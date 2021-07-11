@@ -1,0 +1,17 @@
+Next:
+
+* https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
+* https://github.com/leoncvlt/cryptodex build index via square root? Should we do this?
+* Build a docker-compose file for this so it's easy to run as a cron job on a raspberry pi.
+* Think about multiple exchanges to get more lower-value tokens in the index
+  * Define minimum API requirements for a new exchange
+  * Which exchange has the most tokens, reasonable fees, and mostly trustworthy?
+* Can we use a LIMIT order at the bottom of the current order market?
+
+Ideas:
+* Can we use cointracker to get external portfolio data?
+* Tie to postgres database to run for multiple individual users?
+
+Python ideas:
+* Python linter?
+* Github actions for mypy?
