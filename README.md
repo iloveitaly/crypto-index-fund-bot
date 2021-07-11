@@ -1,0 +1,120 @@
+# Crypto Index Fund Bot
+
+A bot to build your own index fund using dollar-cost averaging.
+
+There are [bots](https://allcryptobots.com) out there that do this, so why build another? They are missing key features that I wanted:
+
+* Never sell any tokens. Instead, rebalance using USD deposits. ([HodlBot](https://www.hodlbot.io) can't do this)
+* Build a cross-chain index (otherwise [TokenSets](https://www.tokensets.com) would have been perfect)
+* When new deposits come in, asset purchases should be prioritized by:
+  * New tokens that aren't held at all ([Shrimpy](https://www.shrimpy.io) can't do this)
+  * Tokens whose value has dropped the most over the last month (not aware of any bot that does this)
+  * Tokens whose allocation is below target (nearly all bots do this)
+* Control the minimum and maximum purchase size for new crypto orders. Most bots keep buying the same token over attempting to reach the correct target allocation. I want to distribute new USD deposits over a range of tokens.
+* Represent assets held outside of the bot-managed exchange(s) in the index (not aware of any bot that does this).
+* Ability to exclude certain types of tokens, like stable coins or wrapped tokens.
+* Ability to exclude specific tokens from the index completely (most existing bots allow for this).
+* Build a cross-exchange index. Binance and Coinbase are great, but they have a limited set of tokens. I'd like to build an index across multiple exchanges, optimizing for token purchases in each exchange that can't be made in the other (for instance, NEXO isn't available in Binance or CoinBase, but is available in HitBTC).
+
+Here are some features I *didn't* want that I could imagine others would like:
+
+* Customizing individual index weights of specific coins
+* Rebalancing by selling existing tokens
+* Using a DEX vs a centralized exchange
+
+Also, I wanted to learn python, and this was a perfect [learning project.](http://mikebian.co/my-process-for-intentional-learning/) Please excuse any beginner-python code (and submit PRs to fix!).
+
+# Install
+
+This project uses [asdf](https://asdf-vm.com/) to install required runtime versions. `asdf install` will source versions from `.tool-versions` for you.
+
+After installing python and poetry, install python dependencies:
+
+```
+poetry install
+```
+
+You'll need some API keys for the bot to work. First, copy the env template:
+
+```
+cp .env-example .env
+```
+
+Then grab API keys:
+
+* [Binance US.](http://mikebian.co/binance) Right now, this is the only supported exchange. Generate API keys without withdrawal permissions but with ordering permissions.
+* [CoinMarketCap.](https://coinmarketcap.com/api/) Used for calculating the cap-weighted index.
+
+If you have externally-held assets, you'll want to represent them in `external_portfolio.json`:
+
+```
+cp external_portfolio_example.json external_portfolio.json
+```
+
+# Usage
+
+First, you'll want to jump into a python venv:
+
+```
+poetry shell
+```
+
+Right now, there are some variables that are hardcoded into the `User` class that you may want to change. Assuming you've taken a look at the `User` options and configured `.env` you can execute market buys using:
+
+```
+python market_buy.py
+```
+
+This is the command you'll want to setup on a cron job.
+
+To view the generated index:
+
+```
+python market_cap.py
+```
+
+To view your current portfolio (including your externally held assets) with target allocations *and* additional assets with targets that the bot will attempt to purchase for you:
+
+```
+python portfolio.py
+```
+
+# Implementation Details
+
+## Market orders
+
+On many exchanges a market order pays higher fees than limit orders. But Binance fees are the same whether you're the maker or the taker. For simplicity, this bot just places instantly-fulfilled market orders. There's usually sufficient liquidity to assume your order will be filled without the price moving much in the milliseconds it takes to check the market and then place the order.
+
+The only way to reduce Binance fees is to hold their BNB token in your account (currently 0.1% fees become 0.075%).
+
+<!--
+## Minimum notional values
+Binance specifies a minimum buy order value for each crypto (aka `minNotional`). Let's say you're looking to buy equal amounts of 10 different cryptos and only want to spend 0.005 BTC altogether. Obviously each order's notional value will then be 0.0005 BTC.
+
+But the `minNotional` for BTC orders is 0.001; Binance will not let you place an order whose value is smaller than that.
+-->
+
+# Related & Alternative Systems
+### Open Source
+
+* https://github.com/kdmukai/binance_bbb the primary inspiration for this bot.
+* https://github.com/benmarten/CryptoETF generates a target index but doesn't automatically make purchases
+* https://github.com/nazjunaid/MyCryptoIndexFund another more user-friendly index generator that doesn't make any purchases
+* https://github.com/danrue/crypto-indexer/ same as above, but has been dead for a long time.
+* https://github.com/aboutlo/crypto-index-fund google sheets based option
+* https://github.com/jackkinsella/crypto-index rails-based trading bot. Looked advanced (too complex for what I'm trying to do), but has been dead for a very long time.
+* https://github.com/leoncvlt/cryptodex recently developed
+### Paid
+
+* https://cryptoindex.com Very interesting product, but looks too advanced for what I was trying to do.
+* https://www.hodlbot.io. Interesting product, but looks abandoned. Doesn't support DCA, it will sell your assets to rebalance.
+* https://www.shrimpy.io. Best bot that I could find. They have [an advanced DCA product](https://help.shrimpy.io/hc/en-us/articles/1260803098690-Dollar-Cost-Averaging-DCA-in-Shrimpy) which only reallocates new deposits to the account.
+* https://www.tokensets.com. Really interesting solution to this problem using smart contracts. Only supports EC20 tokens.
+### Funds
+
+* https://crypto20.com/en/
+* https://www.bitwiseinvestments.com/funds
+# Disclaimer
+
+I am not a qualified licensed investment advisor and I don't have any professional finance experience. This tool neither is, nor should be construed as an offer, solicitation, or recommendation to buy or sell any cryptocurencies assets. Use it at your own risk.
+

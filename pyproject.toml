@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "binance_bbb"
+version = "0.1.0"
+description = ""
+authors = ["Michael Bianco <mike@mikebian.co>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+python-binance = "^1.0.12"
+ipython = "^7.25.0"
+ipdb = "^0.13.8"
+tabulate = "^0.8.9"
+mypy = "^0.910"
+coinbasepro = "^0.3.0"
+structlog = "^21.1.0"
+colorama = "^0.4.4"
+python-dotenv = "^0.18.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
