@@ -8,9 +8,9 @@ def user_from_env():
   import json
 
   user = User()
-  user.binance_api_key = os.getenv("BINANCE_API_KEY")
-  user.binance_secret_key = os.getenv("BINANCE_SECRET_KEY")
-  user.livemode = os.getenv("LIVEMODE", 'false').lower() == 'true'
+  user.binance_api_key = os.getenv("USER_BINANCE_API_KEY")
+  user.binance_secret_key = os.getenv("USER_BINANCE_SECRET_KEY")
+  user.livemode = os.getenv("USER_LIVEMODE", 'false').lower() == 'true'
 
   try:
     user.external_portfolio = json.load(open('external_portfolio.json'))
