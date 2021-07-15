@@ -1,5 +1,7 @@
 Next:
 
+* main.cli with command line interface
+* https://algotrading101.com/learn/binance-python-api-guide/
 * https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
 * https://github.com/leoncvlt/cryptodex build index via square root? Should we do this?
 * Build a docker-compose file for this so it's easy to run as a cron job on a raspberry pi.
@@ -7,6 +9,7 @@ Next:
   * Define minimum API requirements for a new exchange
   * Which exchange has the most tokens, reasonable fees, and mostly trustworthy?
 * Can we use a LIMIT order at the bottom of the current order market?
+* use a simple moving average to ensure we aren't buying the spikes too much
 
 Ideas:
 * Can we use cointracker to get external portfolio data?
@@ -15,3 +18,4 @@ Ideas:
 Python ideas:
 * Python linter?
 * Github actions for mypy?
+* fix typing errors
