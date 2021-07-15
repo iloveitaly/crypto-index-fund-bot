@@ -20,6 +20,20 @@ binance_prices = {
   for price_dict in public_binance_client.get_all_tickers()
 }
 
+def can_buy_amount_in_exchange(symbol: str, amount_in_purchasing_currency: float):
+  binance_symbol_info = public_binance_client.get_symbol_info(symbol)
+
+  # the min notional amount specified on the symbol data is the min in USD
+  # that needs to be purchased. This min is enforced upstream, so we can avoid
+  # that check here
+
+  if binance_symbol_info['status'] != 'TRADING':
+    log.info("symbol is not trading, skipping", symbol=symbol)
+    return False
+
+  return True
+
+
 def can_buy_in_exchange(exchange, symbol, purchasing_currency):
   mapping = {
     'binance': can_buy_in_binance,
