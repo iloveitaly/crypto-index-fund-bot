@@ -8,12 +8,12 @@ from typing import List
 
 def portfolio_with_allocation_percentages(portfolio) -> List[CryptoBalance]:
   import math
-  total = math.fsum([balance['usd_price'] * balance['amount'] for balance in portfolio])
+  portfolio_total = math.fsum([balance['usd_price'] * balance['amount'] for balance in portfolio])
 
   return [
     balance | {
       'usd_total' : usd_total,
-      'percentage' : usd_total / total * 100.0,
+      'percentage' : usd_total / portfolio_total * 100.0,
     }
     for balance in portfolio
 
@@ -52,7 +52,7 @@ def add_price_to_portfolio(portfolio: List[CryptoBalance], purchasing_currency: 
   ]
 
 # TODO maybe remove user preference? The target porfolio should take into the account the user's purchasing currency preference?
-def add_missing_assets_to_portfolio(user: User, portfolio, portfolio_target: List[CryptoBalance]) -> List[CryptoBalance]:
+def add_missing_assets_to_portfolio(user: User, portfolio: List[CryptoBalance], portfolio_target: List[CryptoBalance]) -> List[CryptoBalance]:
   from exchanges import binance_prices
   purchasing_currency = user.purchasing_currency()
 
@@ -69,7 +69,7 @@ def add_missing_assets_to_portfolio(user: User, portfolio, portfolio_target: Lis
   ]
 
 # right now, this is for tinkering/debugging purposes only
-def add_percentage_target_to_portfolio(portfolio, portfolio_target: List[CryptoBalance]):
+def add_percentage_target_to_portfolio(portfolio: List[CryptoBalance], portfolio_target: List[CryptoBalance]):
   return [
     balance | {
       'target_percentage':
