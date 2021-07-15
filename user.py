@@ -11,9 +11,10 @@ def user_from_env():
   user.binance_api_key = os.getenv("USER_BINANCE_API_KEY")
   user.binance_secret_key = os.getenv("USER_BINANCE_SECRET_KEY")
   user.livemode = os.getenv("USER_LIVEMODE", 'false').lower() == 'true'
+  user.convert_stablecoins = os.getenv("USER_CONVERT_STABLECOINS", 'false').lower() == 'true'
 
   try:
-    user.external_portfolio = json.load(open('external_portfolio.json'))
+    user.external_portfolio = json.load(open('external_portfolio.json'))'
   except FileNotFoundError:
     pass
 
@@ -25,6 +26,7 @@ class User:
     self.binance_api_key = ''
     self.binance_secret_key = ''
     self.external_portfolio = []
+    self.convert_stablecoins = False
 
   def exchanges(self):
     return ['binance']
@@ -32,7 +34,7 @@ class User:
   def binance_client(self):
     from binance.client import Client
 
-    # memoize this
+    # TODO memoize this
     return Client(
       self.binance_api_key,
       self.binance_secret_key,
