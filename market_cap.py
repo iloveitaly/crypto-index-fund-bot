@@ -38,17 +38,17 @@ def filtered_coins_by_market_cap(
     # was the coin included in a list of skipped coins?
     offending_tags = set.intersection(set(coin['tags']), exclude_tags)
     if len(offending_tags) > 0:
-      log.info("skipping, includes excluded tag", symbol=symbol, offending_tags=offending_tags)
+      log.debug("skipping, includes excluded tag", symbol=symbol, offending_tags=offending_tags)
       continue
 
     # was the coin manually excluded?
     if symbol in exclude_coins:
-      log.info("coin symbol excluded", symbol=symbol)
+      log.debug("coin symbol excluded", symbol=symbol)
       continue
 
     # is the coin available on supported exchanges
     if not any(can_buy_in_exchange(exchange, symbol, purchasing_currency) for exchange in exchanges):
-      log.info("coin cannot be purchased in exchange", symbol=symbol, exchanges=exchanges)
+      log.debug("coin cannot be purchased in exchange", symbol=symbol, exchanges=exchanges)
       continue
 
     coins.append(coin)
