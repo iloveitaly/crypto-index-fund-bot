@@ -14,7 +14,7 @@ def user_from_env():
   user.convert_stablecoins = os.getenv("USER_CONVERT_STABLECOINS", 'false').lower() == 'true'
 
   try:
-    user.external_portfolio = json.load(open('external_portfolio.json'))'
+    user.external_portfolio = json.load(open('external_portfolio.json'))
   except FileNotFoundError:
     pass
 
