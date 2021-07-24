@@ -106,14 +106,3 @@ def coins_with_market_cap(user: User) -> List[CryptoData]:
   )
 
   return calculate_market_cap_from_coin_list(user.purchasing_currency(), filtered_coins)
-
-# run script directly to get market cap data as a csv in the terminal
-if __name__ == "__main__":
-  user = user_from_env()
-  coins_by_exchange = coins_with_market_cap(user)
-
-  log.info("writing market cap csv")
-
-  # TODO option to output as tabulated file
-  from utils import csv_output, table_output
-  table_output(coins_by_exchange)

@@ -43,8 +43,9 @@ def merge_portfolio(portfolio_1: List[CryptoBalance], portfolio_2: List[CryptoBa
 
   return new_portfolio
 
-def add_price_to_portfolio(portfolio: List[CryptoBalance], purchasing_currency: str):
+def add_price_to_portfolio(portfolio: List[CryptoBalance], purchasing_currency: str) -> List[CryptoBalance]:
   return [
+    # TODO the new python dict merge syntax doesn't seem to play well with typed dicts
     balance | {
       'usd_price': price_of_symbol(balance['symbol'], purchasing_currency) if balance['symbol'] != purchasing_currency else 1,
     }
@@ -90,27 +91,3 @@ def add_percentage_target_to_portfolio(portfolio: List[CryptoBalance], portfolio
     }
     for balance in portfolio
   ]
-
-# run directly to output target portfolio index
-if __name__ == "__main__":
-  from user import user_from_env
-  from exchanges import binance_portfolio
-
-  user = user_from_env()
-  portfolio_target = coins_with_market_cap(user)
-
-  external_portfolio = user.external_portfolio
-
-  # pull a raw binance reportfolio from exchanges.py and add percentage allocations to it
-  portfolio = binance_portfolio(user)
-  portfolio = merge_portfolio(portfolio, external_portfolio)
-  portfolio = add_price_to_portfolio(portfolio, user.purchasing_currency())
-  portfolio = portfolio_with_allocation_percentages(portfolio)
-  portfolio = add_missing_assets_to_portfolio(user, portfolio, portfolio_target)
-  portfolio = add_percentage_target_to_portfolio(portfolio, portfolio_target)
-
-  # highest percentages first in the output table
-  portfolio.sort(key=lambda balance: balance['target_percentage'], reverse=True)
-
-  from utils import table_output
-  table_output(portfolio)

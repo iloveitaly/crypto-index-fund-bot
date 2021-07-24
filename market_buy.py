@@ -63,7 +63,7 @@ def calculate_market_buy_preferences(target_index: List[CryptoData], current_por
 def purchasing_currency_in_portfolio(user: User, portfolio: List[CryptoBalance]) -> float:
   return math.fsum([
     balance['usd_total']
-    for balance in current_portfolio
+    for balance in portfolio
     if balance['symbol'] == user.purchasing_currency()
   ])
 
@@ -72,7 +72,8 @@ def determine_market_buys(
     user: User,
     sorted_buy_preferences: List[CryptoData],
     current_portfolio: List[CryptoBalance],
-    target_portfolio: List[CryptoData]
+    target_portfolio: List[CryptoData],
+    purchase_balance: float,
   ) -> List[MarketBuy]:
   """
   1. Purchase minimums for each asset
@@ -89,9 +90,7 @@ def determine_market_buys(
 
   purchase_minimum = user.purchase_min()
   purchase_maximum = user.purchase_max()
-
   portfolio_total = math.fsum(balance['usd_total'] for balance in current_portfolio)
-  purchase_balance = purchasing_currency_in_portfolio(user, current_portfolio)
 
   if purchase_balance < binance_purchase_minimum:
     log.info("not enough USD to buy anything", purchase_balance=purchase_balance)
@@ -191,36 +190,3 @@ def make_market_buys(user: User, market_buys: List[MarketBuy]) -> List:
 
 
   return orders
-
-# run directly to output list of buys that would be made
-if __name__ == "__main__":
-  from user import user_from_env
-  from exchanges import binance_portfolio
-
-  user = user_from_env()
-  portfolio_target = coins_with_market_cap(user)
-
-  current_portfolio = binance_portfolio(user)
-
-  if user.convert_stablecoins:
-    convert_stablecoins(user, current_portfolio)
-
-  external_portfolio = user.external_portfolio
-  external_portfolio = add_price_to_portfolio(external_portfolio, user.purchasing_currency())
-
-  current_portfolio = merge_portfolio(current_portfolio, external_portfolio)
-  current_portfolio = add_price_to_portfolio(current_portfolio, user.purchasing_currency())
-  current_portfolio = portfolio_with_allocation_percentages(current_portfolio)
-
-  sorted_market_buys = calculate_market_buy_preferences(portfolio_target, current_portfolio)
-  market_buys = determine_market_buys(user, sorted_market_buys, current_portfolio, portfolio_target)
-
-  from utils import table_output
-  table_output(market_buys)
-
-  # TODO add option to actually make market purchases
-  orders = make_market_buys(user, market_buys)
-
-  # TODO inspect order response structure and extract important information for the logs
-  # breakpoint()
-
