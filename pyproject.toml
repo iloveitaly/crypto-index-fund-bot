@@ -16,6 +16,7 @@ structlog = "^21.1.0"
 colorama = "^0.4.4"
 python-dotenv = "^0.18.0"
 rich = "^10.6.0"
+click = "^8.0.1"
 
 [tool.poetry.dev-dependencies]
 
