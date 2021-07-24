@@ -1,6 +1,6 @@
 # Crypto Index Fund Bot
 
-A bot to build your own index fund using dollar-cost averaging.
+A bot to build your own index fund of cryptocurrencies using dollar-cost averaging.
 
 There are [bots](https://allcryptobots.com) out there that do this, so why build another? They are missing key features that I wanted:
 
@@ -60,24 +60,42 @@ First, you'll want to jump into a python venv:
 poetry shell
 ```
 
-Right now, there are some variables that are hardcoded into the `User` class that you may want to change. Assuming you've taken a look at the `User` options and configured `.env` you can execute market buys using:
+Right now, there are some variables that are hardcoded into the `User` class that you may want to change. Assuming you've taken a look at the `User` options and configured `.env` you can run `python main.py --help` to get the following information:
 
-```shell
-python market_buy.py
 ```
 
-This is the command you'll want to setup on a cron job.
+Usage: main.py [OPTIONS] COMMAND [ARGS]...
 
-To view the generated index:
+  Tool for building your own crypto index fund.
 
-```shell
-python market_cap.py
+Options:
+  -v, --verbose  Enables verbose mode.
+  --help         Show this message and exit.
+
+Commands:
+  buy        Buy additional tokens for your index
+  index      Print index by market cap
+  portfolio  Print current portfolio with targets
 ```
 
-To view your current portfolio (including your externally held assets) with target allocations *and* additional assets with targets that the bot will attempt to purchase for you:
+Some examples:
 
 ```shell
-python portfolio.py
+python main.py index
+
+# To view your current portfolio (including your externally held assets) with target allocations
+# _and_ additional assets with targets that the bot will purchase towards.
+python main.py portfolio --format=csv
+
+python main.py buy --purchase-balance=200
+
+python main.py buy --dry-run
+```
+
+This is the command you'll want to setup on a cron job:
+
+```shell
+python main.py buy
 ```
 
 ## Implementation Details
