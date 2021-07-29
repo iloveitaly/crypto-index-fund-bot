@@ -11,11 +11,26 @@ def coinmarketcap_data():
   coinmarketcap_api_key = os.getenv('COINMARKETCAP_API_KEY')
   coinbase_endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=1000&sort=market_cap"
 
+  # TODO should we cache or at minimum memoize this?
   return requests.get(coinbase_endpoint, headers={
     "X-CMC_PRO_API_KEY": coinmarketcap_api_key
   }).json()
 
-  # exclude_coins = ['BTC', 'ETH', 'DOGE']
+# for debugging / testing only
+def coinmarketcap_tags():
+  from functools import reduce
+  import operator
+
+  all_data = coinmarketcap_data()
+  all_tags = [data['tags'] for data in all_data['data']]
+  all_tags = reduce(operator.concat, all_tags)
+  return set(all_tags)
+
+# for debugging / testing only
+def coinmarketcap_data_for_symbol(symbol):
+  all_data = coinmarketcap_data()
+  return next(data for data in all_data['data'] if data['symbol'] == symbol)
+
 # TODO should indicate that this is married to coinmarketcap data a bit more
 # market_data is pulled from coinmarketcap
 def filtered_coins_by_market_cap(
@@ -24,12 +39,12 @@ def filtered_coins_by_market_cap(
     exchanges: List[str],
     exclude_tags=[],
     exclude_coins=[],
+    limit=-1
   ):
 
   from exchanges import can_buy_in_exchange
 
   exclude_tags = set(exclude_tags)
-  limit = 5
   coins = []
 
   for coin in market_data['data']:
@@ -53,11 +68,10 @@ def filtered_coins_by_market_cap(
 
     coins.append(coin)
 
-    # TODO make this a CLI option for building a smaller index for people who want
-    #      to manage this manually
-    # limit -= 1
-    # if limit == 0:
-    #   break
+    if limit != -1:
+      limit -= 1
+      if limit == 0:
+        break
 
   log.info("filtered coin list, used for index", coin_count=len(coins))
 
