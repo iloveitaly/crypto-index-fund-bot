@@ -18,11 +18,12 @@ def cli(verbose):
 
 @cli.command(help="Print index by market cap")
 @click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
-def index(format):
+@click.option("-l", "--limit", type=int, help="Maximum size of index")
+def index(format, limit):
   import market_cap
 
   user = user_from_env()
-  coins_by_exchange = market_cap.coins_with_market_cap(user)
+  coins_by_exchange = market_cap.coins_with_market_cap(user, limit)
 
   log.info("writing market cap csv")
 
@@ -80,11 +81,16 @@ def buy(format, dry_run, purchase_balance, convert):
     dry_run = True
 
   user = user_from_env()
+
+  if dry_run:
+    user.convert_stablecoins = False
+    user.livemode = False
+
   portfolio_target = market_cap.coins_with_market_cap(user)
 
   current_portfolio = binance_portfolio(user)
 
-  if not dry_run and (convert or user.convert_stablecoins):
+  if convert or user.convert_stablecoins:
     convert_stablecoins(user, current_portfolio)
 
   external_portfolio = user.external_portfolio
@@ -107,11 +113,10 @@ def buy(format, dry_run, purchase_balance, convert):
 
   if not market_buys:
     click.secho('Not enough purchasing currency to make any trades.', fg='red')
-  elif not dry_run:
-    orders = market_buy.make_market_buys(user, market_buys)
-    # TODO purchase confirmation outputs
   else:
-    click.secho('\ndry run, not executing trades', fg='green')
+    orders = market_buy.make_market_buys(user, market_buys)
+    breakpoint()
+    # TODO purchase confirmation outputs
 
 if __name__ == '__main__':
     cli()

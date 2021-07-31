@@ -105,7 +105,7 @@ def calculate_market_cap_from_coin_list(purchasing_currency: str, coins) -> List
 
   return coins_with_market_cap
 
-def coins_with_market_cap(user: User) -> List[CryptoData]:
+def coins_with_market_cap(user: User, limit: int) -> List[CryptoData]:
   market_data = coinmarketcap_data()
 
   filtered_coins = filtered_coins_by_market_cap(
@@ -114,6 +114,7 @@ def coins_with_market_cap(user: User) -> List[CryptoData]:
 
     exchanges=user.exchanges(),
     exclude_tags=user.excluded_tags(),
+    limit=limit,
 
     # TODO if multiple exchanges exclude coins included in a previous index?
     # exclude_coins=
