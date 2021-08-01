@@ -7,6 +7,7 @@ from utils import log
 # https://python-binance.readthedocs.io/en/latest/market_data.html
 # https://binance-docs.github.io/apidocs/spot/en/#change-log
 # https://github.com/binance-us/binance-official-api-docs
+# https://dev.binance.vision/
 from binance.client import Client as BinanceClient
 public_binance_client = BinanceClient('', '', tld='us')
 binance_exchange = public_binance_client.get_exchange_info()
@@ -61,6 +62,7 @@ def can_buy_in_coinbase(symbol, purchasing_currency):
       return True
 
 # TODO should do error handling for non-USD currencies
+# TODO should exchange type be specified?
 def price_of_symbol(symbol, purchasing_currency):
   pricing_symbol = symbol + purchasing_currency
 

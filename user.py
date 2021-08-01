@@ -23,6 +23,7 @@ def user_from_env():
 class User:
   def __init__(self):
     self.livemode = False
+    self.buy_strategy = 'limit'
     self.binance_api_key = ''
     self.binance_secret_key = ''
     self.external_portfolio = []

@@ -3,7 +3,7 @@ import math
 from user import User
 
 from portfolio import add_price_to_portfolio, portfolio_with_allocation_percentages, add_price_to_portfolio, merge_portfolio
-from exchanges import binance_portfolio, can_buy_amount_in_exchange
+from exchanges import binance_portfolio, can_buy_amount_in_exchange, price_of_symbol
 from market_cap import coins_with_market_cap
 from convert_stablecoins import convert_stablecoins
 
@@ -156,37 +156,82 @@ def make_market_buys(user: User, market_buys: List[MarketBuy]) -> List:
     # symbol is: `baseasset` + `quoteasset`
     purchase_symbol = buy['symbol'] + purchasing_currency
     symbol_info = binance_client.get_symbol_info(purchase_symbol)
+    # TODO maybe use Decimal.quantize() to round?
     normalized_amount = round(buy['amount'], symbol_info['quoteAssetPrecision'])
 
     order_params = {
       'symbol': purchase_symbol,
       'newOrderRespType': 'FULL',
-
-      # allows us to purchase crypto in a currency of choice
-      # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
-      'quoteOrderQty': normalized_amount,
-      # quantity=float(quantity)
     }
 
-    log.info("submitting market buy order", symbol=purchase_symbol, amount=normalized_amount)
+    if user.buy_strategy == 'limit':
+      # order depth returns the lowest asks and the highest bids
+      # increasing limits returns lower bids and higher asks
+      # grab a long-ish order book to get some analytics on the order book
+
+      order_book = binance_client.get_order_book(symbol=purchase_symbol, limit=100)
+
+      # price that binance reports is at the bottom of the order book
+      # looks like they use the bottom of the ask stack to clear market orders (makes sense)
+      lowest_ask = order_book['asks'][0][0]
+      highest_bid = order_book['bids'][0][0]
+
+      from decimal import Decimal
+      ask_difference = Decimal(highest_bid) - Decimal(lowest_ask)
+
+      log.info(
+        "price analytics",
+
+        difference=str(ask_difference),
+        percentage_difference=str(ask_difference / Decimal(lowest_ask) * Decimal(-100.0)),
+        bid=highest_bid,
+        ask=lowest_ask,
+        reported_price=price_of_symbol(buy['symbol'], purchasing_currency)
+      )
+
+      # TODO should consider using `Decimal` below instead of `float`
+
+      # TODO can we inspect the order book depth here? Or general liquidity for the market?
+      #      what else can we do to improve our purchase strategy?
+
+      # the quote precision is not what we need to round by, the stepSize needs to be used instead:
+      # https://github.com/sammchardy/python-binance/issues/219
+      step_size = next(f['stepSize'] for f in symbol_info['filters'] if f['filterType'] == 'LOT_SIZE')
+      precision_from_step_size = int(round(-math.log(float(step_size), 10), 0))
+
+      # TODO add option to use the midpoint, or some other position, of the order book instead of the lowest ask
+
+      order_params |= {
+        # TODO is there a way to specify a number of hours? It seems like only the three standard TIF options are available
+        'timeInForce': 'GTC',
+        'quantity': round(normalized_amount / float(highest_bid), precision_from_step_size),
+        'price': highest_bid
+      }
+    else: # market
+      order_params |= {
+        # `quoteOrderQty` allows us to purchase crypto in a currency of choice, instead of an amount in the token we are buying
+        # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
+        'quoteOrderQty': normalized_amount,
+      }
+
+    log.info("submitting market buy order", order=order_params)
 
     from binance.exceptions import BinanceAPIException
 
     if user.livemode:
-      order = binance_client.order_market_buy(**order_params)
-      # binance.exceptions.BinanceAPIException: APIError(code=-2010): Account has insufficient balance for requested action.
-      # binance.exceptions.BinanceAPIException: APIError(code=-1111): Precision is over the maximum defined for this asset.
-      # binance.exceptions.BinanceAPIException: APIError(code=-1013): Filter failure: MIN_NOTIONAL
-      # Account has insufficient balance for requested action.
+      if user.buy_strategy == 'limit':
+        order = binance_client.order_limit_buy(**order_params)
+      else:
+        order = binance_client.order_market_buy(**order_params)
     else:
       from binance.client import Client
+
       # if test is successful, order will be an empty dict
       order = binance_client.create_test_order(**({
         'side': Client.SIDE_BUY,
-        'type': Client.ORDER_TYPE_MARKET,
+        'type': Client.ORDER_TYPE_LIMIT if user.buy_strategy == 'limit' else Client.ORDER_TYPE_MARKET,
       } | order_params))
 
     orders.append(order)
-
 
   return orders

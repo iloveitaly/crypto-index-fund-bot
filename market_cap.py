@@ -3,7 +3,7 @@ import requests
 from utils import log
 from user import User, user_from_env
 
-from typing import List
+import typing as t
 from data_types import CryptoData
 
 def coinmarketcap_data():
@@ -36,7 +36,7 @@ def coinmarketcap_data_for_symbol(symbol):
 def filtered_coins_by_market_cap(
     market_data,
     purchasing_currency: str,
-    exchanges: List[str],
+    exchanges: t.List[str],
     exclude_tags=[],
     exclude_coins=[],
     limit=-1
@@ -68,7 +68,7 @@ def filtered_coins_by_market_cap(
 
     coins.append(coin)
 
-    if limit != -1:
+    if limit != -1 and limit != None:
       limit -= 1
       if limit == 0:
         break
@@ -79,7 +79,7 @@ def filtered_coins_by_market_cap(
 
 # TODO hardcoded against USD quotes right now, support different purchase currencies in the future
 # `coins` is data from coinmarketcap
-def calculate_market_cap_from_coin_list(purchasing_currency: str, coins) -> List[CryptoData]:
+def calculate_market_cap_from_coin_list(purchasing_currency: str, coins) -> t.List[CryptoData]:
   total_market_cap = sum([coin['quote'][purchasing_currency]['market_cap'] for coin in coins])
   coins_with_market_cap = []
 
@@ -105,7 +105,7 @@ def calculate_market_cap_from_coin_list(purchasing_currency: str, coins) -> List
 
   return coins_with_market_cap
 
-def coins_with_market_cap(user: User, limit: int) -> List[CryptoData]:
+def coins_with_market_cap(user: User, limit: t.Optional[int] = None) -> t.List[CryptoData]:
   market_data = coinmarketcap_data()
 
   filtered_coins = filtered_coins_by_market_cap(
