@@ -18,12 +18,20 @@ def cli(verbose):
 
 @cli.command(help="Print index by market cap")
 @click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
+@click.option("-s", "--strategy", type=click.Choice(['market_cap', 'sqrt_market_cap']), show_default=True, help="Index strategy")
 @click.option("-l", "--limit", type=int, help="Maximum size of index")
-def index(format, limit):
+def index(format, limit, strategy):
   import market_cap
 
   user = user_from_env()
-  coins_by_exchange = market_cap.coins_with_market_cap(user, limit)
+
+  if strategy:
+    user.index_strategy = strategy
+
+  if limit:
+    user.index_limit = limit
+
+  coins_by_exchange = market_cap.coins_with_market_cap(user)
 
   log.info("writing market cap csv")
 

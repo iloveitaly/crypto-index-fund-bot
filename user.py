@@ -24,6 +24,8 @@ class User:
   def __init__(self):
     self.livemode = False
     self.buy_strategy = 'limit'
+    self.index_strategy = 'market_cap'
+    self.index_limit = None
     self.binance_api_key = ''
     self.binance_secret_key = ''
     self.external_portfolio = []

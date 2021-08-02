@@ -79,14 +79,24 @@ def filtered_coins_by_market_cap(
 
 # TODO hardcoded against USD quotes right now, support different purchase currencies in the future
 # `coins` is data from coinmarketcap
-def calculate_market_cap_from_coin_list(purchasing_currency: str, coins) -> t.List[CryptoData]:
-  total_market_cap = sum([coin['quote'][purchasing_currency]['market_cap'] for coin in coins])
+def calculate_market_cap_from_coin_list(purchasing_currency: str, coins, strategy: str = "market_cap") -> t.List[CryptoData]:
+  import math
+  market_cap_list = [coin['quote'][purchasing_currency]['market_cap'] for coin in coins]
+
+  if strategy == 'sqrt_market_cap':
+    total_market_cap = sum([math.sqrt(cap) for cap in market_cap_list])
+  else:
+    total_market_cap = sum([cap for cap in market_cap_list])
+
   coins_with_market_cap = []
 
   log.info("total market cap", total_market_cap=total_market_cap)
 
   for coin in coins:
     market_cap = coin['quote'][purchasing_currency]['market_cap']
+
+    if strategy == 'sqrt_market_cap':
+      market_cap = math.sqrt(market_cap)
 
     coins_with_market_cap.append({
       "symbol": coin['symbol'],
@@ -114,10 +124,14 @@ def coins_with_market_cap(user: User, limit: t.Optional[int] = None) -> t.List[C
 
     exchanges=user.exchanges(),
     exclude_tags=user.excluded_tags(),
-    limit=limit,
+    limit=user.index_limit,
 
     # TODO if multiple exchanges exclude coins included in a previous index?
     # exclude_coins=
   )
 
-  return calculate_market_cap_from_coin_list(user.purchasing_currency(), filtered_coins)
+  return calculate_market_cap_from_coin_list(
+    user.purchasing_currency(),
+    filtered_coins,
+    user.index_strategy
+  )
