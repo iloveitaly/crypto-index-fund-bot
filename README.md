@@ -100,23 +100,44 @@ python main.py buy
 
 ## Implementation Details
 
+### Index Strategies
+
+* Market Index. This is the default strategy.
+* Sqrt Market Index. Reduces the weight that the largest entries in an index have. [Here's a good overview](https://help.shrimpy.io/hc/en-us/articles/1260803099290-Shrimpy-Index-Creator-Weighting) of this strategy.
+* SME Index. _Not yet implemented._
+
 ### Market orders
 
 On many exchanges a market order pays higher fees than limit orders. But Binance fees are the same whether you're the maker or the taker. For simplicity, this bot just places instantly-fulfilled market orders. There's usually sufficient liquidity to assume your order will be filled without the price moving much in the milliseconds it takes to check the market and then place the order.
 
 The only way to reduce Binance fees is to hold their BNB token in your account (currently 0.1% fees become 0.075%).
+### Limit Orders
+
+_WIP limit order documentation. Right now, there is a limit order strategy, but we don't auto-cancel them after a certain period of time_
+
+If a limit order is not filled, by default it [remains open indefinitely.](https://academy.binance.com/en/articles/understanding-the-different-order-types)
+
+### Order Minimums
+Exchanges specify a minimum buy order value for each crypto (i.e. `minNotional` in Binance). Let's say you're looking to buy equal amounts of 10 different cryptos and only want to spend 0.005 BTC altogether, which would result in 0.0005 BTC of each token being purchased.
+
+However, let's say the `minNotional` for BTC orders is 0.001; an exchange will not let you place an order whose value is smaller than that. In this case, we will ensure the minimum order amount is satisfied even if it means exceeding your target allocation (this would only happen small small amounts of total crypto holdings).
 
 ### Crypto Exchange Requirements
 
+_WIP requirements for adding support for new exchages. Right now only binance is supported_
+
+Hard requirements:
+
 * Ability to determine the price and amount of all assets
-* Ability to submit orders, preferable in the purchasing currency instead of asset value
+* Published order minimums in purchasing currency (i.e. 10 USD)
+* Published order minimums for the purchased token (i.e. 10 XLM)
+* Ability to make a market and limit order
 
-<!--
-## Minimum notional values
-Binance specifies a minimum buy order value for each crypto (aka `minNotional`). Let's say you're looking to buy equal amounts of 10 different cryptos and only want to spend 0.005 BTC altogether. Obviously each order's notional value will then be 0.0005 BTC.
+Nice to have:
 
-But the `minNotional` for BTC orders is 0.001; Binance will not let you place an order whose value is smaller than that.
--->
+* Ability to submit orders in the purchasing currency instead of tokens quantities
+* Specify an exact time for an order to expire, rather than just GTC.
+* Ability to deposit a recurring amount, in USD rather than a stablecoin (which requires fees to be usable for purchases)
 
 ## Related & Alternative Systems
 
