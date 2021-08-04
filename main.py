@@ -4,6 +4,7 @@ import utils
 from utils import log
 from user import user_from_env
 from utils import csv_output, table_output
+from data_types import MarketIndexStrategy
 
 # if you use `cod` it's helpful to disable while you are hacking on the CLI
 # if you are on zsh:
@@ -18,7 +19,7 @@ def cli(verbose):
 
 @cli.command(help="Print index by market cap")
 @click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
-@click.option("-s", "--strategy", type=click.Choice(['market_cap', 'sqrt_market_cap']), show_default=True, help="Index strategy")
+@click.option("-s", "--strategy", type=click.Choice([choice.value for choice in MarketIndexStrategy]), default=MarketIndexStrategy.MARKET_CAP, show_default=True, help="Index strategy")
 @click.option("-l", "--limit", type=int, help="Maximum size of index")
 def index(format, limit, strategy):
   import market_cap
@@ -123,8 +124,9 @@ def buy(format, dry_run, purchase_balance, convert):
     click.secho('Not enough purchasing currency to make any trades.', fg='red')
   else:
     orders = market_buy.make_market_buys(user, market_buys)
-    breakpoint()
-    # TODO purchase confirmation outputs
+
+    for order in orders:
+      log.info("order completed", order_id=order["orderId"], symbol=order["symbol"])
 
 if __name__ == '__main__':
     cli()
