@@ -1,8 +1,10 @@
 from data_types import CryptoData, CryptoBalance
-from typing import List
+import typing as t
 
 from user import user_from_env, User
 from utils import log
+
+from decimal import Decimal
 
 # https://python-binance.readthedocs.io/en/latest/market_data.html
 # https://binance-docs.github.io/apidocs/spot/en/#change-log
@@ -73,7 +75,26 @@ def price_of_symbol(symbol, purchasing_currency):
     # TODO should pull from coinmarket cap or something
     return 1
 
-def binance_portfolio(user: User) -> List[CryptoBalance]:
+def binance_purchase_minimum() -> float:
+  return 10.0
+
+def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str) -> str:
+  import math
+  symbol_info = public_binance_client.get_symbol_info(symbol)
+
+  # not 100% sure of the logic below, but I imagine it's possible for the quote asset precision
+  # and the step size precision to be different. In this case, to satisfy both filters, we'd need to pick the min
+  asset_rounding_precision = symbol_info['quoteAssetPrecision']
+
+  # the quote precision is not what we need to round by, the stepSize needs to be used instead:
+  # https://github.com/sammchardy/python-binance/issues/219
+  step_size = next(f['stepSize'] for f in symbol_info['filters'] if f['filterType'] == 'LOT_SIZE')
+  step_size_rounding_precision = int(round(-math.log(float(step_size), 10), 0))
+
+  rounding_precision = min(asset_rounding_precision, step_size_rounding_precision)
+  return format(Decimal(amount), f"0.{rounding_precision}f")
+
+def binance_portfolio(user: User) -> t.List[CryptoBalance]:
   account = user.binance_client().get_account()
   purchasing_currency = user.purchasing_currency()
 

@@ -1,6 +1,6 @@
 from utils import log
 from user import User
-from exchanges import binance_portfolio
+from exchanges import binance_portfolio, binance_normalize_purchase_amount, binance_purchase_minimum
 
 # convert all stablecoins of the purchasing currency into the purchasing currency so we can use it
 # in binance, you need to purchase in USD and cannot purchase most currencies from a stablecoin
@@ -20,20 +20,26 @@ def convert_stablecoins(user: User, portfolio):
 
   for balance in [balance for balance in portfolio if balance['symbol'] in stablecoin_symbols]:
     purchase_symbol = balance['symbol'] + 'USD'
+    amount = balance['amount']
+
+    if amount < binance_purchase_minimum():
+      log.info("cannot convert stablecoin, not above minimum", symbol=purchase_symbol, amount=amount)
+      continue
+
+    normalized_amount = binance_normalize_purchase_amount(amount, purchase_symbol)
 
     # TODO binance order construction should be pulled out into a separate method
+
     order_params = {
       'symbol': purchase_symbol,
       'newOrderRespType': 'FULL',
 
       # allows us to purchase crypto in a currency of choice
       # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
-      'quoteOrderQty': balance['amount'],
+      'quoteOrderQty': normalized_amount,
     }
 
-    order = binance_client.order_market_sell(
-      **order_params
-    )
+    order = binance_client.order_market_sell(**order_params)
 
     """
     {'clientOrderId': 'nW6LJNE8YF1R0KWVR9r1qU',
@@ -56,8 +62,7 @@ def convert_stablecoins(user: User, portfolio):
     'type': 'MARKET'}
     """
 
-    # TODO selectively extract fields we care about here
-    log.info("order completed", order=order)
+    log.info(order_id=order["orderId"], symbol=order["symbol"])
 
     orders.append(order)
 
