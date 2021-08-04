@@ -4,7 +4,7 @@ from utils import log
 from user import User, user_from_env
 
 import typing as t
-from data_types import CryptoData
+from data_types import CryptoData, MarketIndexStrategy
 
 def coinmarketcap_data():
   import os
@@ -79,11 +79,16 @@ def filtered_coins_by_market_cap(
 
 # TODO hardcoded against USD quotes right now, support different purchase currencies in the future
 # `coins` is data from coinmarketcap
-def calculate_market_cap_from_coin_list(purchasing_currency: str, coins, strategy: str = "market_cap") -> t.List[CryptoData]:
+def calculate_market_cap_from_coin_list(purchasing_currency: str, coins, strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP) -> t.List[CryptoData]:
   import math
+
+  if strategy == MarketIndexStrategy.SMA:
+    for coin in coins:
+      breakpoint()
+
   market_cap_list = [coin['quote'][purchasing_currency]['market_cap'] for coin in coins]
 
-  if strategy == 'sqrt_market_cap':
+  if strategy == MarketIndexStrategy.SQRT_MARKET_CAP:
     total_market_cap = sum([math.sqrt(cap) for cap in market_cap_list])
   else:
     total_market_cap = sum([cap for cap in market_cap_list])
