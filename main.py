@@ -17,6 +17,26 @@ def cli(verbose):
   if verbose:
     utils.setLevel('INFO')
 
+@cli.command(help="Analyize configured exchanges")
+def analyze():
+  from exchanges import coinbase_exchange, binance_exchange
+
+  coinbase_available_coins = set([coin['base_currency'] for coin in coinbase_exchange])
+  binance_available_coins = set([coin['baseAsset'] for coin in binance_exchange['symbols']])
+
+  print("Available, regardless of purchasing currency:")
+  print(f"coinbase:\t{len(coinbase_available_coins)}")
+  print(f"binance:\t{len(binance_available_coins)}")
+
+  user = user_from_env()
+
+  coinbase_available_coins_in_purchasing_currency = set([coin['base_currency'] for coin in coinbase_exchange if coin['quote_currency'] == user.purchasing_currency()])
+  binance_available_coins_in_purchasing_currency = set([coin['baseAsset'] for coin in binance_exchange['symbols'] if coin['quoteAsset'] == user.purchasing_currency()])
+
+  print("\nAvailable in purchasing currency:")
+  print(f"coinbase:\t{len(coinbase_available_coins_in_purchasing_currency)}")
+  print(f"binance:\t{len(binance_available_coins_in_purchasing_currency)}")
+
 @cli.command(help="Print index by market cap")
 @click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
 @click.option("-s", "--strategy", type=click.Choice([choice.value for choice in MarketIndexStrategy]), default=MarketIndexStrategy.MARKET_CAP, show_default=True, help="Index strategy")
