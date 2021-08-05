@@ -70,6 +70,10 @@ def portfolio(format):
   else:
     click.echo(csv_output(user_portfolio))
 
+  import market_buy
+  purchase_balance = market_buy.purchasing_currency_in_portfolio(user, user_portfolio)
+  click.echo(f"\nPurchasing Balance: {purchase_balance}")
+
 @cli.command(
   short_help="Buy additional tokens for your index",
   help="Buys additional tokens using purchasing currency in your exchange(s)"
