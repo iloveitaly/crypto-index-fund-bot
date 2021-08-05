@@ -62,7 +62,7 @@ def convert_stablecoins(user: User, portfolio):
     'type': 'MARKET'}
     """
 
-    log.info(order_id=order["orderId"], symbol=order["symbol"])
+    log.info("order completed", order_id=order["orderId"], symbol=order["symbol"])
 
     orders.append(order)
 
