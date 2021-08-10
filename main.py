@@ -150,7 +150,9 @@ def buy(format, dry_run, purchase_balance, convert):
     orders = market_buy.make_market_buys(user, market_buys)
 
     for order in orders:
-      log.info("order completed", order_id=order["orderId"], symbol=order["symbol"])
+      # test mode orders result in an empty dict
+      if order:
+        log.info("order completed", order_id=order["orderId"], symbol=order["symbol"])
 
 if __name__ == '__main__':
     cli()
