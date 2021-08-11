@@ -11,6 +11,7 @@ CryptoBalance = typing.TypedDict('CryptoBalance', {
 })
 
 CryptoData = typing.TypedDict('CryptoData', {
+  # symbol is not a pair
   'symbol': str,
   'market_cap': int,
   'percentage': float,
@@ -22,6 +23,10 @@ MarketBuy = typing.TypedDict('MarketBuy', {
   "symbol": str,
   "amount": float,
 })
+
+class MarketBuyStrategy(str, enum.Enum):
+  LIMIT = 'limit'
+  MARKET = 'market'
 
 # by subclassing str you can use == to compare strings to enums
 class MarketIndexStrategy(str, enum.Enum):
