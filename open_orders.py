@@ -12,6 +12,7 @@ def cancel_stale_open_orders(user: User) -> t.List:
 
   old_orders = [
     order
+    # TODO should use binance_open_orders
     for order in binance_client.get_open_orders()
     if order['side'] == BINANCE_CONSTANTS.SIDE_BUY and order['timeInForce'] == BINANCE_CONSTANTS.TIME_IN_FORCE_GTC and
     # `time` from binance is expressed in milliseconds

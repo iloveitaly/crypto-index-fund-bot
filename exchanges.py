@@ -5,6 +5,7 @@ from user import user_from_env, User
 from utils import log
 
 from decimal import Decimal
+import math
 
 # https://python-binance.readthedocs.io/en/latest/market_data.html
 # https://binance-docs.github.io/apidocs/spot/en/#change-log
@@ -79,20 +80,47 @@ def binance_purchase_minimum() -> float:
   return 10.0
 
 def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str) -> str:
-  import math
   symbol_info = public_binance_client.get_symbol_info(symbol)
 
   # not 100% sure of the logic below, but I imagine it's possible for the quote asset precision
   # and the step size precision to be different. In this case, to satisfy both filters, we'd need to pick the min
-  asset_rounding_precision = symbol_info['quoteAssetPrecision']
+  # asset_rounding_precision = symbol_info['quoteAssetPrecision']
 
   # the quote precision is not what we need to round by, the stepSize needs to be used instead:
   # https://github.com/sammchardy/python-binance/issues/219
   step_size = next(f['stepSize'] for f in symbol_info['filters'] if f['filterType'] == 'LOT_SIZE')
   step_size_rounding_precision = int(round(-math.log(float(step_size), 10), 0))
 
-  rounding_precision = min(asset_rounding_precision, step_size_rounding_precision)
+  # rounding_precision = min(asset_rounding_precision, step_size_rounding_precision)
+  rounding_precision = step_size_rounding_precision
   return format(Decimal(amount), f"0.{rounding_precision}f")
+
+def binance_normalize_price(amount: t.Union[str, Decimal], symbol: str) -> str:
+  symbol_info = public_binance_client.get_symbol_info(symbol)
+
+  asset_rounding_precision = symbol_info['quoteAssetPrecision']
+
+  tick_size = next(f['tickSize'] for f in symbol_info['filters'] if f['filterType'] == 'PRICE_FILTER')
+  tick_size_rounding_precision = int(round(-math.log(float(tick_size), 10), 0))
+
+  rounding_precision = min(asset_rounding_precision, tick_size_rounding_precision)
+
+  return format(Decimal(amount), f"0.{rounding_precision}f")
+
+def binance_open_orders(user: User) -> t.List[CryptoBalance]:
+  return [
+    {
+      # TODO PURCHASING_CURRENCY should make this dynamic for different purchasing currencies
+      # cut off the 'USD' at the end of the symbol
+      'symbol': order['symbol'][:-3],
+      'amount': Decimal(order['origQty']),
+      'usd_price': Decimal(order['price']),
+      'usd_total': Decimal(order['origQty']) * Decimal(order['price']),
+    }
+
+    for order in user.binance_client().get_open_orders()
+    if order['side'] == 'BUY'
+  ]
 
 def binance_portfolio(user: User) -> t.List[CryptoBalance]:
   account = user.binance_client().get_account()
