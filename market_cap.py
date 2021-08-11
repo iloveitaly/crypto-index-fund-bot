@@ -131,8 +131,7 @@ def coins_with_market_cap(user: User, limit: t.Optional[int] = None) -> t.List[C
     exclude_tags=user.excluded_tags(),
     limit=user.index_limit,
 
-    # TODO if multiple exchanges exclude coins included in a previous index?
-    # exclude_coins=
+    exclude_coins=user.excluded_coins
   )
 
   return calculate_market_cap_from_coin_list(

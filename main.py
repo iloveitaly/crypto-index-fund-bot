@@ -103,7 +103,7 @@ def portfolio(format):
 @click.option("-p", "--purchase-balance", type=float, help="Dry-run with a specific amount of purchasing currency")
 @click.option("-c", "--convert", is_flag=True, help="Convert all stablecoin equivilents to purchasing currency. Overrides user configuration.")
 @click.option("--cancel-orders", is_flag=True, help="Cancel all stale orders")
-def buy(format, dry_run, purchase_balance, convert, cancel_stale_orders):
+def buy(format, dry_run, purchase_balance, convert, cancel_orders):
   from exchanges import binance_portfolio
   from convert_stablecoins import convert_stablecoins
   from open_orders import cancel_stale_open_orders
@@ -121,7 +121,7 @@ def buy(format, dry_run, purchase_balance, convert, cancel_stale_orders):
     user.convert_stablecoins = False
     user.livemode = False
 
-  if cancel_stale_orders or user.cancel_stale_orders:
+  if cancel_orders or user.cancel_stale_orders:
     cancel_stale_open_orders(user)
 
   portfolio_target = market_cap.coins_with_market_cap(user)

@@ -34,6 +34,7 @@ class User:
   livemode: bool = False
   cancel_stale_orders: bool = True
   stale_order_hour_limit: int = 24
+  excluded_coins: t.List[str] = []
 
   def __init__(self):
     pass
