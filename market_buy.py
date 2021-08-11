@@ -2,9 +2,9 @@ from utils import log
 from user import User
 
 import math
-from exchanges import binance_normalize_purchase_amount, binance_purchase_minimum, can_buy_amount_in_exchange, price_of_symbol
+from exchanges import binance_open_orders, binance_normalize_purchase_amount, binance_purchase_minimum, can_buy_amount_in_exchange, price_of_symbol, binance_normalize_price
 
-from data_types import CryptoBalance, CryptoData, MarketBuy
+from data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
 import typing as t
 
 def calculate_market_buy_preferences(target_index: t.List[CryptoData], current_portfolio: t.List[CryptoBalance]) -> t.List[CryptoData]:
@@ -80,8 +80,9 @@ def determine_market_buys(
     purchase_balance: float,
   ) -> t.List[MarketBuy]:
   """
-  1. Purchase minimums for each asset
-  3. Amount of purchasing currency available
+  1. Is the asset currently trading?
+  2. Do we have the minimum purchase amount?
+  3. Are there open orders for the asset already?
   """
 
   # binance fees are fixed based on account configuration (BNB amounts, etc) and cannot be pulled dynamically
@@ -105,14 +106,21 @@ def determine_market_buys(
   purchase_total = purchase_balance
   purchases = []
 
-  for coin in sorted_buy_preferences:
-    target_info = next((target for target in target_portfolio if target['symbol'] == coin['symbol']))
+  existing_orders = binance_open_orders(user)
+  symbols_of_existing_orders = [order['symbol'] for order in existing_orders]
 
-    # TODO consider extracting price calculation logic into a separate method
+  for coin in sorted_buy_preferences:
+    # TODO may make sense in the future to check the purchase amount and adjust the expected
+    if coin['symbol'] in symbols_of_existing_orders:
+      log.info("already have an open order for this coin", coin=coin)
+      continue
+
+    # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
     purchase_amount = purchase_total if purchase_total < exchange_purchase_minimum * 2 else purchase_minimum
 
     # percentage is not expressed in a < 1 float, so we need to convert it
-    target_amount = target_info['percentage'] / 100.0 * portfolio_total
+    coin_portfolio_info = next((target for target in target_portfolio if target['symbol'] == coin['symbol']))
+    target_amount = coin_portfolio_info['percentage'] / 100.0 * portfolio_total
 
     # make sure purchase total will not overflow the target allocation
     purchase_amount = min(purchase_amount, target_amount, purchase_maximum)
@@ -166,7 +174,7 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
       'newOrderRespType': 'FULL',
     }
 
-    if user.buy_strategy == 'limit':
+    if user.buy_strategy == MarketBuyStrategy.LIMIT:
       # order depth returns the lowest asks and the highest bids
       # increasing limits returns lower bids and higher asks
       # grab a long-ish order book to get some analytics on the order book
@@ -192,6 +200,10 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
         reported_price=price_of_symbol(buy['symbol'], purchasing_currency)
       )
 
+      # TODO pull percentage drop attempt from user model
+      limit_price = min(Decimal(highest_bid), Decimal(lowest_ask) * Decimal(0.95))
+      order_quantity = Decimal(normalized_amount) / limit_price
+
       # TODO can we inspect the order book depth here? Or general liquidity for the market?
       #      what else can we do to improve our purchase strategy?
 
@@ -200,8 +212,8 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
       order_params |= {
         # TODO is there a way to specify a number of hours? It seems like only the three standard TIF options are available
         'timeInForce': 'GTC',
-        'quantity': binance_normalize_purchase_amount(Decimal(normalized_amount) / Decimal(highest_bid), purchase_symbol),
-        'price': highest_bid
+        'quantity': binance_normalize_purchase_amount(order_quantity, purchase_symbol),
+        'price': binance_normalize_price(limit_price, purchase_symbol),
       }
 
       log.info("submitting limit buy order", order=order_params)
