@@ -63,7 +63,6 @@ poetry shell
 Right now, there are some variables that are hardcoded into the `User` class that you may want to change. Assuming you've taken a look at the `User` options and configured `.env` you can run `python main.py --help` to get the following information:
 
 ```
-
 Usage: main.py [OPTIONS] COMMAND [ARGS]...
 
   Tool for building your own crypto index fund.
@@ -73,6 +72,7 @@ Options:
   --help         Show this message and exit.
 
 Commands:
+  analyze    Analyize configured exchanges
   buy        Buy additional tokens for your index
   index      Print index by market cap
   portfolio  Print current portfolio with targets
