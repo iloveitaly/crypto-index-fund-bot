@@ -8,7 +8,7 @@ from binance.client import Client as BINANCE_CONSTANTS
 # TODO abstract out binance specifics
 def cancel_stale_open_orders(user: User) -> t.List:
   binance_client = user.binance_client()
-  order_time_limit = 24
+  order_time_limit = user.stale_order_hour_limit
 
   old_orders = [
     order

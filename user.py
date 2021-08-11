@@ -1,3 +1,6 @@
+import typing as t
+from data_types import MarketBuy, MarketIndexStrategy, MarketBuyStrategy, CryptoBalance
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -21,15 +24,19 @@ def user_from_env():
   return user
 
 class User:
+  index_strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP
+  buy_strategy: MarketBuyStrategy = MarketBuyStrategy.LIMIT
+  binance_api_key: str = ''
+  binance_secret_key: str = ''
+  external_portfolio: t.List[CryptoBalance] = []
+  convert_stablecoins: bool = False
+  index_limit: t.Optional[int] = None
+  livemode: bool = False
+  cancel_stale_orders: bool = True
+  stale_order_hour_limit: int = 24
+
   def __init__(self):
-    self.livemode = False
-    self.buy_strategy = 'limit'
-    self.index_strategy = 'market_cap'
-    self.index_limit = None
-    self.binance_api_key = ''
-    self.binance_secret_key = ''
-    self.external_portfolio = []
-    self.convert_stablecoins = False
+    pass
 
   def exchanges(self):
     return ['binance']
