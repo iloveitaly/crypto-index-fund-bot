@@ -111,11 +111,14 @@ python main.py buy
 On many exchanges a market order pays higher fees than limit orders. But Binance fees are the same whether you're the maker or the taker. For simplicity, this bot just places instantly-fulfilled market orders. There's usually sufficient liquidity to assume your order will be filled without the price moving much in the milliseconds it takes to check the market and then place the order.
 
 The only way to reduce Binance fees is to hold their BNB token in your account (currently 0.1% fees become 0.075%).
+
 ### Limit Orders
 
 _WIP limit order documentation. Right now, there is a limit order strategy, but we don't auto-cancel them after a certain period of time_
 
-If a limit order is not filled, by default it [remains open indefinitely.](https://academy.binance.com/en/articles/understanding-the-different-order-types)
+If a limit order is not filled, by default it [remains open indefinitely.](https://academy.binance.com/en/articles/understanding-the-different-order-types) This bot will automatically cancel any open limit orders that have not been filled based on the user configuration. The cancellation process does not differentiate between orders created by the bot and orders created by the user.
+
+The bot will *not* submit an order for a token that has an existing open order.
 
 ### Order Minimums
 Exchanges specify a minimum buy order value for each crypto (i.e. `minNotional` in Binance). Let's say you're looking to buy equal amounts of 10 different cryptos and only want to spend 0.005 BTC altogether, which would result in 0.0005 BTC of each token being purchased.
