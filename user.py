@@ -1,8 +1,6 @@
 import typing as t
 from data_types import MarketBuy, MarketIndexStrategy, MarketBuyStrategy, CryptoBalance
-
-from dotenv import load_dotenv
-load_dotenv()
+from utils import log
 
 # right now, this is the only way to use User
 # in the future, User could easily be wired up to an ORM
@@ -13,11 +11,20 @@ def user_from_env():
   user = User()
   user.binance_api_key = os.getenv("USER_BINANCE_API_KEY")
   user.binance_secret_key = os.getenv("USER_BINANCE_SECRET_KEY")
+
   user.livemode = os.getenv("USER_LIVEMODE", 'false').lower() == 'true'
   user.convert_stablecoins = os.getenv("USER_CONVERT_STABLECOINS", 'false').lower() == 'true'
+  user.cancel_stale_orders = os.getenv("USER_CANCEL_STALE_ORDERS", 'false').lower() == 'true'
+
+  if index_strategy := os.getenv("USER_INDEX_STRATEGY"):
+    user.index_strategy = index_strategy
+
+  if buy_strategy := os.getenv("USER_BUY_STRATEGY"):
+    user.buy_strategy = buy_strategy
 
   try:
     user.external_portfolio = json.load(open('external_portfolio.json'))
+    log.debug("loaded external portfolio")
   except FileNotFoundError:
     pass
 
@@ -35,32 +42,24 @@ class User:
   cancel_stale_orders: bool = True
   stale_order_hour_limit: int = 24
   excluded_coins: t.List[str] = []
+  purchasing_currency: str = 'USD'
+  purchase_max: int = 50
+  purchase_min: int = 30
+  excluded_tags: t.List[str] = ['wrapped-tokens', 'stablecoin']
+  exchanges: t.List[str] = ['binance']
 
   def __init__(self):
     pass
 
-  def exchanges(self):
-    return ['binance']
-
   def binance_client(self):
     from binance.client import Client
 
-    # TODO memoize this
+    # TODO memoize client
+    # TODO error check for empty keys?
+
     return Client(
       self.binance_api_key,
       self.binance_secret_key,
 
       tld='us'
     )
-
-  def purchasing_currency(self):
-    return 'USD'
-
-  def purchase_max(self):
-    return 50
-
-  def purchase_min(self):
-    return 30
-
-  def excluded_tags(self):
-    return ['wrapped-tokens', 'stablecoin']
