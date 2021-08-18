@@ -1,0 +1,10 @@
+__pycache__
+.*_cache
+test/
+.env
+.env-example
+.gitignore
+.tool-versions
+TODO
+Dockerfile
+README.md
