@@ -124,7 +124,7 @@ def binance_open_orders(user: User) -> t.List[CryptoBalance]:
 
 def binance_portfolio(user: User) -> t.List[CryptoBalance]:
   account = user.binance_client().get_account()
-  purchasing_currency = user.purchasing_currency()
+  purchasing_currency = user.purchasing_currency
 
   return [
     # TODO basically returns an incomplete CryptoBalance that will be augmented with additional fields later on

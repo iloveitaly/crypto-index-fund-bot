@@ -5,7 +5,7 @@ from exchanges import binance_portfolio, binance_normalize_purchase_amount, bina
 # convert all stablecoins of the purchasing currency into the purchasing currency so we can use it
 # in binance, you need to purchase in USD and cannot purchase most currencies from a stablecoin
 def convert_stablecoins(user: User, portfolio):
-  purchasing_currency = user.purchasing_currency()
+  purchasing_currency = user.purchasing_currency
   stablecoin_symbols = []
 
   # TODO check if currency is a stablecoin?
@@ -38,6 +38,8 @@ def convert_stablecoins(user: User, portfolio):
       # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
       'quoteOrderQty': normalized_amount,
     }
+
+    # TODO respect livemode flag by creating a common method for executing binance orders
 
     order = binance_client.order_market_sell(**order_params)
 

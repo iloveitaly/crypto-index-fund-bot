@@ -82,6 +82,8 @@ def filtered_coins_by_market_cap(
 def calculate_market_cap_from_coin_list(purchasing_currency: str, coins, strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP) -> t.List[CryptoData]:
   import math
 
+  log.info("calculating market index", strategy=strategy)
+
   if strategy == MarketIndexStrategy.SMA:
     for coin in coins:
       breakpoint()
@@ -125,17 +127,17 @@ def coins_with_market_cap(user: User, limit: t.Optional[int] = None) -> t.List[C
 
   filtered_coins = filtered_coins_by_market_cap(
     market_data,
-    user.purchasing_currency(),
+    user.purchasing_currency,
 
-    exchanges=user.exchanges(),
-    exclude_tags=user.excluded_tags(),
+    exchanges=user.exchanges,
+    exclude_tags=user.excluded_tags,
     limit=user.index_limit,
 
     exclude_coins=user.excluded_coins
   )
 
   return calculate_market_cap_from_coin_list(
-    user.purchasing_currency(),
+    user.purchasing_currency,
     filtered_coins,
     user.index_strategy
   )

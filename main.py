@@ -30,8 +30,8 @@ def analyze():
 
   user = user_from_env()
 
-  coinbase_available_coins_in_purchasing_currency = set([coin['base_currency'] for coin in coinbase_exchange if coin['quote_currency'] == user.purchasing_currency()])
-  binance_available_coins_in_purchasing_currency = set([coin['baseAsset'] for coin in binance_exchange['symbols'] if coin['quoteAsset'] == user.purchasing_currency()])
+  coinbase_available_coins_in_purchasing_currency = set([coin['base_currency'] for coin in coinbase_exchange if coin['quote_currency'] == user.purchasing_currency])
+  binance_available_coins_in_purchasing_currency = set([coin['baseAsset'] for coin in binance_exchange['symbols'] if coin['quoteAsset'] == user.purchasing_currency])
 
   print("\nAvailable in purchasing currency:")
   print(f"coinbase:\t{len(coinbase_available_coins_in_purchasing_currency)}")
@@ -76,7 +76,7 @@ def portfolio(format):
   # pull a raw binance reportfolio from exchanges.py and add percentage allocations to it
   user_portfolio = binance_portfolio(user)
   user_portfolio = portfolio.merge_portfolio(user_portfolio, external_portfolio)
-  user_portfolio = portfolio.add_price_to_portfolio(user_portfolio, user.purchasing_currency())
+  user_portfolio = portfolio.add_price_to_portfolio(user_portfolio, user.purchasing_currency)
   user_portfolio = portfolio.portfolio_with_allocation_percentages(user_portfolio)
   user_portfolio = portfolio.add_missing_assets_to_portfolio(user, user_portfolio, portfolio_target)
   user_portfolio = portfolio.add_percentage_target_to_portfolio(user_portfolio, portfolio_target)
@@ -117,11 +117,18 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
 
   user = user_from_env()
 
+  # if user is in testmode, assume user wants dry run
+  if not dry_run and not user.livemode:
+    dry_run = True
+
+  if dry_run:
+    click.secho(f"Bot running in dry-run mode\n", fg='green')
+
   if dry_run:
     user.convert_stablecoins = False
     user.livemode = False
 
-  if cancel_orders or user.cancel_stale_orders:
+  if not dry_run and (cancel_orders or user.cancel_stale_orders):
     cancel_stale_open_orders(user)
 
   portfolio_target = market_cap.coins_with_market_cap(user)
@@ -132,10 +139,10 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
     convert_stablecoins(user, current_portfolio)
 
   external_portfolio = user.external_portfolio
-  external_portfolio = portfolio.add_price_to_portfolio(external_portfolio, user.purchasing_currency())
+  external_portfolio = portfolio.add_price_to_portfolio(external_portfolio, user.purchasing_currency)
 
   current_portfolio = portfolio.merge_portfolio(current_portfolio, external_portfolio)
-  current_portfolio = portfolio.add_price_to_portfolio(current_portfolio, user.purchasing_currency())
+  current_portfolio = portfolio.add_price_to_portfolio(current_portfolio, user.purchasing_currency)
   current_portfolio = portfolio.portfolio_with_allocation_percentages(current_portfolio)
 
   if not purchase_balance:
@@ -143,6 +150,8 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
 
   sorted_market_buys = market_buy.calculate_market_buy_preferences(portfolio_target, current_portfolio)
   market_buys = market_buy.determine_market_buys(user, sorted_market_buys, current_portfolio, portfolio_target, purchase_balance)
+
+  click.secho(f"Purchasing Balance: {purchase_balance}", fg='green')
 
   if format == 'md':
     click.echo(table_output(market_buys))

@@ -66,7 +66,7 @@ def purchasing_currency_in_portfolio(user: User, portfolio: t.List[CryptoBalance
   total = math.fsum([
     balance['usd_total']
     for balance in portfolio
-    if balance['symbol'] == user.purchasing_currency()
+    if balance['symbol'] == user.purchasing_currency
   ])
 
   return max(total - reserve_amount, 0)
@@ -93,8 +93,8 @@ def determine_market_buys(
   # depending on if you are using the pro vs simple view
   exchange_purchase_minimum = binance_purchase_minimum()
 
-  purchase_minimum = user.purchase_min()
-  purchase_maximum = user.purchase_max()
+  user_purchase_minimum = user.purchase_min
+  user_purchase_maximum = user.purchase_max
   portfolio_total = math.fsum(balance['usd_total'] for balance in current_portfolio)
 
   if purchase_balance < exchange_purchase_minimum:
@@ -155,7 +155,7 @@ def determine_market_buys(
 
 # https://www.binance.us/en/usercenter/wallet/money-log
 def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
-  purchasing_currency = user.purchasing_currency()
+  purchasing_currency = user.purchasing_currency
   binance_client = user.binance_client()
   orders = []
 
