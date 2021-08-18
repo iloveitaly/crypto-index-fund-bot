@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from rich.traceback import install as install_rich_tracebacks
 # install_rich_tracebacks(show_locals=True, width=200)
 install_rich_tracebacks(width=200)
