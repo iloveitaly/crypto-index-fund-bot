@@ -2,7 +2,7 @@ from utils import log
 from user import User
 
 import math
-from exchanges import binance_open_orders, binance_normalize_purchase_amount, binance_purchase_minimum, can_buy_amount_in_exchange, price_of_symbol, binance_normalize_price
+from exchanges import low_over_last_day, binance_open_orders, binance_normalize_purchase_amount, binance_purchase_minimum, can_buy_amount_in_exchange, price_of_symbol, binance_normalize_price
 
 from data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
 import typing as t
@@ -90,7 +90,8 @@ def determine_market_buys(
   # TODO we'll need to explore if this is different for other exchanges
 
   # it doesn't look like this is specified in the API, and the minimum is different
-  # depending on if you are using the pro vs simple view
+  # depending on if you are using the pro vs simple view. This is the purchasing minimum on binance
+  # but not on
   exchange_purchase_minimum = binance_purchase_minimum()
 
   user_purchase_minimum = user.purchase_min
@@ -101,7 +102,11 @@ def determine_market_buys(
     log.info("not enough USD to buy anything", purchase_balance=purchase_balance)
     return []
 
-  log.info("enough purchase currency balance", balance=purchase_balance)
+  log.info("enough purchase currency balance",
+    balance=purchase_balance,
+    exchange_minimum=exchange_purchase_minimum,
+    user_minimum=user_purchase_minimum,
+  )
 
   purchase_total = purchase_balance
   purchases = []
@@ -112,30 +117,41 @@ def determine_market_buys(
   for coin in sorted_buy_preferences:
     # TODO may make sense in the future to check the purchase amount and adjust the expected
     if coin['symbol'] in symbols_of_existing_orders:
+      # TODO add current order information to logs
       log.info("already have an open order for this coin", coin=coin)
       continue
 
+    paired_symbol = coin['symbol'] + user.purchasing_currency
+    if not can_buy_amount_in_exchange(paired_symbol):
+      continue
+
     # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
-    purchase_amount = purchase_total if purchase_total < exchange_purchase_minimum * 2 else purchase_minimum
+    purchase_amount = purchase_total if purchase_total < exchange_purchase_minimum * 2 else user_purchase_minimum
+
+    # make sure the floor purchase amount is at least the user-specific minimum
+    purchase_amount = max(purchase_amount, user_purchase_minimum)
 
     # percentage is not expressed in a < 1 float, so we need to convert it
     coin_portfolio_info = next((target for target in target_portfolio if target['symbol'] == coin['symbol']))
     target_amount = coin_portfolio_info['percentage'] / 100.0 * portfolio_total
 
     # make sure purchase total will not overflow the target allocation
-    purchase_amount = min(purchase_amount, target_amount, purchase_maximum)
+    purchase_amount = min(purchase_amount, target_amount, user_purchase_maximum)
 
     # we need to at least buy the minimum that the exchange allows
     purchase_amount = max(exchange_purchase_minimum, purchase_amount)
 
+    # TODO right now the minNotional filter is NOT respected since the user min is $30, which is normally higher than this value
+    #      this is something we'll have to handle properly in the future
+    # minimum_token_quantity_in_exchange(paired_symbol)
+    # symbol_info = public_binance_client.get_symbol_info(paired_symbol)
+    # tick_size = next(f['minNotional'] for f in symbol_info['filters'] if f['filterType'] == 'PRICE_FILTER')
+
     if purchase_amount > purchase_total:
-      log.info("not enough purchase currency balance for coin", balance=purchase_total, coin=coin['symbol'])
+      log.info("not enough purchase currency balance for coin", amount=purchase_amount, balance=purchase_total, coin=coin['symbol'])
       continue
 
-    paired_symbol = coin['symbol'] + user.purchasing_currency()
-    if not can_buy_amount_in_exchange(paired_symbol, purchase_amount):
-      # above method will log a warning
-      continue
+    log.info("adding purchase preference", symbol=coin['symbol'], amount=purchase_amount)
 
     purchases.append({
       'symbol': coin['symbol'],
@@ -200,8 +216,10 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
         reported_price=price_of_symbol(buy['symbol'], purchasing_currency)
       )
 
+      # TODO calculate momentum, or low price over last 24hrs, to determine the ideal drop price
       # TODO pull percentage drop attempt from user model
-      limit_price = min(Decimal(highest_bid), Decimal(lowest_ask) * Decimal(0.95))
+      limit_price = min(Decimal(highest_bid), Decimal(lowest_ask) * Decimal(0.97))
+      limit_price = min(low_over_last_day(purchase_symbol), limit_price)
       order_quantity = Decimal(normalized_amount) / limit_price
 
       # TODO can we inspect the order book depth here? Or general liquidity for the market?
