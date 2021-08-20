@@ -1,21 +1,33 @@
-Next:
+# Bot
 
-* main.cli with command line interface
 * https://algotrading101.com/learn/binance-python-api-guide/
 * https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
-* https://github.com/leoncvlt/cryptodex build index via square root? Should we do this?
-* Build a docker-compose file for this so it's easy to run as a cron job on a raspberry pi.
+* Offer a SME-based index?
+  * https://taapi.io
+  * Calculate on our own using klines and https://mrjbq7.github.io/ta-lib/
 * Think about multiple exchanges to get more lower-value tokens in the index
+  * Refactor binance-specific stuff out of the market_buy logic
   * Define minimum API requirements for a new exchange
   * Which exchange has the most tokens, reasonable fees, and mostly trustworthy?
-* Can we use a LIMIT order at the bottom of the current order market?
-* use a simple moving average to ensure we aren't buying the spikes too much
+* Play around with purchasing at different points in the order book when using a limit strategy
+  * Inspect market depth to help determine the most realistic low price to purchase at
 
-Ideas:
-* Can we use cointracker to get external portfolio data?
+# System
 * Tie to postgres database to run for multiple individual users?
+  * Add django for ORM
+* Add sentry for error reporting
+* Conditionally load up rich depending on the env
 
-Python ideas:
+# Docker
+* JSON external assets in docker
+  * Can we use cointracker to get external portfolio data?
+* Build a docker-compose file for this so it's easy to run as a cron job on a raspberry pi.
+
+# CI / Python
+
 * Python linter?
 * Github actions for mypy?
-* fix typing errors
+* Fix typing errors, mostly with the typed dicts
+* GitHub workflow for basic tests
+* Black for code formatting
+* Add cassettes for tests
