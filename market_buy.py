@@ -267,7 +267,7 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
 
     try:
       if user.livemode:
-        if user.buy_strategy == 'limit':
+        if user.buy_strategy == MarketBuyStrategy.LIMIT:
           order = binance_client.order_limit_buy(**order_params)
         else:
           order = binance_client.order_market_buy(**order_params)
