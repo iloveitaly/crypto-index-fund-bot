@@ -3,7 +3,6 @@ import utils
 
 from utils import log
 from user import user_from_env
-from utils import csv_output, table_output
 from data_types import MarketIndexStrategy
 
 # if you use `cod` it's helpful to disable while you are hacking on the CLI
@@ -19,10 +18,10 @@ def cli(verbose):
 
 @cli.command(help="Analyize configured exchanges")
 def analyze():
-  from exchanges import coinbase_exchange, binance_exchange
+  import exchanges
 
-  coinbase_available_coins = set([coin['base_currency'] for coin in coinbase_exchange])
-  binance_available_coins = set([coin['baseAsset'] for coin in binance_exchange['symbols']])
+  coinbase_available_coins = set([coin['base_currency'] for coin in exchanges.coinbase_exchange])
+  binance_available_coins = set([coin['baseAsset'] for coin in exchanges.binance_exchange['symbols']])
 
   print("Available, regardless of purchasing currency:")
   print(f"coinbase:\t{len(coinbase_available_coins)}")
@@ -30,8 +29,8 @@ def analyze():
 
   user = user_from_env()
 
-  coinbase_available_coins_in_purchasing_currency = set([coin['base_currency'] for coin in coinbase_exchange if coin['quote_currency'] == user.purchasing_currency])
-  binance_available_coins_in_purchasing_currency = set([coin['baseAsset'] for coin in binance_exchange['symbols'] if coin['quoteAsset'] == user.purchasing_currency])
+  coinbase_available_coins_in_purchasing_currency = set([coin['base_currency'] for coin in exchanges.coinbase_exchange if coin['quote_currency'] == user.purchasing_currency])
+  binance_available_coins_in_purchasing_currency = set([coin['baseAsset'] for coin in exchanges.binance_exchange['symbols'] if coin['quoteAsset'] == user.purchasing_currency])
 
   print("\nAvailable in purchasing currency:")
   print(f"coinbase:\t{len(coinbase_available_coins_in_purchasing_currency)}")
@@ -57,9 +56,9 @@ def index(format, limit, strategy):
   log.info("writing market cap csv")
 
   if format == 'md':
-    click.echo(table_output(coins_by_exchange))
+    click.echo(utils.table_output(coins_by_exchange))
   else:
-    click.echo(csv_output(coins_by_exchange))
+    click.echo(utils.csv_output(coins_by_exchange))
 
 @cli.command(help="Print current portfolio with targets")
 @click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
@@ -124,18 +123,23 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
   if dry_run:
     click.secho(f"Bot running in dry-run mode\n", fg='green')
 
+  if convert:
+    user.convert_stablecoins = True
+
+  if cancel_orders:
+    user.cancel_stale_orders = True
+
   if dry_run:
     user.convert_stablecoins = False
+    user.cancel_stale_orders = False
     user.livemode = False
 
-  if not dry_run and (cancel_orders or user.cancel_stale_orders):
+  if user.cancel_stale_orders:
     cancel_stale_open_orders(user)
-
-  portfolio_target = market_cap.coins_with_market_cap(user)
 
   current_portfolio = binance_portfolio(user)
 
-  if convert or user.convert_stablecoins:
+  if user.convert_stablecoins:
     convert_stablecoins(user, current_portfolio)
 
   external_portfolio = user.external_portfolio
@@ -148,15 +152,16 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
   if not purchase_balance:
     purchase_balance = market_buy.purchasing_currency_in_portfolio(user, current_portfolio)
 
+  portfolio_target = market_cap.coins_with_market_cap(user)
   sorted_market_buys = market_buy.calculate_market_buy_preferences(portfolio_target, current_portfolio)
   market_buys = market_buy.determine_market_buys(user, sorted_market_buys, current_portfolio, portfolio_target, purchase_balance)
 
   click.secho(f"Purchasing Balance: {purchase_balance}", fg='green')
 
   if format == 'md':
-    click.echo(table_output(market_buys))
+    click.echo(utils.table_output(market_buys))
   else:
-    click.echo(csv_output(market_buys))
+    click.echo(utils.csv_output(market_buys))
 
   if not market_buys:
     click.secho('Not enough purchasing currency to make any trades.', fg='red')
