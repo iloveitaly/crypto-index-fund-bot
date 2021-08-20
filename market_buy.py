@@ -183,7 +183,6 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
 
     # symbol is: `baseasset` + `quoteasset`
     purchase_symbol = buy['symbol'] + purchasing_currency
-    normalized_amount = binance_normalize_purchase_amount(buy['amount'], purchase_symbol)
 
     order_params = {
       'symbol': purchase_symbol,
@@ -220,7 +219,7 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
       # TODO pull percentage drop attempt from user model
       limit_price = min(Decimal(highest_bid), Decimal(lowest_ask) * Decimal(0.97))
       limit_price = min(low_over_last_day(purchase_symbol), limit_price)
-      order_quantity = Decimal(normalized_amount) / limit_price
+      order_quantity = Decimal(buy['amount']) / limit_price
 
       # TODO can we inspect the order book depth here? Or general liquidity for the market?
       #      what else can we do to improve our purchase strategy?
@@ -239,7 +238,7 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
       order_params |= {
         # `quoteOrderQty` allows us to purchase crypto in a currency of choice, instead of an amount in the token we are buying
         # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
-        'quoteOrderQty': normalized_amount,
+        'quoteOrderQty': binance_normalize_price(buy['amount'], purchase_symbol),
       }
 
       log.info("submitting market buy order", order=order_params)
