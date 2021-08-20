@@ -55,7 +55,7 @@ def add_price_to_portfolio(portfolio: List[CryptoBalance], purchasing_currency: 
 # TODO maybe remove user preference? The target porfolio should take into the account the user's purchasing currency preference?
 def add_missing_assets_to_portfolio(user: User, portfolio: List[CryptoBalance], portfolio_target: List[CryptoBalance]) -> List[CryptoBalance]:
   from exchanges import binance_prices
-  purchasing_currency = user.purchasing_currency()
+  purchasing_currency = user.purchasing_currency
 
   return portfolio + [
     {
