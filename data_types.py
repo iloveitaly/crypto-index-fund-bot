@@ -30,6 +30,6 @@ class MarketBuyStrategy(str, enum.Enum):
 
 # by subclassing str you can use == to compare strings to enums
 class MarketIndexStrategy(str, enum.Enum):
-    MARKET_CAP = 'market_cap'
-    SQRT_MARKET_CAP = 'sqrt_market_cap'
-    SMA = 'sma'
+  MARKET_CAP = 'market_cap'
+  SQRT_MARKET_CAP = 'sqrt_market_cap'
+  SMA = 'sma'
