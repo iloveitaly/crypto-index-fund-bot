@@ -15,6 +15,7 @@ python-dotenv = "^0.18.0"
 rich = "^10.6.0"
 click = "^8.0.1"
 vcrpy = {path = "../../python/vcrpy", develop = true }
+Django = "^3.2.6"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.25.0"
