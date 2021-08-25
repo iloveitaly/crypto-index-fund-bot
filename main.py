@@ -103,12 +103,7 @@ def portfolio(format):
 @click.option("-c", "--convert", is_flag=True, help="Convert all stablecoin equivilents to purchasing currency. Overrides user configuration.")
 @click.option("--cancel-orders", is_flag=True, help="Cancel all stale orders")
 def buy(format, dry_run, purchase_balance, convert, cancel_orders):
-  from exchanges import binance_portfolio
-  from convert_stablecoins import convert_stablecoins
-  from open_orders import cancel_stale_open_orders
-  import portfolio
-  import market_cap
-  import market_buy
+  from commands import BuyCommand
 
   if purchase_balance:
     log.info("dry run using fake purchase balance", purchase_balance=purchase_balance)
@@ -134,29 +129,9 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
     user.cancel_stale_orders = False
     user.livemode = False
 
-  if user.cancel_stale_orders:
-    cancel_stale_open_orders(user)
+  purchase_balance, market_buys, completed_orders = BuyCommand.execute(user, purchase_balance)
 
-  current_portfolio = binance_portfolio(user)
-
-  if user.convert_stablecoins:
-    convert_stablecoins(user, current_portfolio)
-
-  external_portfolio = user.external_portfolio
-  external_portfolio = portfolio.add_price_to_portfolio(external_portfolio, user.purchasing_currency)
-
-  current_portfolio = portfolio.merge_portfolio(current_portfolio, external_portfolio)
-  current_portfolio = portfolio.add_price_to_portfolio(current_portfolio, user.purchasing_currency)
-  current_portfolio = portfolio.portfolio_with_allocation_percentages(current_portfolio)
-
-  if not purchase_balance:
-    purchase_balance = market_buy.purchasing_currency_in_portfolio(user, current_portfolio)
-
-  portfolio_target = market_cap.coins_with_market_cap(user)
-  sorted_market_buys = market_buy.calculate_market_buy_preferences(portfolio_target, current_portfolio)
-  market_buys = market_buy.determine_market_buys(user, sorted_market_buys, current_portfolio, portfolio_target, purchase_balance)
-
-  click.secho(f"Purchasing Balance: {purchase_balance}", fg='green')
+  click.secho(f"Purchasing Balance: {purchase_balance}\n", fg='green')
 
   if format == 'md':
     click.echo(utils.table_output(market_buys))
@@ -164,14 +139,10 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
     click.echo(utils.csv_output(market_buys))
 
   if not market_buys:
-    click.secho('Not enough purchasing currency to make any trades.', fg='red')
+    click.secho("\nNot enough purchasing currency to make any trades.", fg='red')
   else:
-    orders = market_buy.make_market_buys(user, market_buys)
-
-    for order in orders:
-      # test mode orders result in an empty dict
-      if order:
-        log.info("order completed", order_id=order["orderId"], symbol=order["symbol"])
+    purchased_token_list = ', '.join([order["symbol"] for order in completed_orders])
+    click.secho(f"\nSuccessfully purchased: {purchased_token_list}", fg='green')
 
 if __name__ == '__main__':
     cli()

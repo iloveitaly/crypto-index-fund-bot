@@ -171,6 +171,9 @@ def determine_market_buys(
 
 # https://www.binance.us/en/usercenter/wallet/money-log
 def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
+  if not market_buys:
+    return []
+
   purchasing_currency = user.purchasing_currency
   binance_client = user.binance_client()
   orders = []
@@ -279,8 +282,12 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
           'type': Client.ORDER_TYPE_LIMIT if user.buy_strategy == 'limit' else Client.ORDER_TYPE_MARKET,
         } | order_params))
 
+      log.info("order successfully completed", order=order)
+
       orders.append(order)
     except BinanceAPIException as e:
       log.error("failed to submit market buy order", error=e)
 
-  return orders
+  # in testmode, the result is an empty dict
+  # remove this since it doesn't provide any useful information and is confusing to parse downstream
+  return list(filter(None, orders))
