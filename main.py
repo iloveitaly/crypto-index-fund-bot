@@ -1,3 +1,6 @@
+import dotenv
+dotenv.load_dotenv()
+
 import click
 import utils
 
@@ -52,8 +55,6 @@ def index(format, limit, strategy):
     user.index_limit = limit
 
   coins_by_exchange = market_cap.coins_with_market_cap(user)
-
-  log.info("writing market cap csv")
 
   if format == 'md':
     click.echo(utils.table_output(coins_by_exchange))
