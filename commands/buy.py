@@ -1,5 +1,6 @@
 import typing as t
 from user import User
+from data_types import MarketBuyStrategy
 
 import exchanges
 import convert_stablecoins
@@ -13,8 +14,8 @@ import market_buy
 class BuyCommand:
   # TODO we should break this up into smaller functions
   @classmethod
-  def execute(cls, user: User, purchase_balance: t.Optional[float]) -> t.Tuple[float, t.List, t.List]:
-    if user.cancel_stale_orders:
+  def execute(cls, user: User, purchase_balance: t.Optional[float] = None) -> t.Tuple[float, t.List, t.List]:
+    if user.buy_strategy == MarketBuyStrategy.LIMIT and user.cancel_stale_orders:
       open_orders.cancel_stale_open_orders(user)
 
     current_portfolio = exchanges.binance_portfolio(user)
