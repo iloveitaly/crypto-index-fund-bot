@@ -52,15 +52,16 @@ If you have externally-held assets, you'll want to represent them in `external_p
 cp external_portfolio_example.json external_portfolio.json
 ```
 
-## Usage
-
-First, you'll want to jump into a python venv:
+Then, you'll be ready to jump into a venv and start playing:
 
 ```shell
 poetry shell
+python main.py
 ```
 
-Right now, there are some variables that are hardcoded into the `User` class that you may want to change. Assuming you've taken a look at the `User` options and configured `.env` you can run `python main.py --help` to get the following information:
+## Command Line Usage
+
+Right now, there are some variables that are hardcoded into the `User` class that you may want to change. Assuming you've taken a look at the `User` options *and* configured `.env` you can run `python main.py --help` to get the following information:
 
 ```
 Usage: main.py [OPTIONS] COMMAND [ARGS]...
@@ -97,6 +98,17 @@ This is the command you'll want to setup on a cron job:
 ```shell
 python main.py buy
 ```
+
+## Single-user Deployment Using Docker
+
+You can use docker to deploy a single-user instance of this bot to a VPS or a local machine like a Raspberry Pi.
+
+```
+docker build -t crypto-index-fund-bot .
+docker run -d --env-file .env crypto-index-fund-bot
+```
+
+TODO: right now single-user docker deploy does not support `external_portfolio.json`.
 
 ## Implementation Details
 
