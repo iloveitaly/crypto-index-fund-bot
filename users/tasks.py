@@ -5,7 +5,6 @@ from celery import Celery
 
 import os
 
-from utils import log
 import django.utils.timezone
 from commands.buy import BuyCommand
 
@@ -14,10 +13,25 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'botweb.settings')
 
 app = Celery('tasks', broker=os.environ['REDIS_URL'])
 
+from django_structlog.celery.steps import DjangoStructLogInitStep
+app.steps['worker'].add(DjangoStructLogInitStep)
+
+from celery.signals import setup_logging
+
+@setup_logging.connect
+def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
+  # not sure exactly why, but just defining this function fixed colorization formatting in celery
+  # it seems to eliminate the default logging wrapper which mutates the log formatting
+  pass
+
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
   # this method has a *lot* of kw params that can modify functionality
-  sender.add_periodic_task(10.0, initiate_user_buys.s(), name='add every 10')
+  sender.add_periodic_task(
+    60 * 60,
+    initiate_user_buys.s(),
+    name='check all accounts every hour for updates'
+  )
 
 @app.task
 def initiate_user_buys():
@@ -29,11 +43,14 @@ def initiate_user_buys():
 @app.task
 def user_buy(user_id):
   from .models import User
+  import utils
 
   user = User.objects.get(id=user_id)
   bot_user = user.bot_user()
 
-  log.info("initiating buys for user", user=user)
+  utils.log.bind(user_id=user.id)
+  utils.log.info("initiating buys for user")
+
   BuyCommand.execute(bot_user)
 
   user.date_checked = django.utils.timezone.now()

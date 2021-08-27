@@ -6,12 +6,16 @@ import structlog
 import logging
 import os
 
-from structlog.stdlib import filter_by_level
+from structlog.threadlocal import wrap_dict
 
 def setLevel(level):
   level = logging.__getattribute__(level.upper())
   structlog.configure(
-      wrapper_class=structlog.make_filtering_bound_logger(level),
+    # context_class enables thread-local logging to avoid passing a log instance around
+    # https://www.structlog.org/en/21.1.0/thread-local.html
+    context_class=wrap_dict(dict),
+
+    wrapper_class=structlog.make_filtering_bound_logger(level),
   )
 
 log_level = os.environ.get('LOG_LEVEL', 'WARN')
