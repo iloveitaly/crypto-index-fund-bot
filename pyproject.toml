@@ -18,6 +18,7 @@ vcrpy = {path = "../../python/vcrpy", develop = true }
 Django = "^3.2.6"
 psycopg2 = "^2.9.1"
 celery = {version = "^5.1.2", allow-prereleases = true}
+redis = "^3.5.3"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.25.0"
