@@ -327,6 +327,27 @@ python-versions = ">=3.6"
 Django = ">=2.2"
 
 [[package]]
+name = "django-ipware"
+version = "4.0.0"
+description = "A Django application to retrieve user's IP address"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+
+[[package]]
+name = "django-structlog"
+version = "2.1.1"
+description = "Structured Logging for Django"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+django = ">=1.11"
+django-ipware = "*"
+structlog = "*"
+
+[[package]]
 name = "idna"
 version = "3.2"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -959,7 +980,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "c9595e0e1a16a1ff3f6d4039ec3590db7c3b812c42210f5b2cfe8ac456d43c56"
+content-hash = "ac6c6ed7e3a132cb1e17c22220d7e3d27ab017859a62106e3f61319edaa92d42"
 
 [metadata.files]
 aiohttp = [
@@ -1113,6 +1134,14 @@ django = [
 django-extensions = [
     {file = "django-extensions-3.1.3.tar.gz", hash = "sha256:5f0fea7bf131ca303090352577a9e7f8bfbf5489bd9d9c8aea9401db28db34a0"},
     {file = "django_extensions-3.1.3-py3-none-any.whl", hash = "sha256:50de8977794a66a91575dd40f87d5053608f679561731845edbd325ceeb387e3"},
+]
+django-ipware = [
+    {file = "django-ipware-4.0.0.tar.gz", hash = "sha256:1294f916f3b3475e40e1b0ec1bd320aa2397978eae672721c81cbc2ed517e9ee"},
+    {file = "django_ipware-4.0.0-py2.py3-none-any.whl", hash = "sha256:116bd0d7940f09bf7ffd465943992e23d87e772a9d6c0d3a57b74040589a383b"},
+]
+django-structlog = [
+    {file = "django-structlog-2.1.1.tar.gz", hash = "sha256:177de7440873043dc9517862c0ea84713c16ff25849359351255e23fa42bb593"},
+    {file = "django_structlog-2.1.1-py3-none-any.whl", hash = "sha256:1531ca6a029d57babec5182a6b2ea9c33edfc6f9190d95826db14861e0cd4c2f"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},
