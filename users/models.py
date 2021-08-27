@@ -22,7 +22,7 @@ class User(models.Model):
     bot_user.binance_secret_key = self.binance_secret_key
     bot_user.external_portfolio = self.external_portfolio
 
-    for k, v in self.preferences:
+    for k, v in self.preferences.items():
       setattr(bot_user, k, v)
 
     return bot_user
