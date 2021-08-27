@@ -32,11 +32,11 @@ def user_from_env():
 
 class User:
   index_strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP
-  buy_strategy: MarketBuyStrategy = MarketBuyStrategy.LIMIT
+  buy_strategy: MarketBuyStrategy = MarketBuyStrategy.MARKET
   binance_api_key: str = ''
   binance_secret_key: str = ''
   external_portfolio: t.List[CryptoBalance] = []
-  convert_stablecoins: bool = False
+  convert_stablecoins: bool = True
   index_limit: t.Optional[int] = None
   livemode: bool = False
   cancel_stale_orders: bool = True
@@ -44,7 +44,7 @@ class User:
   excluded_coins: t.List[str] = []
   purchasing_currency: str = 'USD'
   purchase_max: int = 50
-  purchase_min: int = 30
+  purchase_min: int = 25
   excluded_tags: t.List[str] = ['wrapped-tokens', 'stablecoin']
   exchanges: t.List[str] = ['binance']
 
