@@ -279,7 +279,7 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
         # if test is successful, order will be an empty dict
         order = binance_client.create_test_order(**({
           'side': Client.SIDE_BUY,
-          'type': Client.ORDER_TYPE_LIMIT if user.buy_strategy == 'limit' else Client.ORDER_TYPE_MARKET,
+          'type': Client.ORDER_TYPE_LIMIT if user.buy_strategy == MarketBuyStrategy.LIMIT else Client.ORDER_TYPE_MARKET,
         } | order_params))
 
       log.info("order successfully completed", order=order)
