@@ -5,16 +5,14 @@ description = ""
 authors = ["Michael Bianco <mike@mikebian.co>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 python-binance = "^1.0.12"
 tabulate = "^0.8.9"
 coinbasepro = "^0.3.0"
 structlog = "^21.1.0"
-colorama = "^0.4.4"
 python-dotenv = "^0.18.0"
 rich = "^10.6.0"
 click = "^8.0.1"
-vcrpy = {path = "../../python/vcrpy", develop = true }
 Django = "^3.2.6"
 psycopg2 = "^2.9.1"
 celery = {version = "^5.1.2", allow-prereleases = true}
@@ -22,6 +20,7 @@ redis = "^3.5.3"
 django-structlog = "^2.1.1"
 
 [tool.poetry.dev-dependencies]
+vcrpy = {path = "../../python/vcrpy", develop = true }
 ipython = "^7.25.0"
 ipdb = "^0.13.8"
 mypy = "^0.910"
