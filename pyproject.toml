@@ -18,6 +18,7 @@ psycopg2 = "^2.9.1"
 celery = {version = "^5.1.2", allow-prereleases = true}
 redis = "^3.5.3"
 django-structlog = "^2.1.1"
+dj-database-url = "^0.5.0"
 
 [tool.poetry.dev-dependencies]
 # vcrpy = {path = "../../python/vcrpy", develop = true }
