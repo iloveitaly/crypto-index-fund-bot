@@ -4,7 +4,8 @@ dotenv.load_dotenv()
 import click
 import bot.utils
 
-from bot.utils import log
+from bot import utils
+# from bot.utils import log
 from bot.user import user_from_env
 from bot.data_types import MarketIndexStrategy
 
@@ -55,36 +56,20 @@ def index(format, limit, strategy):
   import bot.market_cap
   coins_by_exchange = bot.market_cap.coins_with_market_cap(user)
 
-  click.echo(bot.utils.table_output_with_format(coins_by_exchange, format))
+  click.echo(utils.table_output_with_format(coins_by_exchange, format))
 
 @cli.command(help="Print current portfolio with targets")
 @click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
 def portfolio(format):
-  from market_cap import coins_with_market_cap
-  from exchanges import binance_portfolio
-  import bot.market_cap
-  import portfolio
+  from bot.commands import PortfolioCommand
 
   user = user_from_env()
-  portfolio_target = coins_with_market_cap(user)
+  portfolio = PortfolioCommand.execute(user)
 
-  external_portfolio = user.external_portfolio
+  click.echo(utils.table_output_with_format(portfolio, format))
 
-  # pull a raw binance reportfolio from exchanges.py and add percentage allocations to it
-  user_portfolio = binance_portfolio(user)
-  user_portfolio = portfolio.merge_portfolio(user_portfolio, external_portfolio)
-  user_portfolio = portfolio.add_price_to_portfolio(user_portfolio, user.purchasing_currency)
-  user_portfolio = portfolio.portfolio_with_allocation_percentages(user_portfolio)
-  user_portfolio = portfolio.add_missing_assets_to_portfolio(user, user_portfolio, portfolio_target)
-  user_portfolio = portfolio.add_percentage_target_to_portfolio(user_portfolio, portfolio_target)
-
-  # highest percentages first in the output table
-  user_portfolio.sort(key=lambda balance: balance['target_percentage'], reverse=True)
-
-  click.echo(bot.utils.table_output_with_format(user_portfolio, format))
-
-  import market_buy
-  purchase_balance = market_buy.purchasing_currency_in_portfolio(user, user_portfolio)
+  import bot.market_buy
+  purchase_balance = bot.market_buy.purchasing_currency_in_portfolio(user, portfolio)
   click.echo(f"\nPurchasing Balance: {purchase_balance}")
 
 @cli.command(
@@ -100,7 +85,7 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
   from bot.commands import BuyCommand
 
   if purchase_balance:
-    log.info("dry run using fake purchase balance", purchase_balance=purchase_balance)
+    utils.log.info("dry run using fake purchase balance", purchase_balance=purchase_balance)
     dry_run = True
 
   user = user_from_env()

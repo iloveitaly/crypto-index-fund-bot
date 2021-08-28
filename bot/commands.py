@@ -1,7 +1,7 @@
 import typing as t
 
 from .user import User
-from .data_types import MarketBuyStrategy
+from .data_types import CryptoBalance, MarketBuyStrategy
 
 from . import exchanges
 from . import convert_stablecoins
@@ -12,6 +12,32 @@ from . import market_buy
 
 
 # TODO not really sure the best pattern for implementing the command/interactor pattern but we are going to give this a try
+class PortfolioCommand:
+  @classmethod
+  def execute(cls, user: User) -> t.List[CryptoBalance]:
+    # from market_cap import coins_with_market_cap
+    # from exchanges import binance_portfolio
+    # import bot.market_cap
+    # import portfolio
+
+    portfolio_target = market_cap.coins_with_market_cap(user)
+
+    external_portfolio = user.external_portfolio
+
+    # pull a raw binance reportfolio from exchanges.py and add percentage allocations to it
+    user_portfolio = exchanges.binance_portfolio(user)
+    user_portfolio = portfolio.merge_portfolio(user_portfolio, external_portfolio)
+    user_portfolio = portfolio.add_price_to_portfolio(user_portfolio, user.purchasing_currency)
+    user_portfolio = portfolio.portfolio_with_allocation_percentages(user_portfolio)
+    user_portfolio = portfolio.add_missing_assets_to_portfolio(user, user_portfolio, portfolio_target)
+    user_portfolio = portfolio.add_percentage_target_to_portfolio(user_portfolio, portfolio_target)
+
+    # TODO https://github.com/python/typing/issues/760
+    # highest percentages first in the output table
+    user_portfolio.sort(key=lambda balance: balance['target_percentage'], reverse=True)
+
+    return user_portfolio
+
 class BuyCommand:
   # TODO we should break this up into smaller functions
   @classmethod
