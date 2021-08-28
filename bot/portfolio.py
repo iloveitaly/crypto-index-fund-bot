@@ -1,12 +1,10 @@
-from market_cap import coins_with_market_cap
+from .user import User
+from . import exchanges
 
-from user import User
-from exchanges import price_of_symbol
+from .data_types import CryptoBalance, CryptoData
+import typing as t
 
-from data_types import CryptoBalance, CryptoData
-from typing import List
-
-def portfolio_with_allocation_percentages(portfolio) -> List[CryptoBalance]:
+def portfolio_with_allocation_percentages(portfolio) -> t.List[CryptoBalance]:
   import math
   portfolio_total = math.fsum([balance['usd_price'] * balance['amount'] for balance in portfolio])
 
@@ -22,7 +20,7 @@ def portfolio_with_allocation_percentages(portfolio) -> List[CryptoBalance]:
   ]
 
 # useful for adding in externally held assets
-def merge_portfolio(portfolio_1: List[CryptoBalance], portfolio_2: List[CryptoBalance]) -> List[CryptoBalance]:
+def merge_portfolio(portfolio_1: t.List[CryptoBalance], portfolio_2: t.List[CryptoBalance]) -> t.List[CryptoBalance]:
   new_portfolio = []
 
   for balance in portfolio_1:
@@ -43,17 +41,17 @@ def merge_portfolio(portfolio_1: List[CryptoBalance], portfolio_2: List[CryptoBa
 
   return new_portfolio
 
-def add_price_to_portfolio(portfolio: List[CryptoBalance], purchasing_currency: str) -> List[CryptoBalance]:
+def add_price_to_portfolio(portfolio: t.List[CryptoBalance], purchasing_currency: str) -> t.List[CryptoBalance]:
   return [
     # TODO the new python dict merge syntax doesn't seem to play well with typed dicts
     balance | {
-      'usd_price': price_of_symbol(balance['symbol'], purchasing_currency) if balance['symbol'] != purchasing_currency else 1,
+      'usd_price': exchanges.price_of_symbol(balance['symbol'], purchasing_currency) if balance['symbol'] != purchasing_currency else 1,
     }
     for balance in portfolio
   ]
 
 # TODO maybe remove user preference? The target porfolio should take into the account the user's purchasing currency preference?
-def add_missing_assets_to_portfolio(user: User, portfolio: List[CryptoBalance], portfolio_target: List[CryptoBalance]) -> List[CryptoBalance]:
+def add_missing_assets_to_portfolio(user: User, portfolio: t.List[CryptoBalance], portfolio_target: t.List[CryptoBalance]) -> t.List[CryptoBalance]:
   from exchanges import binance_prices
   purchasing_currency = user.purchasing_currency
 
@@ -70,7 +68,7 @@ def add_missing_assets_to_portfolio(user: User, portfolio: List[CryptoBalance], 
   ]
 
 # right now, this is for tinkering/debugging purposes only
-def add_percentage_target_to_portfolio(portfolio: List[CryptoBalance], portfolio_target: List[CryptoBalance]):
+def add_percentage_target_to_portfolio(portfolio: t.List[CryptoBalance], portfolio_target: t.List[CryptoBalance]):
   return [
     balance | {
       'target_percentage':
