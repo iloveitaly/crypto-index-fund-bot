@@ -1,6 +1,6 @@
 import typing as t
-from data_types import MarketBuy, MarketIndexStrategy, MarketBuyStrategy, CryptoBalance
-from utils import log
+from .data_types import MarketIndexStrategy, MarketBuyStrategy, CryptoBalance
+from .utils import log
 
 # right now, this is the only way to use User
 # in the future, User could easily be wired up to an ORM
@@ -33,8 +33,8 @@ def user_from_env():
 class User:
   index_strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP
   buy_strategy: MarketBuyStrategy = MarketBuyStrategy.MARKET
-  binance_api_key: str = ''
-  binance_secret_key: str = ''
+  binance_api_key: t.Optional[str] = ''
+  binance_secret_key: t.Optional[str] = ''
   external_portfolio: t.List[CryptoBalance] = []
   convert_stablecoins: bool = True
   index_limit: t.Optional[int] = None

@@ -1,13 +1,14 @@
 import typing as t
-from user import User
-from data_types import MarketBuyStrategy
 
-import exchanges
-import convert_stablecoins
-import open_orders
-import portfolio
-import market_cap
-import market_buy
+from .user import User
+from .data_types import MarketBuyStrategy
+
+from . import exchanges
+from . import convert_stablecoins
+from . import open_orders
+from . import portfolio
+from . import market_cap
+from . import market_buy
 
 
 # TODO not really sure the best pattern for implementing the command/interactor pattern but we are going to give this a try

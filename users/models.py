@@ -16,7 +16,7 @@ class User(models.Model):
     # eventually, we'll want to merge the two but let's just get this working first
 
     # TODO really terrible that we are using the same name here for both users
-    from user import User as BotUser
+    from bot.user import User as BotUser
 
     bot_user = BotUser()
     bot_user.binance_api_key = self.binance_api_key

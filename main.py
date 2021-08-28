@@ -2,11 +2,11 @@ import dotenv
 dotenv.load_dotenv()
 
 import click
-import utils
+import bot.utils
 
-from utils import log
-from user import user_from_env
-from data_types import MarketIndexStrategy
+from bot.utils import log
+from bot.user import user_from_env
+from bot.data_types import MarketIndexStrategy
 
 # if you use `cod` it's helpful to disable while you are hacking on the CLI
 # if you are on zsh:
@@ -17,11 +17,11 @@ from data_types import MarketIndexStrategy
 @click.option("--verbose", "-v", is_flag=True, help="Enables verbose mode.")
 def cli(verbose):
   if verbose:
-    utils.setLevel('INFO')
+    bot.utils.setLevel('INFO')
 
 @cli.command(help="Analyize configured exchanges")
 def analyze():
-  import exchanges
+  import bot.exchanges as exchanges
 
   coinbase_available_coins = set([coin['base_currency'] for coin in exchanges.coinbase_exchange])
   binance_available_coins = set([coin['baseAsset'] for coin in exchanges.binance_exchange['symbols']])
@@ -44,8 +44,6 @@ def analyze():
 @click.option("-s", "--strategy", type=click.Choice([choice.value for choice in MarketIndexStrategy]), default=MarketIndexStrategy.MARKET_CAP, show_default=True, help="Index strategy")
 @click.option("-l", "--limit", type=int, help="Maximum size of index")
 def index(format, limit, strategy):
-  import market_cap
-
   user = user_from_env()
 
   if strategy:
@@ -54,18 +52,17 @@ def index(format, limit, strategy):
   if limit:
     user.index_limit = limit
 
-  coins_by_exchange = market_cap.coins_with_market_cap(user)
+  import bot.market_cap
+  coins_by_exchange = bot.market_cap.coins_with_market_cap(user)
 
-  if format == 'md':
-    click.echo(utils.table_output(coins_by_exchange))
-  else:
-    click.echo(utils.csv_output(coins_by_exchange))
+  click.echo(bot.utils.table_output_with_format(coins_by_exchange, format))
 
 @cli.command(help="Print current portfolio with targets")
 @click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
 def portfolio(format):
   from market_cap import coins_with_market_cap
   from exchanges import binance_portfolio
+  import bot.market_cap
   import portfolio
 
   user = user_from_env()
@@ -84,11 +81,7 @@ def portfolio(format):
   # highest percentages first in the output table
   user_portfolio.sort(key=lambda balance: balance['target_percentage'], reverse=True)
 
-  from utils import table_output, csv_output
-  if format == 'md':
-    click.echo(table_output(user_portfolio))
-  else:
-    click.echo(csv_output(user_portfolio))
+  click.echo(bot.utils.table_output_with_format(user_portfolio, format))
 
   import market_buy
   purchase_balance = market_buy.purchasing_currency_in_portfolio(user, user_portfolio)
@@ -104,7 +97,7 @@ def portfolio(format):
 @click.option("-c", "--convert", is_flag=True, help="Convert all stablecoin equivilents to purchasing currency. Overrides user configuration.")
 @click.option("--cancel-orders", is_flag=True, help="Cancel all stale orders")
 def buy(format, dry_run, purchase_balance, convert, cancel_orders):
-  from commands import BuyCommand
+  from bot.commands import BuyCommand
 
   if purchase_balance:
     log.info("dry run using fake purchase balance", purchase_balance=purchase_balance)
@@ -134,10 +127,7 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
 
   click.secho(f"Purchasing Balance: {purchase_balance}\n", fg='green')
 
-  if format == 'md':
-    click.echo(utils.table_output(market_buys))
-  else:
-    click.echo(utils.csv_output(market_buys))
+  click.echo(bot.utils.table_output_with_format(market_buys, format))
 
   if not market_buys:
     click.secho("\nNot enough purchasing currency to make any trades.", fg='red')

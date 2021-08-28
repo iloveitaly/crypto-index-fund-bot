@@ -1,6 +1,6 @@
-from utils import log
-from user import User
-from exchanges import binance_portfolio, binance_normalize_purchase_amount, binance_purchase_minimum
+from .utils import log
+from .user import User
+from . import exchanges
 
 # convert all stablecoins of the purchasing currency into the purchasing currency so we can use it
 # in binance, you need to purchase in USD and cannot purchase most currencies from a stablecoin
@@ -22,11 +22,11 @@ def convert_stablecoins(user: User, portfolio):
     purchase_symbol = balance['symbol'] + 'USD'
     amount = balance['amount']
 
-    if amount < binance_purchase_minimum():
+    if amount < exchanges.binance_purchase_minimum():
       log.info("cannot convert stablecoin, not above minimum", symbol=purchase_symbol, amount=amount)
       continue
 
-    normalized_amount = binance_normalize_purchase_amount(amount, purchase_symbol)
+    normalized_amount = exchanges.binance_normalize_purchase_amount(amount, purchase_symbol)
 
     # TODO binance order construction should be pulled out into a separate method
 
@@ -74,5 +74,5 @@ if __name__ == '__main__':
   from user import user_from_env
 
   user = user_from_env()
-  portfolio = binance_portfolio(user)
+  portfolio = exchanges.binance_portfolio(user)
   convert_stablecoins(user, portfolio)

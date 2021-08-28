@@ -1,10 +1,11 @@
 import requests
 
-from utils import log
-from user import User, user_from_env
+from .utils import log
+from .user import User
 
 import typing as t
-from data_types import CryptoData, MarketIndexStrategy
+from . import exchanges
+from .data_types import CryptoData, MarketIndexStrategy
 
 def coinmarketcap_data():
   import os
@@ -36,13 +37,11 @@ def coinmarketcap_data_for_symbol(symbol):
 def filtered_coins_by_market_cap(
     market_data,
     purchasing_currency: str,
-    exchanges: t.List[str],
+    enabled_exchanges: t.List[str],
     exclude_tags=[],
     exclude_coins=[],
     limit=-1
   ):
-
-  from exchanges import can_buy_in_exchange
 
   exclude_tags = set(exclude_tags)
   coins = []
@@ -62,8 +61,8 @@ def filtered_coins_by_market_cap(
       continue
 
     # is the coin available on supported exchanges
-    if not any(can_buy_in_exchange(exchange, symbol, purchasing_currency) for exchange in exchanges):
-      log.debug("coin cannot be purchased in exchange", symbol=symbol, exchanges=exchanges)
+    if not any(exchanges.can_buy_in_exchange(exchange, symbol, purchasing_currency) for exchange in enabled_exchanges):
+      log.debug("coin cannot be purchased in exchange", symbol=symbol, enabled_exchanges=enabled_exchanges)
       continue
 
     coins.append(coin)
@@ -129,7 +128,7 @@ def coins_with_market_cap(user: User, limit: t.Optional[int] = None) -> t.List[C
     market_data,
     user.purchasing_currency,
 
-    exchanges=user.exchanges,
+    enabled_exchanges=user.exchanges,
     exclude_tags=user.excluded_tags,
     limit=user.index_limit,
 

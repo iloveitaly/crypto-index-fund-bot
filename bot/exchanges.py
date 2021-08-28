@@ -1,8 +1,8 @@
-from data_types import CryptoData, CryptoBalance
+from .data_types import CryptoData, CryptoBalance
 import typing as t
 
-from user import User
-from utils import log
+from .user import User
+from .utils import log
 
 from decimal import Decimal
 import math
@@ -26,6 +26,10 @@ binance_prices = {
 
 def can_buy_amount_in_exchange(symbol: str):
   binance_symbol_info = public_binance_client.get_symbol_info(symbol)
+
+  if binance_symbol_info is None:
+    log.warn("symbol did not return any data", symbol=symbol)
+    return False
 
   # the min notional amount specified on the symbol data is the min in USD
   # that needs to be purchased. Most of the time, the minimum is enforced by
@@ -168,10 +172,10 @@ def binance_portfolio(user: User) -> t.List[CryptoBalance]:
   return [
     # TODO basically returns an incomplete CryptoBalance that will be augmented with additional fields later on
     # TODO unsure of how to represent this well in python's typing system
-    {
+    CryptoBalance(**{
       'symbol': balance['asset'],
       'amount': float(balance['free']),
-    }
+    })
     for balance in account['balances']
     if float(balance['free']) > 0
   ]

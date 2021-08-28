@@ -1,10 +1,10 @@
-from utils import log
-from user import User
+from .utils import log
+from .user import User
 
 import math
-from exchanges import low_over_last_day, binance_open_orders, binance_normalize_purchase_amount, binance_purchase_minimum, can_buy_amount_in_exchange, price_of_symbol, binance_normalize_price
+from . import exchanges
 
-from data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
+from .data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
 import typing as t
 
 def calculate_market_buy_preferences(target_index: t.List[CryptoData], current_portfolio: t.List[CryptoBalance]) -> t.List[CryptoData]:
@@ -92,7 +92,7 @@ def determine_market_buys(
   # it doesn't look like this is specified in the API, and the minimum is different
   # depending on if you are using the pro vs simple view. This is the purchasing minimum on binance
   # but not on
-  exchange_purchase_minimum = binance_purchase_minimum()
+  exchange_purchase_minimum = exchanges.binance_purchase_minimum()
 
   user_purchase_minimum = user.purchase_min
   user_purchase_maximum = user.purchase_max
@@ -111,7 +111,7 @@ def determine_market_buys(
   purchase_total = purchase_balance
   purchases = []
 
-  existing_orders = binance_open_orders(user)
+  existing_orders = exchanges.binance_open_orders(user)
   symbols_of_existing_orders = [order['symbol'] for order in existing_orders]
 
   for coin in sorted_buy_preferences:
@@ -122,7 +122,7 @@ def determine_market_buys(
       continue
 
     paired_symbol = coin['symbol'] + user.purchasing_currency
-    if not can_buy_amount_in_exchange(paired_symbol):
+    if not exchanges.can_buy_amount_in_exchange(paired_symbol):
       continue
 
     # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
@@ -215,13 +215,13 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
         percentage_difference=str(ask_difference / Decimal(lowest_ask) * Decimal(-100.0)),
         bid=highest_bid,
         ask=lowest_ask,
-        reported_price=price_of_symbol(buy['symbol'], purchasing_currency)
+        reported_price=exchanges.price_of_symbol(buy['symbol'], purchasing_currency)
       )
 
       # TODO calculate momentum, or low price over last 24hrs, to determine the ideal drop price
       # TODO pull percentage drop attempt from user model
       limit_price = min(Decimal(highest_bid), Decimal(lowest_ask) * Decimal(0.97))
-      limit_price = min(low_over_last_day(purchase_symbol), limit_price)
+      limit_price = min(exchanges.low_over_last_day(purchase_symbol), limit_price)
       order_quantity = Decimal(buy['amount']) / limit_price
 
       # TODO can we inspect the order book depth here? Or general liquidity for the market?
@@ -232,8 +232,8 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
       order_params |= {
         # TODO is there a way to specify a number of hours? It seems like only the three standard TIF options are available
         'timeInForce': 'GTC',
-        'quantity': binance_normalize_purchase_amount(order_quantity, purchase_symbol),
-        'price': binance_normalize_price(limit_price, purchase_symbol),
+        'quantity': exchanges.binance_normalize_purchase_amount(order_quantity, purchase_symbol),
+        'price': exchanges.binance_normalize_price(limit_price, purchase_symbol),
       }
 
       log.info("submitting limit buy order", order=order_params)
@@ -241,7 +241,7 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
       order_params |= {
         # `quoteOrderQty` allows us to purchase crypto in a currency of choice, instead of an amount in the token we are buying
         # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
-        'quoteOrderQty': binance_normalize_price(buy['amount'], purchase_symbol),
+        'quoteOrderQty': exchanges.binance_normalize_price(buy['amount'], purchase_symbol),
       }
 
       log.info("submitting market buy order", order=order_params)

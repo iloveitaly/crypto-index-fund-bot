@@ -23,12 +23,20 @@ setLevel(log_level)
 
 log = structlog.get_logger()
 
-def table_output(array_of_dicts):
+def table_output_with_format(array_of_dicts, format):
+  if not array_of_dicts: return None
+
+  if format == 'md':
+    return csv_table_output(array_of_dicts)
+  else:
+    return markdown_table_output(array_of_dicts)
+
+def markdown_table_output(array_of_dicts):
   # note all table formats allow float formatting
   from tabulate import tabulate
   return tabulate(array_of_dicts, headers="keys", tablefmt="github", floatfmt=".2f")
 
-def csv_output(array_of_dicts):
+def csv_table_output(array_of_dicts):
   import sys
   import csv
 

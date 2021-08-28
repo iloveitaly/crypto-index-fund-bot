@@ -6,7 +6,7 @@ from celery import Celery
 import os
 
 import django.utils.timezone
-from commands.buy import BuyCommand
+from bot.commands import BuyCommand
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'botweb.settings')
@@ -14,6 +14,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'botweb.settings')
 app = Celery('tasks', broker=os.environ['REDIS_URL'])
 
 from django_structlog.celery.steps import DjangoStructLogInitStep
+assert app.steps is not None
 app.steps['worker'].add(DjangoStructLogInitStep)
 
 from celery.signals import setup_logging
@@ -24,6 +25,7 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
   # it seems to eliminate the default logging wrapper which mutates the log formatting
   pass
 
+assert app.on_after_configure is not None
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
   # this method has a *lot* of kw params that can modify functionality
@@ -43,13 +45,13 @@ def initiate_user_buys():
 @app.task
 def user_buy(user_id):
   from .models import User
-  import utils
+  import bot.utils
 
   user = User.objects.get(id=user_id)
   bot_user = user.bot_user()
 
-  utils.log.bind(user_id=user.id)
-  utils.log.info("initiating buys for user")
+  bot.utils.log.bind(user_id=user.id)
+  bot.utils.log.info("initiating buys for user")
 
   BuyCommand.execute(bot_user)
 
