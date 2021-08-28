@@ -52,13 +52,14 @@ def add_price_to_portfolio(portfolio: t.List[CryptoBalance], purchasing_currency
 
 # TODO maybe remove user preference? The target porfolio should take into the account the user's purchasing currency preference?
 def add_missing_assets_to_portfolio(user: User, portfolio: t.List[CryptoBalance], portfolio_target: t.List[CryptoBalance]) -> t.List[CryptoBalance]:
-  from exchanges import binance_prices
+  from . import exchanges
   purchasing_currency = user.purchasing_currency
 
   return portfolio + [
     {
       "symbol": balance['symbol'],
-      "usd_price": binance_prices[balance['symbol'] + purchasing_currency],
+      # TODO should use a consistent method for this
+      "usd_price": exchanges.binance_prices[balance['symbol'] + purchasing_currency],
       "amount": 0,
       "usd_total": 0,
       "percentage": 0
@@ -68,7 +69,7 @@ def add_missing_assets_to_portfolio(user: User, portfolio: t.List[CryptoBalance]
   ]
 
 # right now, this is for tinkering/debugging purposes only
-def add_percentage_target_to_portfolio(portfolio: t.List[CryptoBalance], portfolio_target: t.List[CryptoBalance]):
+def add_percentage_target_to_portfolio(portfolio: t.List[CryptoBalance], portfolio_target: t.List[CryptoBalance]) -> t.List[CryptoBalance]:
   return [
     balance | {
       'target_percentage':

@@ -7,7 +7,8 @@ CryptoBalance = typing.TypedDict('CryptoBalance', {
   'amount': float,
   'usd_price': float,
   'usd_total': float,
-  'percentage': float
+  'percentage': float,
+  'target_percentage': float
 })
 
 CryptoData = typing.TypedDict('CryptoData', {

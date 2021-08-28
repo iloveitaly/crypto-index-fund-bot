@@ -116,8 +116,12 @@ def price_of_symbol(symbol, purchasing_currency):
     return binance_prices[pricing_symbol]
   else:
     log.info("price not available in binance, pulling from coinmarket cap", symbol=pricing_symbol)
+
+    # TODO need to get cached coinmarket cap data and pull via:
+    # ['quote']['USD']['price']
+
     # TODO should pull from coinmarket cap or something
-    return 1
+    return 0
 
 def binance_purchase_minimum() -> float:
   return 10.0
