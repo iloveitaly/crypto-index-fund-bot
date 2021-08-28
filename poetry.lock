@@ -845,7 +845,7 @@ description = "Automatically mock your HTTP interactions to simplify and speed u
 category = "dev"
 optional = false
 python-versions = ">=3.5"
-develop = true
+develop = false
 
 [package.dependencies]
 PyYAML = "*"
@@ -853,12 +853,11 @@ six = ">=1.5"
 wrapt = "*"
 yarl = "*"
 
-[package.extras]
-dev = ["tox", "black", "codecov"]
-
 [package.source]
-type = "directory"
-url = "../../python/vcrpy"
+type = "git"
+url = "https://github.com/iloveitaly/vcrpy"
+reference = "deduped-cassettes"
+resolved_reference = "446a59551f053f50dc78cd74def6dbb08090e908"
 
 [[package]]
 name = "vine"
@@ -907,7 +906,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "c8ab75763e353c3b2ce7d36fbbe9af24b4cd8f2e2a175c30d073e088a840ae12"
+content-hash = "0995f03ee462805563f2e090ad4860cdd29d653d4028f57270bd7a367bb6d3cc"
 
 [metadata.files]
 aiohttp = [
