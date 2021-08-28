@@ -1,17 +1,14 @@
 import unittest
-from user import user_from_env
+from bot.user import user_from_env
 import pytest
-
-import market_cap
 
 from unittest.mock import patch
 from click.testing import CliRunner
 
 import binance.client
-import market_cap
 import main
 
-from data_types import MarketBuyStrategy, MarketIndexStrategy
+from bot.data_types import MarketBuyStrategy, MarketIndexStrategy
 
 @pytest.fixture(scope="module")
 def vcr_config():
@@ -40,13 +37,13 @@ class TestE2E(unittest.TestCase):
   def test_not_buying_open_orders(self):
     pass
 
-  @patch.object(binance.client.Client, 'order_market_buy')
-  @patch('market_buy.purchasing_currency_in_portfolio', return_value=60.0)
+  @patch.object(binance.client.Client, 'order_market_buy', return_value={})
+  @patch('bot.market_buy.purchasing_currency_in_portfolio', return_value=50.0)
   def test_market_buy(self, _purchasing_currency_mock, order_market_buy_mock):
     # user preconditions
     user = user_from_env()
     assert True == user.livemode
-    assert 30 == user.purchase_min
+    assert 25 == user.purchase_min
     assert MarketBuyStrategy.MARKET == user.buy_strategy
     assert MarketIndexStrategy.MARKET_CAP == user.index_strategy
 
@@ -61,5 +58,5 @@ class TestE2E(unittest.TestCase):
 
     # 60 should be split into two orders
     assert order_market_buy_mock.call_count == 2
-    assert {'symbol': 'ENJUSD', 'newOrderRespType': 'FULL', 'quoteOrderQty': '30.0'} == order_market_buy_mock.mock_calls[0].kwargs
-    assert {'symbol': 'MKRUSD', 'newOrderRespType': 'FULL', 'quoteOrderQty': '30.00000'} == order_market_buy_mock.mock_calls[1].kwargs
+    assert {'symbol': 'ENJUSD', 'newOrderRespType': 'FULL', 'quoteOrderQty': '25.0000'} == order_market_buy_mock.mock_calls[0].kwargs
+    assert {'symbol': 'MKRUSD', 'newOrderRespType': 'FULL', 'quoteOrderQty': '25.0000'} == order_market_buy_mock.mock_calls[1].kwargs
