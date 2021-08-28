@@ -1,0 +1,48 @@
+version: "2.4"
+services:
+  worker: &worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: mdnwebdocs/kuma_base
+    command: ./celery.sh
+    # user: ${UID:-1000}
+    # volumes:
+    #   - ./:/app:z
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      # `kuma` has a lot of interesting ENV overrides to look at if this app ever gets bigger
+      - DATABASE_URL=postgresql://${POSTGRES_DATABASE_USER:-postgres}:${POSTGRES_DATABASE_PASSWORD:-postgres}@postgres:5432/crypto_index_fund_bot
+      - REDIS_URL=redis://redis:6379
+      - DEBUG=${DEBUG:-True}
+      # Other environment overrides
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=True
+      - PYTHONWARNINGS=${PYTHONWARNINGS:-}
+      - MAINTENANCE_MODE=${MAINTENANCE_MODE:-False}
+
+  # TODO right now there is no web worker, but I'm leaving this here in case we use it in the future
+  # Web is based on worker b/c you cannot clear the "ports" with docker-compose.
+  # web:
+  #   <<: *worker
+  #   command: gunicorn -w ${GUNICORN_WORKERS:-4} --bind 0.0.0.0:8000 --access-logfile=- --timeout=120 --worker-class=gevent botweb.wsgi:application
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   ports:
+  #     - "8000:8000"
+
+  # https://hub.docker.com/_/postgres/
+  postgres:
+    image: postgres:13.4
+    environment:
+      # Create the superuser account
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=crypto_index_fund_bot
+
+  # https://hub.docker.com/_/redis
+  redis:
+    image: redis:6.2
