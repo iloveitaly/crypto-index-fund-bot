@@ -21,7 +21,7 @@ django-structlog = "^2.1.1"
 
 [tool.poetry.dev-dependencies]
 # vcrpy = {path = "../../python/vcrpy", develop = true }
-vcrpy = { git = "https://github.com/iloveitaly/vcrpy", branch = "deduped-cassettes" }
+vcrpy = { git = "https://github.com/iloveitaly/vcrpy.git", branch = "deduped-cassettes", develop = true }
 ipython = "^7.25.0"
 ipdb = "^0.13.8"
 mypy = "^0.910"

@@ -915,7 +915,7 @@ description = "Automatically mock your HTTP interactions to simplify and speed u
 category = "dev"
 optional = false
 python-versions = ">=3.5"
-develop = false
+develop = true
 
 [package.dependencies]
 PyYAML = "*"
@@ -925,7 +925,7 @@ yarl = "*"
 
 [package.source]
 type = "git"
-url = "https://github.com/iloveitaly/vcrpy"
+url = "https://github.com/iloveitaly/vcrpy.git"
 reference = "deduped-cassettes"
 resolved_reference = "446a59551f053f50dc78cd74def6dbb08090e908"
 
@@ -976,7 +976,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "7f48125f94399e653879e6466097df64e5167405d0c2ffdfcedd9d5cdb3112d6"
+content-hash = "d88a8ec2b831c9a75991affbbe7d348e7e70e908efaee771ead4d6fb64e49512"
 
 [metadata.files]
 aiohttp = [
