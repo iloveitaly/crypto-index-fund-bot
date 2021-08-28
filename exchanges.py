@@ -1,7 +1,7 @@
 from data_types import CryptoData, CryptoBalance
 import typing as t
 
-from user import user_from_env, User
+from user import User
 from utils import log
 
 from decimal import Decimal
@@ -24,12 +24,12 @@ binance_prices = {
   for price_dict in public_binance_client.get_all_tickers()
 }
 
-def can_buy_amount_in_exchange(symbol: str, amount_in_purchasing_currency: float):
+def can_buy_amount_in_exchange(symbol: str):
   binance_symbol_info = public_binance_client.get_symbol_info(symbol)
 
   # the min notional amount specified on the symbol data is the min in USD
-  # that needs to be purchased. This min is enforced upstream, so we can avoid
-  # that check here
+  # that needs to be purchased. Most of the time, the minimum is enforced by
+  # the binance-wide minimum, but this is not always the case.
 
   if binance_symbol_info['status'] != 'TRADING':
     log.info("symbol is not trading, skipping", symbol=symbol)
@@ -58,6 +58,45 @@ def can_buy_in_binance(symbol, purchasing_currency):
 import coinbasepro as cbpro
 coinbase_public_client = cbpro.PublicClient()
 coinbase_exchange = coinbase_public_client.get_products()
+
+def low_over_last_day(purchasing_symbol: str) -> Decimal:
+  import datetime
+
+  # TODO coinbase option is below, but ran into some issues with it that I can't remember
+  # candles = coinbase_public_client.get_product_historic_rates(
+  #   product_id="PAXG-USD",
+  #   granularity=60*60,
+  #   start=(datetime.datetime.now() - datetime.timedelta(hours=24)).isoformat(),
+  #   stop=datetime.datetime.now().isoformat()
+  # )
+
+  # min([candle['low'] for candle in candles])
+
+  # https://binance-docs.github.io/apidocs/spot/en/#kline-candlestick-data
+  # the API just returns an ordered array, which is insane
+  """
+    [
+    1499040000000,      // Open time
+    "0.01634790",       // Open
+    "0.80000000",       // High
+    "0.01575800",       // Low
+    "0.01577100",       // Close
+    "148976.11427815",  // Volume
+    1499644799999,      // Close time
+    "2434.19055334",    // Quote asset volume
+    308,                // Number of trades
+    "1756.87402397",    // Taker buy base asset volume
+    "28.46694368",      // Taker buy quote asset volume
+    "17928899.62484339" // Ignore.
+  ]
+  """
+
+  candles = public_binance_client.get_klines(
+    symbol=purchasing_symbol,
+    interval='1h'
+  )
+
+  return Decimal(min([candle[3] for candle in candles]))
 
 def can_buy_in_coinbase(symbol, purchasing_currency):
   for coin in coinbase_exchange:
