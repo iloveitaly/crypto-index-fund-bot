@@ -29,6 +29,10 @@ ENV SCHEDULE "0 * * * *"
 WORKDIR /app
 COPY . ./
 
+# this is the cleanest way to conditionally copy a file
+# https://stackoverflow.com/a/46801962/129415
+COPY *external_portfolio.json ./
+
 # run after copying source to chache the earlier steps
 RUN poetry install --no-dev
 
