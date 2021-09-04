@@ -1,10 +1,12 @@
 from django.db import models
 
+from encrypted_model_fields.fields import EncryptedCharField
+
 class User(models.Model):
   # TODO these are not stored in `preferences` since we want to encrypt them in the future
   # django requires an explicit field length; the key sizes here are probably much smaller
-  binance_api_key = models.CharField(max_length=100, null=True)
-  binance_secret_key = models.CharField(max_length=100, null=True)
+  binance_api_key = EncryptedCharField(max_length=100, null=True)
+  binance_secret_key = EncryptedCharField(max_length=100, null=True)
 
   external_portfolio = models.JSONField(default=dict)
   preferences = models.JSONField(default=dict)
