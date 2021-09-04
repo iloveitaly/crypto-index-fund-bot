@@ -4,7 +4,7 @@ install_rich_tracebacks(width=200)
 
 import structlog
 import logging
-import os
+from decouple import config
 
 from structlog.threadlocal import wrap_dict
 
@@ -16,9 +16,11 @@ def setLevel(level):
     context_class=wrap_dict(dict),
 
     wrapper_class=structlog.make_filtering_bound_logger(level),
+
+    cache_logger_on_first_use=True
   )
 
-log_level = os.environ.get('LOG_LEVEL', 'WARN')
+log_level = config('LOG_LEVEL', default='WARN')
 setLevel(log_level)
 
 log = structlog.get_logger()
