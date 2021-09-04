@@ -41,4 +41,4 @@ build-backend = "poetry.core.masonry.api"
 
 [pytest]
 log_cli = true
-DJANGO_SETTINGS_MODULE = "botweb.settings"
+DJANGO_SETTINGS_MODULE = "botweb.settings.test"

@@ -23,6 +23,10 @@ RUN set -eux; \
   pip3 install poetry; \
   poetry config virtualenvs.create false;
 
+# TODO consider using a non-sudo user to run under
+
+ENV DJANGO_SETTINGS_MODULE "botweb.settings.production"
+
 # run every hour by default, use `SCHEDULE=NONE` to run directly
 ENV SCHEDULE "0 * * * *"
 
