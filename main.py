@@ -1,11 +1,7 @@
-import dotenv
-dotenv.load_dotenv()
-
 import click
 import bot.utils
 
 from bot import utils
-# from bot.utils import log
 from bot.user import user_from_env
 from bot.data_types import MarketIndexStrategy
 

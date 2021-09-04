@@ -5,21 +5,21 @@ from .utils import log
 # right now, this is the only way to use User
 # in the future, User could easily be wired up to an ORM
 def user_from_env():
-  import os
+  from decouple import config
   import json
 
   user = User()
-  user.binance_api_key = os.getenv("USER_BINANCE_API_KEY")
-  user.binance_secret_key = os.getenv("USER_BINANCE_SECRET_KEY")
+  user.binance_api_key = config("USER_BINANCE_API_KEY")
+  user.binance_secret_key = config("USER_BINANCE_SECRET_KEY")
 
-  user.livemode = os.getenv("USER_LIVEMODE", 'false').lower() == 'true'
-  user.convert_stablecoins = os.getenv("USER_CONVERT_STABLECOINS", 'false').lower() == 'true'
-  user.cancel_stale_orders = os.getenv("USER_CANCEL_STALE_ORDERS", 'false').lower() == 'true'
+  user.livemode = config("USER_LIVEMODE", 'false').lower() == 'true'
+  user.convert_stablecoins = config("USER_CONVERT_STABLECOINS", 'false').lower() == 'true'
+  user.cancel_stale_orders = config("USER_CANCEL_STALE_ORDERS", 'false').lower() == 'true'
 
-  if index_strategy := os.getenv("USER_INDEX_STRATEGY"):
+  if index_strategy := config("USER_INDEX_STRATEGY", default=None):
     user.index_strategy = index_strategy
 
-  if buy_strategy := os.getenv("USER_BUY_STRATEGY"):
+  if buy_strategy := config("USER_BUY_STRATEGY", default=None):
     user.buy_strategy = buy_strategy
 
   try:

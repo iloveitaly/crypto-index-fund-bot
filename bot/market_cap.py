@@ -8,8 +8,8 @@ from . import exchanges
 from .data_types import CryptoData, MarketIndexStrategy
 
 def coinmarketcap_data():
-  import os
-  coinmarketcap_api_key = os.getenv('COINMARKETCAP_API_KEY')
+  import decouple
+  coinmarketcap_api_key = decouple.config('COINMARKETCAP_API_KEY')
   coinbase_endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=1000&sort=market_cap"
 
   # TODO should we cache or at minimum memoize this?

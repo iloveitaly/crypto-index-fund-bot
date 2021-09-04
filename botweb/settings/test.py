@@ -10,5 +10,5 @@ CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 
 DATABASES = {
-    'default': dj_database_url.parse(config('TEST_DATABASE_URL'))
+  'default': dj_database_url.parse(config('TEST_DATABASE_URL'))
 }
