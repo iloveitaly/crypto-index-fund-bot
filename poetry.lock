@@ -107,7 +107,7 @@ python-versions = "*"
 
 [[package]]
 name = "celery"
-version = "5.2.0b2"
+version = "5.2.0b3"
 description = "Distributed Task Queue."
 category = "main"
 optional = false
@@ -734,6 +734,17 @@ toml = "*"
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
+name = "pytest-celery"
+version = "0.0.0"
+description = "pytest-celery a shim pytest plugin to enable celery.contrib.pytest"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+celery = ">=4.4.0"
+
+[[package]]
 name = "pytest-django"
 version = "4.4.0"
 description = "A Django plugin for pytest."
@@ -1057,7 +1068,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "98cbcee12f47930a704129a5271d9c556a9e4890111b3f9c430c292aa4362bf2"
+content-hash = "da5c581bbc277e40a1cd1a79336dae94c4bc33f10e46c164bea31a79da7c3c44"
 
 [metadata.files]
 aiohttp = [
@@ -1136,8 +1147,8 @@ billiard = [
     {file = "billiard-3.6.4.0.tar.gz", hash = "sha256:299de5a8da28a783d51b197d496bef4f1595dd023a93a4f59dde1886ae905547"},
 ]
 celery = [
-    {file = "celery-5.2.0b2-py3-none-any.whl", hash = "sha256:abefb031f1a1b49fccf1d4c798785d054e797aaa3c2634cc22a05d654072e7ce"},
-    {file = "celery-5.2.0b2.tar.gz", hash = "sha256:b544fdebb16eca267bed09647f9bffc6b8a238131721fb9a84cb55e1b035c4c2"},
+    {file = "celery-5.2.0b3-py3-none-any.whl", hash = "sha256:8db37760c7d025322deb9bccef22eabc4f84e6b452dc1aa28f6844c0093994a8"},
+    {file = "celery-5.2.0b3.tar.gz", hash = "sha256:13c3b405a21d692689d842db881c3a0ca95f1b6f2a73598d4b6c916c07a4be17"},
 ]
 certifi = [
     {file = "certifi-2021.5.30-py2.py3-none-any.whl", hash = "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"},
@@ -1473,6 +1484,10 @@ pyparsing = [
 pytest = [
     {file = "pytest-6.2.4-py3-none-any.whl", hash = "sha256:91ef2131a9bd6be8f76f1f08eac5c5317221d6ad1e143ae03894b862e8976890"},
     {file = "pytest-6.2.4.tar.gz", hash = "sha256:50bcad0a0b9c5a72c8e4e7c9855a3ad496ca6a881a3641b4260605450772c54b"},
+]
+pytest-celery = [
+    {file = "pytest-celery-0.0.0.tar.gz", hash = "sha256:cfd060fc32676afa1e4f51b2938f903f7f75d952186b8c6cf631628c4088f406"},
+    {file = "pytest_celery-0.0.0-py2.py3-none-any.whl", hash = "sha256:63dec132df3a839226ecb003ffdbb0c2cb88dd328550957e979c942766578060"},
 ]
 pytest-django = [
     {file = "pytest-django-4.4.0.tar.gz", hash = "sha256:b5171e3798bf7e3fc5ea7072fe87324db67a4dd9f1192b037fed4cc3c1b7f455"},
