@@ -1,6 +1,3 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 from celery import Celery
 
 import os
@@ -9,9 +6,11 @@ import django.utils.timezone
 from bot.commands import BuyCommand
 
 # Set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'botweb.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'botweb.settings.development')
 
-app = Celery('tasks', broker=os.environ['REDIS_URL'])
+app = Celery('tasks')
+
+app.config_from_object("django.conf:settings", namespace="CELERY")
 
 from django_structlog.celery.steps import DjangoStructLogInitStep
 assert app.steps is not None
