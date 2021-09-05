@@ -4,7 +4,10 @@ from decouple import config
 
 if sentry_dsn := config("SENTRY_DSN", default=False)
   import sentry_sdk
+  from sentry_sdk.integrations.django import DjangoIntegration
+
   sentry_sdk.init(
     sentry_dsn,
+    integrations=[DjangoIntegration()],
     traces_sample_rate=1.0,
   )
