@@ -50,4 +50,4 @@ services:
   redis:
     image: redis:6.2
 volumes:
-  - postgres
+  postgres:
