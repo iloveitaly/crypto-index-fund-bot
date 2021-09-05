@@ -12,20 +12,48 @@ import math
 # https://github.com/binance-us/binance-official-api-docs
 # https://dev.binance.vision/
 from binance.client import Client as BinanceClient
-public_binance_client = BinanceClient('', '', tld='us')
-binance_exchange = public_binance_client.get_exchange_info()
 
-# `symbol` is a trading pair
-# this includes both USDT and USD prices
-# the pair formatting is 'BTCUSD'
-binance_prices = {
-  price_dict['symbol']: float(price_dict['price'])
-  # `get_all_tickers` is only called once
-  for price_dict in public_binance_client.get_all_tickers()
-}
+# TODO last piece of semi-important state that needs to be wiped
+_binance_prices = None
+
+_public_binance_client = None
+def public_binance_client() -> BinanceClient:
+  global _public_binance_client
+
+  if _public_binance_client is None:
+    # initializing a new client actually hits the `ping` endpoint on the API
+    # which is on of the reasons we want to cache it
+    _public_binance_client = BinanceClient('', '', tld='us')
+
+  return _public_binance_client
+
+# TODO this is terrible and needs to be ripped out
+binance_exchange = public_binance_client().get_exchange_info()
+
+def binance_price_for_symbol(symbol: str) -> t.Optional[float]:
+  global _binance_prices
+
+  if _binance_prices is None:
+    # `symbol` is a trading pair
+    # this includes both USDT and USD prices
+    # the pair formatting is 'BTCUSD'
+    _binance_prices = {
+      price_dict['symbol']: float(price_dict['price'])
+      # `get_all_tickers` is only called once
+      for price_dict in public_binance_client().get_all_tickers()
+    }
+
+  if not symbol in _binance_prices:
+    return None
+
+  return _binance_prices[symbol]
+
+# TODO cache all symbol information and read from that cache as opposed to hitting the API a million times
+def binance_get_symbol_info(symbol: str):
+  return public_binance_client().get_symbol_info(symbol)
 
 def can_buy_amount_in_exchange(symbol: str):
-  binance_symbol_info = public_binance_client.get_symbol_info(symbol)
+  binance_symbol_info = binance_get_symbol_info(symbol)
 
   if binance_symbol_info is None:
     log.warn("symbol did not return any data", symbol=symbol)
@@ -95,7 +123,7 @@ def low_over_last_day(purchasing_symbol: str) -> Decimal:
   ]
   """
 
-  candles = public_binance_client.get_klines(
+  candles = public_binance_client().get_klines(
     symbol=purchasing_symbol,
     interval='1h'
   )
@@ -112,8 +140,8 @@ def can_buy_in_coinbase(symbol, purchasing_currency):
 def price_of_symbol(symbol, purchasing_currency):
   pricing_symbol = symbol + purchasing_currency
 
-  if pricing_symbol in binance_prices:
-    return binance_prices[pricing_symbol]
+  if price := binance_price_for_symbol(pricing_symbol):
+    return price
   else:
     log.info("price not available in binance, pulling from coinmarket cap", symbol=pricing_symbol)
 
@@ -127,7 +155,7 @@ def binance_purchase_minimum() -> float:
   return 10.0
 
 def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str) -> str:
-  symbol_info = public_binance_client.get_symbol_info(symbol)
+  symbol_info = binance_get_symbol_info(symbol)
 
   # not 100% sure of the logic below, but I imagine it's possible for the quote asset precision
   # and the step size precision to be different. In this case, to satisfy both filters, we'd need to pick the min
@@ -143,7 +171,7 @@ def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str
   return format(Decimal(amount), f"0.{rounding_precision}f")
 
 def binance_normalize_price(amount: t.Union[str, Decimal], symbol: str) -> str:
-  symbol_info = public_binance_client.get_symbol_info(symbol)
+  symbol_info = binance_get_symbol_info(symbol)
 
   asset_rounding_precision = symbol_info['quoteAssetPrecision']
 

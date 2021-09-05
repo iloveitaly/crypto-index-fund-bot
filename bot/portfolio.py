@@ -59,8 +59,7 @@ def add_missing_assets_to_portfolio(user: User, portfolio: t.List[CryptoBalance]
   return portfolio + [
     {
       "symbol": balance['symbol'],
-      # TODO should use a consistent method for this
-      "usd_price": exchanges.binance_prices[balance['symbol'] + purchasing_currency],
+      "usd_price": exchanges.binance_price_for_symbol(balance['symbol'] + purchasing_currency),
       "amount": 0,
       "usd_total": 0,
       "percentage": 0
