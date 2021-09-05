@@ -50,6 +50,8 @@ class BuyCommand:
     if user.convert_stablecoins:
       convert_stablecoins.convert_stablecoins(user, current_portfolio)
 
+    # TODO we should wait for the stablecoin sells to clear and then refresh the portfolio
+
     external_portfolio = user.external_portfolio
     external_portfolio = portfolio.add_price_to_portfolio(external_portfolio, user.purchasing_currency)
 
@@ -63,7 +65,7 @@ class BuyCommand:
       purchase_balance = market_buy.purchasing_currency_in_portfolio(user, current_portfolio)
 
     portfolio_target = market_cap.coins_with_market_cap(user)
-    sorted_market_buys = market_buy.calculate_market_buy_preferences(portfolio_target, current_portfolio)
+    sorted_market_buys = market_buy.calculate_market_buy_preferences(portfolio_target, current_portfolio, deprioritized_coins=user.deprioritized_coins)
     market_buys = market_buy.determine_market_buys(user, sorted_market_buys, current_portfolio, portfolio_target, purchase_balance)
 
     completed_orders = market_buy.make_market_buys(user, market_buys)

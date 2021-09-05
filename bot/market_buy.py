@@ -7,19 +7,33 @@ from . import exchanges
 from .data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
 import typing as t
 
-def calculate_market_buy_preferences(target_index: t.List[CryptoData], current_portfolio: t.List[CryptoBalance]) -> t.List[CryptoData]:
+def calculate_market_buy_preferences(
+  target_index: t.List[CryptoData],
+  current_portfolio: t.List[CryptoBalance],
+  deprioritized_coins: t.List[str],
+) -> t.List[CryptoData]:
+
   """
   Buying priority:
 
-  1. Buying what's unique to this exchange
-  2. Buying something new, as opposed to getting closer to a new allocation
-  3. Buying whatever has dropped the most
-  4. Buying what has the most % delta from the target
+  1. Buying what hasn't be deprioritized by the user
+  2. Buying what has > 1% of the market cap
+  3. Buying what's unique to this exchange
+  4. Buying something new, as opposed to getting closer to a new allocation
+  5. Buying whatever has dropped the most
+  6. Buying what has the most % delta from the target
 
   Filter out coins that have exceeded their targets
   """
 
-  filtered_coins_exceeding_target = []
+  log.info('calculating market buy preferences',
+    target_index=len(target_index),
+    current_portfolio=len(current_portfolio)
+  )
+
+  coins_below_index_target = []
+
+  # first, let's exclude all coins that we've exceeded target on
   for coin_data in target_index:
     current_percentage = next((
       balance['percentage']
@@ -28,17 +42,18 @@ def calculate_market_buy_preferences(target_index: t.List[CryptoData], current_p
     ), 0)
 
     if current_percentage < coin_data['percentage']:
-      filtered_coins_exceeding_target.append(coin_data)
+      coins_below_index_target.append(coin_data)
     else:
-      log.info("coin exceeding target", symbol=coin_data['symbol'], percentage=current_percentage, target=coin_data['percentage'])
-
-
-  log.info('calculating market buy preferences', target_index=len(target_index), current_portfolio=len(current_portfolio))
+      log.debug("coin exceeding target, skipping", symbol=coin_data['symbol'], percentage=current_percentage, target=coin_data['percentage'])
 
   sorted_by_largest_target_delta = sorted(
-    filtered_coins_exceeding_target,
+    coins_below_index_target,
     # TODO fsum for math?
-    key=lambda coin_data: next((balance['percentage'] for balance in current_portfolio if balance['symbol'] == coin_data['symbol']), 0) - coin_data['percentage']
+    key=lambda coin_data: next((
+      balance['percentage']
+      for balance in current_portfolio
+      if balance['symbol'] == coin_data['symbol']
+    ), 0) - coin_data['percentage']
   )
 
   # TODO think about grouping drops into tranches so the above sort isn't completely useless
@@ -47,15 +62,49 @@ def calculate_market_buy_preferences(target_index: t.List[CryptoData], current_p
     key=lambda coin_data: coin_data['30d_change']
   )
 
+  # prioritize tokens we don't own yet
   symbols_in_current_allocation = [item['symbol'] for item in current_portfolio]
-  index_by_unowned_assets = sorted(
+  sorted_by_unowned_coins = sorted(
     sorted_by_largest_recent_drop,
     key=lambda coin_data: 1 if coin_data['symbol'] in symbols_in_current_allocation else 0
   )
 
-  # TODO how should we deal with multiple exchanges here?
+  # prioritize tokens that make up > 1% of the market
+  # and either (a) we don't own or (b) our target allocation is off by a factor of 6
+  # why 6? It felt right based on looking at what I wanted out of my current allocation
 
-  return index_by_unowned_assets
+  def should_token_be_treated_as_unowned(coin_data: CryptoData) -> int:
+    if coin_data['percentage'] < 1:
+      return 1
+
+    current_percentage = next((
+      balance['percentage']
+      for balance in current_portfolio
+      if balance['symbol'] == coin_data['symbol']
+    ), 0)
+
+    if current_percentage == 0:
+      return 0
+
+    current_allocation_delta = coin_data['percentage'] / current_percentage
+
+    if current_allocation_delta > 6:
+      return 0
+    else:
+      return 1
+
+  sorted_by_large_market_cap_coins = sorted(
+    sorted_by_unowned_coins,
+    key=should_token_be_treated_as_unowned
+  )
+
+  # last, but not least, let's respect the user's preference for deprioritizing coins
+  sorted_by_deprioritized_coins = sorted(
+    sorted_by_large_market_cap_coins,
+    key=lambda coin_data: 1 if coin_data['symbol'] in deprioritized_coins else 0
+  )
+
+  return sorted_by_deprioritized_coins
 
 def purchasing_currency_in_portfolio(user: User, portfolio: t.List[CryptoBalance]) -> float:
   # ideally, we wouldn't need to have a reserve amount. However, FP math is challenging and it's easy
@@ -128,15 +177,15 @@ def determine_market_buys(
     # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
     purchase_amount = purchase_total if purchase_total < exchange_purchase_minimum * 2 else user_purchase_minimum
 
-    # make sure the floor purchase amount is at least the user-specific minimum
-    purchase_amount = max(purchase_amount, user_purchase_minimum)
-
     # percentage is not expressed in a < 1 float, so we need to convert it
     coin_portfolio_info = next((target for target in target_portfolio if target['symbol'] == coin['symbol']))
     target_amount = coin_portfolio_info['percentage'] / 100.0 * portfolio_total
 
     # make sure purchase total will not overflow the target allocation
     purchase_amount = min(purchase_amount, target_amount, user_purchase_maximum)
+
+    # make sure the floor purchase amount is at least the user-specific minimum
+    purchase_amount = max(purchase_amount, user_purchase_minimum)
 
     # we need to at least buy the minimum that the exchange allows
     purchase_amount = max(exchange_purchase_minimum, purchase_amount)

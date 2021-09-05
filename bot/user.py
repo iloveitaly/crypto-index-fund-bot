@@ -42,6 +42,7 @@ class User:
   cancel_stale_orders: bool = True
   stale_order_hour_limit: int = 24
   excluded_coins: t.List[str] = []
+  deprioritized_coins: t.List[str] = ['BNB', 'DOGE', 'XRP']
   purchasing_currency: str = 'USD'
   purchase_max: int = 50
   purchase_min: int = 25
