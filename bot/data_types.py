@@ -15,6 +15,7 @@ CryptoData = typing.TypedDict('CryptoData', {
   # symbol is not a pair
   'symbol': str,
   'market_cap': int,
+  # should really be 'market_cap_percentage'
   'percentage': float,
   '7d_change': float,
   '30d_change': float

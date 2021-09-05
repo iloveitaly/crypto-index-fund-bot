@@ -20,6 +20,7 @@ def portfolio_with_allocation_percentages(portfolio) -> t.List[CryptoBalance]:
   ]
 
 # useful for adding in externally held assets
+# in the future, we'll also use this for merging portfolios from multiple exchanges
 def merge_portfolio(portfolio_1: t.List[CryptoBalance], portfolio_2: t.List[CryptoBalance]) -> t.List[CryptoBalance]:
   new_portfolio = []
 

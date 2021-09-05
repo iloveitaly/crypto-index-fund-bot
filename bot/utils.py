@@ -34,6 +34,7 @@ def table_output_with_format(array_of_dicts, format):
     return csv_table_output(array_of_dicts)
 
 def markdown_table_output(array_of_dicts):
+  # TODO would be nice to add comma separators to money values
   # note all table formats allow float formatting
   from tabulate import tabulate
   return tabulate(array_of_dicts, headers="keys", tablefmt="github", floatfmt=".2f")

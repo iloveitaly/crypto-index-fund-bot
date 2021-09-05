@@ -178,6 +178,7 @@ def binance_portfolio(user: User) -> t.List[CryptoBalance]:
     # TODO unsure of how to represent this well in python's typing system
     CryptoBalance(**{
       'symbol': balance['asset'],
+      # TODO should probably use Decimal here instead
       'amount': float(balance['free']),
     })
     for balance in account['balances']
