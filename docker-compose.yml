@@ -1,4 +1,3 @@
-version: "2.4"
 services:
   worker: &worker
     build:
@@ -9,6 +8,7 @@ services:
     # user: ${UID:-1000}
     # volumes:
     #   - ./:/app:z
+    env_file: .env
     depends_on:
       - postgres
       - redis
@@ -19,6 +19,7 @@ services:
       - DEBUG=${DEBUG:-True}
       # Other environment overrides
       - PYTHONDONTWRITEBYTECODE=1
+      # https://stackoverflow.com/questions/59812009/what-is-the-use-of-pythonunbuffered-in-docker-file/59812588
       - PYTHONUNBUFFERED=True
       - PYTHONWARNINGS=${PYTHONWARNINGS:-}
       - MAINTENANCE_MODE=${MAINTENANCE_MODE:-False}
@@ -42,7 +43,11 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=crypto_index_fund_bot
+    volumes:
+      - postgres:/var/lib/postgresql/data
 
   # https://hub.docker.com/_/redis
   redis:
     image: redis:6.2
+volumes:
+  - postgres
