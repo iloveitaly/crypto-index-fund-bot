@@ -126,3 +126,24 @@ class TestE2E(unittest.TestCase):
     assert order_market_buy_mock.call_count == 2
     assert {'symbol': 'ENJUSD', 'newOrderRespType': 'FULL', 'quoteOrderQty': '25.0000'} == order_market_buy_mock.mock_calls[0].kwargs
     assert {'symbol': 'MKRUSD', 'newOrderRespType': 'FULL', 'quoteOrderQty': '25.0000'} == order_market_buy_mock.mock_calls[1].kwargs
+
+  def test_portfolio(self):
+    runner = CliRunner()
+    result = runner.invoke(main.portfolio, [])
+
+    assert result.exception is None
+    assert result.exit_code == 0
+
+  def test_index(self):
+    runner = CliRunner()
+    result = runner.invoke(main.index, [])
+
+    assert result.exception is None
+    assert result.exit_code == 0
+
+  def test_analyze(self):
+    runner = CliRunner()
+    result = runner.invoke(main.analyze, [])
+
+    assert result.exception is None
+    assert result.exit_code == 0
