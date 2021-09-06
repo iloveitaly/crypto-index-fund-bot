@@ -16,7 +16,8 @@ jobs:
       with:
         python-version: 3.9.6
     - uses: knowsuchagency/poetry-install@v1
-    - run: |
+    - name: code formatting
+      run: |
         set -eax
         black --version
         black --check .
