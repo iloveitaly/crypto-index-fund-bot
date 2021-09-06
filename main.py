@@ -9,112 +9,162 @@ from bot.data_types import MarketIndexStrategy
 # if you are on zsh:
 #   `preexec_functions=(${preexec_functions#__cod_preexec_zsh})`
 
+
 @click.group(help="Tool for building your own crypto index fund.")
 # TODO this must be specified before the subcommand, which is a strange requirement. I wonder if there is a way around this.
 @click.option("--verbose", "-v", is_flag=True, help="Enables verbose mode.")
 def cli(verbose):
-  if verbose:
-    bot.utils.setLevel('INFO')
+    if verbose:
+        bot.utils.setLevel("INFO")
+
 
 @cli.command(help="Analyize configured exchanges")
 def analyze():
-  import bot.exchanges as exchanges
+    import bot.exchanges as exchanges
 
-  coinbase_available_coins = set([coin['base_currency'] for coin in exchanges.coinbase_exchange])
-  binance_available_coins = set([coin['baseAsset'] for coin in exchanges.binance_exchange['symbols']])
+    coinbase_available_coins = set([coin["base_currency"] for coin in exchanges.coinbase_exchange])
+    binance_available_coins = set([coin["baseAsset"] for coin in exchanges.binance_exchange["symbols"]])
 
-  print("Available, regardless of purchasing currency:")
-  print(f"coinbase:\t{len(coinbase_available_coins)}")
-  print(f"binance:\t{len(binance_available_coins)}")
+    print("Available, regardless of purchasing currency:")
+    print(f"coinbase:\t{len(coinbase_available_coins)}")
+    print(f"binance:\t{len(binance_available_coins)}")
 
-  user = user_from_env()
+    user = user_from_env()
 
-  coinbase_available_coins_in_purchasing_currency = set([coin['base_currency'] for coin in exchanges.coinbase_exchange if coin['quote_currency'] == user.purchasing_currency])
-  binance_available_coins_in_purchasing_currency = set([coin['baseAsset'] for coin in exchanges.binance_exchange['symbols'] if coin['quoteAsset'] == user.purchasing_currency])
+    coinbase_available_coins_in_purchasing_currency = set(
+        [coin["base_currency"] for coin in exchanges.coinbase_exchange if coin["quote_currency"] == user.purchasing_currency]
+    )
+    binance_available_coins_in_purchasing_currency = set(
+        [coin["baseAsset"] for coin in exchanges.binance_exchange["symbols"] if coin["quoteAsset"] == user.purchasing_currency]
+    )
 
-  print("\nAvailable in purchasing currency:")
-  print(f"coinbase:\t{len(coinbase_available_coins_in_purchasing_currency)}")
-  print(f"binance:\t{len(binance_available_coins_in_purchasing_currency)}")
+    print("\nAvailable in purchasing currency:")
+    print(f"coinbase:\t{len(coinbase_available_coins_in_purchasing_currency)}")
+    print(f"binance:\t{len(binance_available_coins_in_purchasing_currency)}")
+
 
 @cli.command(help="Print index by market cap")
-@click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
-@click.option("-s", "--strategy", type=click.Choice([choice.value for choice in MarketIndexStrategy]), default=MarketIndexStrategy.MARKET_CAP, show_default=True, help="Index strategy")
+@click.option(
+    "-f",
+    "--format",
+    type=click.Choice(["md", "csv"]),
+    default="md",
+    show_default=True,
+    help="Output format",
+)
+@click.option(
+    "-s",
+    "--strategy",
+    type=click.Choice([choice.value for choice in MarketIndexStrategy]),
+    default=MarketIndexStrategy.MARKET_CAP,
+    show_default=True,
+    help="Index strategy",
+)
 @click.option("-l", "--limit", type=int, help="Maximum size of index")
 def index(format, limit, strategy):
-  user = user_from_env()
+    user = user_from_env()
 
-  if strategy:
-    user.index_strategy = strategy
+    if strategy:
+        user.index_strategy = strategy
 
-  if limit:
-    user.index_limit = limit
+    if limit:
+        user.index_limit = limit
 
-  import bot.market_cap
-  coins_by_exchange = bot.market_cap.coins_with_market_cap(user)
+    import bot.market_cap
 
-  click.echo(utils.table_output_with_format(coins_by_exchange, format))
+    coins_by_exchange = bot.market_cap.coins_with_market_cap(user)
+
+    click.echo(utils.table_output_with_format(coins_by_exchange, format))
+
 
 @cli.command(help="Print current portfolio with targets")
-@click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
+@click.option(
+    "-f",
+    "--format",
+    type=click.Choice(["md", "csv"]),
+    default="md",
+    show_default=True,
+    help="Output format",
+)
 def portfolio(format):
-  from bot.commands import PortfolioCommand
+    from bot.commands import PortfolioCommand
 
-  user = user_from_env()
-  portfolio = PortfolioCommand.execute(user)
+    user = user_from_env()
+    portfolio = PortfolioCommand.execute(user)
 
-  click.echo(utils.table_output_with_format(portfolio, format))
+    click.echo(utils.table_output_with_format(portfolio, format))
 
-  import bot.market_buy
-  purchase_balance = bot.market_buy.purchasing_currency_in_portfolio(user, portfolio)
-  click.echo(f"\nPurchasing Balance: {purchase_balance}")
+    import bot.market_buy
+
+    purchase_balance = bot.market_buy.purchasing_currency_in_portfolio(user, portfolio)
+    click.echo(f"\nPurchasing Balance: {purchase_balance}")
+
 
 @cli.command(
-  short_help="Buy additional tokens for your index",
-  help="Buys additional tokens using purchasing currency in your exchange(s)"
+    short_help="Buy additional tokens for your index",
+    help="Buys additional tokens using purchasing currency in your exchange(s)",
 )
-@click.option("-f", "--format", type=click.Choice(['md', 'csv']), default="md", show_default=True, help="Output format")
+@click.option(
+    "-f",
+    "--format",
+    type=click.Choice(["md", "csv"]),
+    default="md",
+    show_default=True,
+    help="Output format",
+)
 @click.option("-d", "--dry-run", is_flag=True, help="Dry run, do not buy coins")
-@click.option("-p", "--purchase-balance", type=float, help="Dry-run with a specific amount of purchasing currency")
-@click.option("-c", "--convert", is_flag=True, help="Convert all stablecoin equivilents to purchasing currency. Overrides user configuration.")
+@click.option(
+    "-p",
+    "--purchase-balance",
+    type=float,
+    help="Dry-run with a specific amount of purchasing currency",
+)
+@click.option(
+    "-c",
+    "--convert",
+    is_flag=True,
+    help="Convert all stablecoin equivilents to purchasing currency. Overrides user configuration.",
+)
 @click.option("--cancel-orders", is_flag=True, help="Cancel all stale orders")
 def buy(format, dry_run, purchase_balance, convert, cancel_orders):
-  from bot.commands import BuyCommand
+    from bot.commands import BuyCommand
 
-  if purchase_balance:
-    utils.log.info("dry run using fake purchase balance", purchase_balance=purchase_balance)
-    dry_run = True
+    if purchase_balance:
+        utils.log.info("dry run using fake purchase balance", purchase_balance=purchase_balance)
+        dry_run = True
 
-  user = user_from_env()
+    user = user_from_env()
 
-  # if user is in testmode, assume user wants dry run
-  if not dry_run and not user.livemode:
-    dry_run = True
+    # if user is in testmode, assume user wants dry run
+    if not dry_run and not user.livemode:
+        dry_run = True
 
-  if dry_run:
-    click.secho(f"Bot running in dry-run mode\n", fg='green')
+    if dry_run:
+        click.secho(f"Bot running in dry-run mode\n", fg="green")
 
-  if convert:
-    user.convert_stablecoins = True
+    if convert:
+        user.convert_stablecoins = True
 
-  if cancel_orders:
-    user.cancel_stale_orders = True
+    if cancel_orders:
+        user.cancel_stale_orders = True
 
-  if dry_run:
-    user.convert_stablecoins = False
-    user.cancel_stale_orders = False
-    user.livemode = False
+    if dry_run:
+        user.convert_stablecoins = False
+        user.cancel_stale_orders = False
+        user.livemode = False
 
-  purchase_balance, market_buys, completed_orders = BuyCommand.execute(user, purchase_balance)
+    purchase_balance, market_buys, completed_orders = BuyCommand.execute(user, purchase_balance)
 
-  click.secho(f"Purchasing Balance: {purchase_balance}\n", fg='green')
+    click.secho(f"Purchasing Balance: {purchase_balance}\n", fg="green")
 
-  click.echo(bot.utils.table_output_with_format(market_buys, format))
+    click.echo(bot.utils.table_output_with_format(market_buys, format))
 
-  if not market_buys:
-    click.secho("\nNot enough purchasing currency to make any trades.", fg='red')
-  else:
-    purchased_token_list = ', '.join([order["symbol"] for order in completed_orders])
-    click.secho(f"\nSuccessfully purchased: {purchased_token_list}", fg='green')
+    if not market_buys:
+        click.secho("\nNot enough purchasing currency to make any trades.", fg="red")
+    else:
+        purchased_token_list = ", ".join([order["symbol"] for order in completed_orders])
+        click.secho(f"\nSuccessfully purchased: {purchased_token_list}", fg="green")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cli()
