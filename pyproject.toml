@@ -35,6 +35,7 @@ colorama = "^0.4.4"
 pylint = "^2.10.2"
 pytest-django = "^4.4.0"
 pytest-celery = "^0.0.0"
+black = "^21.8b0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -44,3 +45,13 @@ build-backend = "poetry.core.masonry.api"
 log_cli = true
 log_cli_level = "WARN"
 DJANGO_SETTINGS_MODULE = "botweb.settings.test"
+
+[tool.black]
+line-length=150
+target-version=['py39']
+exclude = '''
+/(
+  venv
+  | migrations
+)/
+'''
