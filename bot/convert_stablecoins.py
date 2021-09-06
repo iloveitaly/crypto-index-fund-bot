@@ -18,7 +18,13 @@ def convert_stablecoins(user: User, portfolio):
   binance_client = user.binance_client()
   orders = []
 
-  for balance in [balance for balance in portfolio if balance['symbol'] in stablecoin_symbols]:
+  stablecoin_portfolio = [
+    balance
+    for balance in portfolio
+    if balance['symbol'] in stablecoin_symbols
+  ]
+
+  for balance in stablecoin_portfolio:
     purchase_symbol = balance['symbol'] + 'USD'
     amount = balance['amount']
 
@@ -26,7 +32,13 @@ def convert_stablecoins(user: User, portfolio):
       log.info("cannot convert stablecoin, not above minimum", symbol=purchase_symbol, amount=amount)
       continue
 
-    normalized_amount = exchanges.binance_normalize_purchase_amount(amount, purchase_symbol)
+    # TODO I ran into a case where I needed to subtract a cent to get binance not to fail
+    #      this could have been a FPA bug, remove this if it doesn't come up again
+    # amount -= 0.01
+
+    normalized_amount = exchanges.binance_normalize_price(amount, purchase_symbol)
+
+    log.info("converting stablecoins", symbol=purchase_symbol, amount=amount, normalized_amount=normalized_amount)
 
     # TODO binance order construction should be pulled out into a separate method
 
