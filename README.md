@@ -5,6 +5,8 @@ A bot to build your own index fund of cryptocurrencies using dollar-cost averagi
 There are [bots](https://allcryptobots.com) out there that do this, so why build another? They are missing key features that I wanted:
 
 * Never sell any tokens. Instead, rebalance using USD deposits. ([HodlBot](https://www.hodlbot.io) can't do this)
+  * Selling triggers capital gains. This increases tax liability in the current year *and* adds tax reporting complexity.
+* Control which tokens are treated as deposits. Specifically, only use USD deposits for purchasing new currencies. ([Shrimpy](https://www.shrimpy.io) can't do this)
 * Build a cross-chain index (otherwise [TokenSets](https://www.tokensets.com) would have been perfect)
 * When new deposits come in, asset purchases should be prioritized by:
   * New tokens that aren't held at all ([Shrimpy](https://www.shrimpy.io) can't do this)
@@ -16,6 +18,8 @@ There are [bots](https://allcryptobots.com) out there that do this, so why build
 * Ability to exclude specific tokens from the index completely (most existing bots allow for this).
 * Build a cross-exchange index. Binance and Coinbase are great, but they have a limited set of tokens. I'd like to build an index across multiple exchanges, optimizing for token purchases in each exchange that can't be made in the other (for instance, NEXO isn't available in Binance or CoinBase, but is available in HitBTC). I'm not aware of any bot that does this.
 * Convert stablecoin balance to USD for puchasing (Shrimpy does this).
+* Ability to deprioritize (buy last) but still hold certain tokens
+* Open source so I can audit and understand the nuances of the bot.
 
 Here are some features I *didn't* want that I could imagine others would like:
 
@@ -99,7 +103,7 @@ This is the command you'll want to setup on a cron job:
 python main.py buy
 ```
 
-## Single-user Deployment Using Docker
+## Single-user Deployment
 
 You can use docker to deploy a single-user instance of this bot to a VPS or a local machine like a Raspberry Pi.
 
@@ -108,7 +112,40 @@ docker build -t crypto-index-fund-bot .
 docker run -d --env-file .env crypto-index-fund-bot
 ```
 
-TODO: right now single-user docker deploy does not support `external_portfolio.json`.
+In single-user mode, all configuration is set via environment variables.
+There is a `SCHEDULE` variable which you can use to configure how often the account is checked for new deposits.
+
+`external_portfolio.json` is copied into the container if it exists locally.
+
+## Multi-user Deployment
+
+In addition to sourcing the user configuration from `.env` and running the bot in single-user mode, you can run the bot in multi-user mode. If you do this:
+
+* Django is loaded
+* Redis and postgres services are required
+* Celery is used to check users accounts on a recurring basis
+
+There's a `docker-compose` which you can use to easily setup ths bot multi-user mode:
+
+```shell
+docker compose up -d
+docker compose run worker python manage.py sqlcreate
+docker compose run worker python manage.py migrate
+
+# now that the database is setup, restart the worker to pick up on the new schema
+docker compose restart worker
+
+# after the application is setup you can run a python shell
+docker compose run worker bash
+python manage.py shell_plus
+```
+
+## Testing
+
+```shell
+DJANGO_SETTINGS_MODULE="botweb.settings.test" python manage.py sqlcreate
+DJANGO_SETTINGS_MODULE="botweb.settings.test" python manage.py migrate
+```
 
 ## Implementation Details
 
