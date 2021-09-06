@@ -1,17 +1,17 @@
 from .user import User
 from . import exchanges
+from decimal import Decimal
 
 from .data_types import CryptoBalance, CryptoData
 import typing as t
 
-def portfolio_with_allocation_percentages(portfolio) -> t.List[CryptoBalance]:
-  import math
-  portfolio_total = math.fsum([balance['usd_price'] * balance['amount'] for balance in portfolio])
+def portfolio_with_allocation_percentages(portfolio: t.List[CryptoBalance]) -> t.List[CryptoBalance]:
+  portfolio_total = sum([balance['usd_price'] * balance['amount'] for balance in portfolio])
 
   return [
     balance | {
       'usd_total' : usd_total,
-      'percentage' : usd_total / portfolio_total * 100.0,
+      'percentage' : usd_total / portfolio_total * Decimal(100),
     }
     for balance in portfolio
 
@@ -52,25 +52,36 @@ def add_price_to_portfolio(portfolio: t.List[CryptoBalance], purchasing_currency
   ]
 
 # TODO maybe remove user preference? The target porfolio should take into the account the user's purchasing currency preference?
-def add_missing_assets_to_portfolio(user: User, portfolio: t.List[CryptoBalance], portfolio_target: t.List[CryptoBalance]) -> t.List[CryptoBalance]:
+def add_missing_assets_to_portfolio(
+  user: User,
+  portfolio: t.List[CryptoBalance],
+  portfolio_target: t.List[CryptoData]
+) -> t.List[CryptoBalance]:
   from . import exchanges
   purchasing_currency = user.purchasing_currency
 
   return portfolio + [
-    {
-      "symbol": balance['symbol'],
-      "usd_price": exchanges.binance_price_for_symbol(balance['symbol'] + purchasing_currency),
-      "amount": 0,
-      "usd_total": 0,
-      "percentage": 0
-    }
+    CryptoBalance(
+      symbol=balance['symbol'],
+      usd_price=exchanges.binance_price_for_symbol(balance['symbol'] + purchasing_currency),
+      amount=Decimal(0),
+
+      # we can't mark specific arguments as optional, so instead we pass a value that will be ignored
+      target_percentage=Decimal(0),
+      usd_total=Decimal(0),
+      percentage=Decimal(0)
+    )
     for balance in portfolio_target
     if balance['symbol'] not in [balance['symbol'] for balance in portfolio]
   ]
 
 # right now, this is for tinkering/debugging purposes only
-def add_percentage_target_to_portfolio(portfolio: t.List[CryptoBalance], portfolio_target: t.List[CryptoBalance]) -> t.List[CryptoBalance]:
+def add_percentage_target_to_portfolio(
+  portfolio: t.List[CryptoBalance],
+  portfolio_target: t.List[CryptoData]
+) -> t.List[CryptoBalance]:
   return [
+    # updating TypedDicts is not simple https://github.com/python/mypy/issues/6462
     balance | {
       'target_percentage':
 
@@ -85,7 +96,7 @@ def add_percentage_target_to_portfolio(portfolio: t.List[CryptoBalance], portfol
 
         # coin may exist in portfolio but not available for purchase
         # this can occur if deposits are allowed but trades are not
-        0.0
+        Decimal(0)
       ),
     }
     for balance in portfolio

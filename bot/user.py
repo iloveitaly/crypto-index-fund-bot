@@ -1,4 +1,6 @@
 import typing as t
+import decimal
+
 from .data_types import MarketIndexStrategy, MarketBuyStrategy, CryptoBalance
 from .utils import log
 
@@ -9,21 +11,21 @@ def user_from_env():
   import json
 
   user = User()
-  user.binance_api_key = config("USER_BINANCE_API_KEY")
-  user.binance_secret_key = config("USER_BINANCE_SECRET_KEY")
+  user.binance_api_key = t.cast(str, config("USER_BINANCE_API_KEY"))
+  user.binance_secret_key = t.cast(str, config("USER_BINANCE_SECRET_KEY"))
 
-  user.livemode = config("USER_LIVEMODE", 'false').lower() == 'true'
-  user.convert_stablecoins = config("USER_CONVERT_STABLECOINS", 'false').lower() == 'true'
-  user.cancel_stale_orders = config("USER_CANCEL_STALE_ORDERS", 'false').lower() == 'true'
+  user.livemode = t.cast(str, config("USER_LIVEMODE", 'false')).lower() == 'true'
+  user.convert_stablecoins = t.cast(str, config("USER_CONVERT_STABLECOINS", 'false')).lower() == 'true'
+  user.cancel_stale_orders = t.cast(str, config("USER_CANCEL_STALE_ORDERS", 'false')).lower() == 'true'
 
   if index_strategy := config("USER_INDEX_STRATEGY", default=None):
-    user.index_strategy = index_strategy
+    user.index_strategy = MarketIndexStrategy(index_strategy)
 
   if buy_strategy := config("USER_BUY_STRATEGY", default=None):
-    user.buy_strategy = buy_strategy
+    user.buy_strategy = MarketBuyStrategy(buy_strategy)
 
   try:
-    user.external_portfolio = json.load(open('external_portfolio.json'))
+    user.external_portfolio = json.load(open('external_portfolio.json'), parse_float=decimal.Decimal)
     log.debug("loaded external portfolio")
   except FileNotFoundError:
     pass

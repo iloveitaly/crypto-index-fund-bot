@@ -2,7 +2,9 @@ from .application import *
 
 from decouple import config
 
-if sentry_dsn := config("SENTRY_DSN", default=False):
+if sentry_dsn := config("SENTRY_DSN", default=None):
+  assert isinstance(sentry_dsn, str)
+
   import sentry_sdk
   from sentry_sdk.integrations.django import DjangoIntegration
 

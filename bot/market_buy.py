@@ -2,6 +2,7 @@ from .utils import log
 from .user import User
 
 import math
+from decimal import Decimal
 from . import exchanges
 
 from .data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
@@ -31,7 +32,7 @@ def calculate_market_buy_preferences(
     current_portfolio=len(current_portfolio)
   )
 
-  coins_below_index_target = []
+  coins_below_index_target: t.List[CryptoData] = []
 
   # first, let's exclude all coins that we've exceeded target on
   for coin_data in target_index:
@@ -53,13 +54,14 @@ def calculate_market_buy_preferences(
       balance['percentage']
       for balance in current_portfolio
       if balance['symbol'] == coin_data['symbol']
-    ), 0) - coin_data['percentage']
+    ), Decimal(0)) - coin_data['percentage']
   )
 
   # TODO think about grouping drops into tranches so the above sort isn't completely useless
   sorted_by_largest_recent_drop = sorted(
     sorted_by_largest_target_delta,
-    key=lambda coin_data: coin_data['30d_change']
+    # TODO should we use 7d change vs 30?
+    key=lambda coin_data: coin_data['change_30d']
   )
 
   # prioritize tokens we don't own yet
@@ -106,19 +108,19 @@ def calculate_market_buy_preferences(
 
   return sorted_by_deprioritized_coins
 
-def purchasing_currency_in_portfolio(user: User, portfolio: t.List[CryptoBalance]) -> float:
+def purchasing_currency_in_portfolio(user: User, portfolio: t.List[CryptoBalance]) -> Decimal:
   # ideally, we wouldn't need to have a reserve amount. However, FP math is challenging and it's easy
   # to be off a cent or two. It's easier just to reserve $1 and not deal with it. Especially for a fun project.
   reserve_amount = 1
 
-  # TODO we should use Decimal here instead of float
-  total = math.fsum([
+  total = sum([
     balance['usd_total']
     for balance in portfolio
     if balance['symbol'] == user.purchasing_currency
   ])
 
-  return max(total - reserve_amount, 0)
+  # TODO we need some sort of `max` overload to treat a decimal as a `SupportsLessThanT`
+  return max(total - reserve_amount, Decimal(0)) # type: ignore
 
 # TODO pass exchange reference into this method and remove hardcoded binance stuff
 def determine_market_buys(
@@ -126,7 +128,7 @@ def determine_market_buys(
     sorted_buy_preferences: t.List[CryptoData],
     current_portfolio: t.List[CryptoBalance],
     target_portfolio: t.List[CryptoData],
-    purchase_balance: float,
+    purchase_balance: Decimal,
   ) -> t.List[MarketBuy]:
   """
   1. Is the asset currently trading?
@@ -145,7 +147,7 @@ def determine_market_buys(
 
   user_purchase_minimum = user.purchase_min
   user_purchase_maximum = user.purchase_max
-  portfolio_total = math.fsum(balance['usd_total'] for balance in current_portfolio)
+  portfolio_total = sum(balance['usd_total'] for balance in current_portfolio)
 
   if purchase_balance < exchange_purchase_minimum:
     log.info("not enough USD to buy anything", purchase_balance=purchase_balance)
@@ -179,7 +181,7 @@ def determine_market_buys(
 
     # percentage is not expressed in a < 1 float, so we need to convert it
     coin_portfolio_info = next((target for target in target_portfolio if target['symbol'] == coin['symbol']))
-    target_amount = coin_portfolio_info['percentage'] / 100.0 * portfolio_total
+    target_amount = coin_portfolio_info['percentage'] / 100 * portfolio_total
 
     # make sure purchase total will not overflow the target allocation
     purchase_amount = min(purchase_amount, target_amount, user_purchase_maximum)

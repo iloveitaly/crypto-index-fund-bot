@@ -1,4 +1,5 @@
 import requests
+from decimal import Decimal
 
 from .utils import log
 from .user import User
@@ -87,10 +88,13 @@ def calculate_market_cap_from_coin_list(purchasing_currency: str, coins, strateg
     for coin in coins:
       breakpoint()
 
-  market_cap_list = [coin['quote'][purchasing_currency]['market_cap'] for coin in coins]
+  market_cap_list = [
+    Decimal(coin['quote'][purchasing_currency]['market_cap'])
+    for coin in coins
+  ]
 
   if strategy == MarketIndexStrategy.SQRT_MARKET_CAP:
-    total_market_cap = sum([math.sqrt(cap) for cap in market_cap_list])
+    total_market_cap = sum([cap.sqrt() for cap in market_cap_list])
   else:
     total_market_cap = sum([cap for cap in market_cap_list])
 
@@ -99,25 +103,25 @@ def calculate_market_cap_from_coin_list(purchasing_currency: str, coins, strateg
   log.info("total market cap", total_market_cap=total_market_cap)
 
   for coin in coins:
-    market_cap = coin['quote'][purchasing_currency]['market_cap']
+    market_cap = Decimal(coin['quote'][purchasing_currency]['market_cap'])
 
     if strategy == 'sqrt_market_cap':
-      market_cap = math.sqrt(market_cap)
+      market_cap = market_cap.sqrt()
 
-    coins_with_market_cap.append({
-      "symbol": coin['symbol'],
-      "market_cap": market_cap,
+    coins_with_market_cap.append(CryptoData(
+      symbol=coin['symbol'],
+      market_cap=market_cap,
 
       # TODO we probably need safer FPA calculations
       # represents % of total market cap of the portfolio
-      "percentage": market_cap / total_market_cap * 100,
+      percentage=market_cap / total_market_cap * 100,
 
       # include percent changes for purchase priority decisions
-      "7d_change": coin['quote'][purchasing_currency]['percent_change_7d'],
-      "30d_change": coin['quote'][purchasing_currency]['percent_change_30d']
+      change_7d=coin['quote'][purchasing_currency]['percent_change_7d'],
+      change_30d=coin['quote'][purchasing_currency]['percent_change_30d']
 
       # TODO why not just add the USD price here? Any benefit to pulling the price from the exchange?
-    })
+    ))
 
   return coins_with_market_cap
 

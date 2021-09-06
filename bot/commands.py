@@ -1,5 +1,6 @@
 import typing as t
 
+from decimal import Decimal
 from .user import User
 from .data_types import CryptoBalance, MarketBuyStrategy
 
@@ -15,11 +16,6 @@ from . import market_buy
 class PortfolioCommand:
   @classmethod
   def execute(cls, user: User) -> t.List[CryptoBalance]:
-    # from market_cap import coins_with_market_cap
-    # from exchanges import binance_portfolio
-    # import bot.market_cap
-    # import portfolio
-
     portfolio_target = market_cap.coins_with_market_cap(user)
 
     external_portfolio = user.external_portfolio
@@ -41,7 +37,7 @@ class PortfolioCommand:
 class BuyCommand:
   # TODO we should break this up into smaller functions
   @classmethod
-  def execute(cls, user: User, purchase_balance: t.Optional[float] = None) -> t.Tuple[float, t.List, t.List]:
+  def execute(cls, user: User, purchase_balance: t.Optional[Decimal] = None) -> t.Tuple[Decimal, t.List, t.List]:
     if user.buy_strategy == MarketBuyStrategy.LIMIT and user.cancel_stale_orders:
       open_orders.cancel_stale_open_orders(user)
 

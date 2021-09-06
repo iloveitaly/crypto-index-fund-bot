@@ -30,7 +30,7 @@ def public_binance_client() -> BinanceClient:
 # TODO this is terrible and needs to be ripped out
 binance_exchange = public_binance_client().get_exchange_info()
 
-def binance_price_for_symbol(symbol: str) -> t.Optional[float]:
+def binance_price_for_symbol(symbol: str) -> t.Optional[Decimal]:
   global _binance_prices
 
   if _binance_prices is None:
@@ -38,7 +38,7 @@ def binance_price_for_symbol(symbol: str) -> t.Optional[float]:
     # this includes both USDT and USD prices
     # the pair formatting is 'BTCUSD'
     _binance_prices = {
-      price_dict['symbol']: float(price_dict['price'])
+      price_dict['symbol']: Decimal(price_dict['price'])
       # `get_all_tickers` is only called once
       for price_dict in public_binance_client().get_all_tickers()
     }
@@ -137,7 +137,7 @@ def can_buy_in_coinbase(symbol, purchasing_currency):
 
 # TODO should do error handling for non-USD currencies
 # TODO should exchange type be specified?
-def price_of_symbol(symbol, purchasing_currency):
+def price_of_symbol(symbol: str, purchasing_currency: str) -> Decimal:
   pricing_symbol = symbol + purchasing_currency
 
   if price := binance_price_for_symbol(pricing_symbol):
@@ -149,10 +149,10 @@ def price_of_symbol(symbol, purchasing_currency):
     # ['quote']['USD']['price']
 
     # TODO should pull from coinmarket cap or something
-    return 0
+    return Decimal(0)
 
-def binance_purchase_minimum() -> float:
-  return 10.0
+def binance_purchase_minimum() -> Decimal:
+  return Decimal(10)
 
 def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str) -> str:
   symbol_info = binance_get_symbol_info(symbol)
@@ -184,14 +184,14 @@ def binance_normalize_price(amount: t.Union[str, Decimal], symbol: str) -> str:
 
 def binance_open_orders(user: User) -> t.List[CryptoBalance]:
   return [
-    {
+    CryptoBalance(**{
       # TODO PURCHASING_CURRENCY should make this dynamic for different purchasing currencies
       # cut off the 'USD' at the end of the symbol
       'symbol': order['symbol'][:-3],
       'amount': Decimal(order['origQty']),
       'usd_price': Decimal(order['price']),
       'usd_total': Decimal(order['origQty']) * Decimal(order['price']),
-    }
+    })
 
     for order in user.binance_client().get_open_orders()
     if order['side'] == 'BUY'
@@ -206,8 +206,7 @@ def binance_portfolio(user: User) -> t.List[CryptoBalance]:
     # TODO unsure of how to represent this well in python's typing system
     CryptoBalance(**{
       'symbol': balance['asset'],
-      # TODO should probably use Decimal here instead
-      'amount': float(balance['free']),
+      'amount': Decimal(balance['free']),
     })
     for balance in account['balances']
     if float(balance['free']) > 0

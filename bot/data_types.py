@@ -1,29 +1,34 @@
 import typing
 import enum
+from decimal import Decimal
 
+# TODO right now it's not possib to mark specific fields as optional
+# https://www.python.org/dev/peps/pep-0655/
 CryptoBalance = typing.TypedDict('CryptoBalance', {
   'symbol': str,
   # could be quantity?
-  'amount': float,
-  'usd_price': float,
-  'usd_total': float,
-  'percentage': float,
-  'target_percentage': float
+  'amount': Decimal,
+  'usd_price': Decimal,
+  'usd_total': Decimal,
+  'percentage': Decimal,
+  'target_percentage': Decimal
 })
 
 CryptoData = typing.TypedDict('CryptoData', {
   # symbol is not a pair
   'symbol': str,
-  'market_cap': int,
+  'market_cap': Decimal,
   # should really be 'market_cap_percentage'
-  'percentage': float,
-  '7d_change': float,
-  '30d_change': float
+  'percentage': Decimal,
+
+  # day indicator at the end of the variable name since argument names cannot start with a number
+  'change_7d': float,
+  'change_30d': float
 })
 
 MarketBuy = typing.TypedDict('MarketBuy', {
   "symbol": str,
-  "amount": float,
+  "amount": Decimal,
 })
 
 class MarketBuyStrategy(str, enum.Enum):
