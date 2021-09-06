@@ -10,8 +10,7 @@ python-binance = "^1.0.12"
 tabulate = "^0.8.9"
 coinbasepro = "^0.3.0"
 structlog = "^21.1.0"
-python-dotenv = "^0.18.0"
-rich = "^10.9.0"
+rich = "^10.6.0"
 click = "^8.0.1"
 Django = "^3.2.6"
 psycopg2 = "^2.9.1"
@@ -43,5 +42,5 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 log_cli = true
-log_cli_level = "INFO"
+log_cli_level = "WARN"
 DJANGO_SETTINGS_MODULE = "botweb.settings.test"
