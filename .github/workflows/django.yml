@@ -16,7 +16,7 @@ jobs:
       with:
         python-version: 3.9.6
     - uses: knowsuchagency/poetry-install@v1
-    - uses: jpetrucciani/black-check@main
+    - uses: jpetrucciani/black-check@master
     - name: Run Tests
       run: |
         python manage.py test
