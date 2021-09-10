@@ -13,15 +13,14 @@ class TestBuyCommand(unittest.TestCase):
 
     # initial buys should prioritize coins that take up a large amount of the index first
     @patch.object(binance.client.Client, "order_market_buy", return_value={})
+    @patch.object(binance.client.Client, "get_open_orders", return_value=[])
     @patch("bot.exchanges.binance_portfolio", return_value=[])
-    def test_initial_buy(self, _binance_portfolio_mock, order_market_buy_mock):
+    def test_initial_buy(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):
         from bot.commands import BuyCommand
 
         user = user_from_env()
         user.external_portfolio = []
-        user.cancel_stale_orders = False
 
-        assert user.cancel_stale_orders == False
         assert user.external_portfolio == []
         assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB"])
         assert True == user.livemode
@@ -40,8 +39,9 @@ class TestBuyCommand(unittest.TestCase):
         assert set(all_order_tokens) == set(["BTCUSD", "ETHUSD", "ADAUSD"])
 
     @patch.object(binance.client.Client, "order_market_buy", return_value={})
+    @patch.object(binance.client.Client, "get_open_orders", return_value=[])
     @patch("bot.exchanges.binance_portfolio", return_value=[])
-    def test_off_allocation_portfolio(self, _binance_portfolio_mock, order_market_buy_mock):
+    def test_off_allocation_portfolio(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):
         from bot.commands import BuyCommand
 
         user = user_from_env()
@@ -50,9 +50,7 @@ class TestBuyCommand(unittest.TestCase):
             {"symbol": "ETH", "amount": Decimal('0.05')},
             {"symbol": "BTC", "amount": Decimal('0.05')},
         ]
-        user.cancel_stale_orders = False
 
-        assert user.cancel_stale_orders == False
         assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB"])
         assert True == user.livemode
         assert self.PURCHASE_MIN == user.purchase_min
