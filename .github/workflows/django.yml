@@ -26,6 +26,8 @@ jobs:
         set -eax
         black --version
         black --check .
+    - name: Type checking
+      run: mypy . --exclude=test --show-error-codes --disable-error-code=import
     - name: Run Tests
       run: |
         python manage.py test
