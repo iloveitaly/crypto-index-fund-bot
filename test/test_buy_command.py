@@ -7,6 +7,7 @@ from bot.user import user_from_env
 import binance.client
 from bot.data_types import MarketBuyStrategy, MarketIndexStrategy
 
+
 @pytest.mark.vcr
 class TestBuyCommand(unittest.TestCase):
     PURCHASE_MIN = Decimal(25)
@@ -46,9 +47,9 @@ class TestBuyCommand(unittest.TestCase):
 
         user = user_from_env()
         user.external_portfolio = [
-            {"symbol": "DOGE", "amount": Decimal('1000000')},
-            {"symbol": "ETH", "amount": Decimal('0.05')},
-            {"symbol": "BTC", "amount": Decimal('0.05')},
+            {"symbol": "DOGE", "amount": Decimal("1000000")},
+            {"symbol": "ETH", "amount": Decimal("0.05")},
+            {"symbol": "BTC", "amount": Decimal("0.05")},
         ]
 
         assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB"])

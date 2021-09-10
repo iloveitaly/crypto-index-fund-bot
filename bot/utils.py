@@ -28,6 +28,8 @@ setLevel(log_level)
 log = structlog.get_logger()
 
 _cached_result = {}
+
+
 def cached_result(key: str, func: t.Callable):
     if in_django_environment():
         from django.core.cache import cache
@@ -50,8 +52,10 @@ def cached_result(key: str, func: t.Callable):
         _cached_result[key] = value
         return value
 
+
 def in_django_environment():
     return config("DJANGO_SETTINGS_MODULE", default=None) != None
+
 
 def table_output_with_format(array_of_dicts, format):
     if not array_of_dicts:

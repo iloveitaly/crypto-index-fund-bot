@@ -17,7 +17,7 @@ def coinmarketcap_data():
     coinbase_endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=1000&sort=market_cap"
 
     return utils.cached_result(
-        'coinmarketcap_data',
+        "coinmarketcap_data",
         # TODO specify decimal parser for json?
         lambda: requests.get(coinbase_endpoint, headers={"X-CMC_PRO_API_KEY": coinmarketcap_api_key}).json(),
     )
