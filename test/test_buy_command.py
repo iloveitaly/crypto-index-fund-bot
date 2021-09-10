@@ -46,7 +46,7 @@ class TestBuyCommand(unittest.TestCase):
         from bot.commands import BuyCommand
 
         user = user_from_env()
-        user.external_portfolio = [
+        user.external_portfolio = [ # type: ignore
             {"symbol": "DOGE", "amount": Decimal("1000000")},
             {"symbol": "ETH", "amount": Decimal("0.05")},
             {"symbol": "BTC", "amount": Decimal("0.05")},
