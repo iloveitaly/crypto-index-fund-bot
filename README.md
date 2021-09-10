@@ -140,6 +140,13 @@ docker compose run worker bash
 python manage.py shell_plus
 ```
 
+If you want to update your deployment to the latest version:
+
+```shell
+docker compose build
+docker compose up -d
+```
+
 ## Testing
 
 A separate database is used for the test environment. To create it and setup the schema:
