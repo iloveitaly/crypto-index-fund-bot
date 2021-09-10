@@ -37,10 +37,13 @@ def merge_portfolio(portfolio_1: t.List[CryptoBalance], portfolio_2: t.List[Cryp
         # if an asset is in porfolio 2, combine them
         if portfolio_2_balance:
             new_portfolio.append(
-                balance
-                | {
-                    "amount": balance["amount"] + portfolio_2_balance["amount"],
-                }
+                t.cast(
+                    CryptoBalance,
+                    balance
+                    | {
+                        "amount": balance["amount"] + portfolio_2_balance["amount"],
+                    },
+                )
             )
         else:
             new_portfolio.append(balance)

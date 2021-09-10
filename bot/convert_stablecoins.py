@@ -1,10 +1,12 @@
+import typing as t
+
 from .utils import log
 from .user import User
 from . import exchanges
 
 # convert all stablecoins of the purchasing currency into the purchasing currency so we can use it
 # in binance, you need to purchase in USD and cannot purchase most currencies from a stablecoin
-def convert_stablecoins(user: User, portfolio):
+def convert_stablecoins(user: User, portfolio) -> t.List[t.Dict]:
     purchasing_currency = user.purchasing_currency
     stablecoin_symbols = []
 
@@ -76,11 +78,3 @@ def convert_stablecoins(user: User, portfolio):
         orders.append(order)
 
     return orders
-
-
-if __name__ == "__main__":
-    from user import user_from_env
-
-    user = user_from_env()
-    portfolio = exchanges.binance_portfolio(user)
-    convert_stablecoins(user, portfolio)

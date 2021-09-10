@@ -12,7 +12,7 @@ from structlog.threadlocal import wrap_dict
 
 
 def setLevel(level):
-    level = logging.__getattribute__(level.upper())
+    level = getattr(logging, level.upper())
     structlog.configure(
         # context_class enables thread-local logging to avoid passing a log instance around
         # https://www.structlog.org/en/21.1.0/thread-local.html

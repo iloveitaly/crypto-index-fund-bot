@@ -103,6 +103,17 @@ def portfolio(format):
     click.echo(f"Portfolio Total: {purchase_total}")
 
 
+# TODO this command needs to be cleaned up with some more options
+@cli.command(short_help="Convert stablecoins to USD for purchasing")
+def convert(self):
+    import bot.exchanges as exchanges
+    import bot.convert_stablecoins as convert_stablecoins
+
+    user = user_from_env()
+    portfolio = exchanges.binance_portfolio(user)
+    convert_stablecoins.convert_stablecoins(user, portfolio)
+
+
 @cli.command(
     short_help="Buy additional tokens for your index",
     help="Buys additional tokens using purchasing currency in your exchange(s)",
