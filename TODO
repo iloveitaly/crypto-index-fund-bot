@@ -1,5 +1,6 @@
 # Bot
 
+* Refactor all binance stuff into a exchange-wrapped module
 * https://algotrading101.com/learn/binance-python-api-guide/
 * https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
 * Offer a SME-based index?
@@ -11,23 +12,19 @@
   * Which exchange has the most tokens, reasonable fees, and mostly trustworthy?
 * Play around with purchasing at different points in the order book when using a limit strategy
   * Inspect market depth to help determine the most realistic low price to purchase at
+* Can we use cointracker to get external portfolio data?
 
 # System
-* Tie to postgres database to run for multiple individual users?
-  * Add django for ORM
-* Add sentry for error reporting
 * Conditionally load up rich depending on the env
+* How will retries be handled by celery?
 
 # Docker
-* JSON external assets in docker
-  * Can we use cointracker to get external portfolio data?
-* Build a docker-compose file for this so it's easy to run as a cron job on a raspberry pi.
+* Move all scripts into a `scripts/` folder
+* Install rust and support latest cryptography version
 
 # CI / Python
 
 * Python linter?
-* Github actions for mypy?
-* Fix typing errors, mostly with the typed dicts
-* GitHub workflow for basic tests
-* Black for code formatting
-* Add cassettes for tests
+* Add cassettes for e22 tests
+* isort on CI
+* cache poetry on github CI https://medium.com/@vanflymen/blazing-fast-ci-with-github-actions-poetry-black-and-pytest-9e74299dd4a5
