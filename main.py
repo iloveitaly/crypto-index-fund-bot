@@ -23,7 +23,7 @@ def analyze():
     import bot.exchanges as exchanges
 
     coinbase_available_coins = set([coin["base_currency"] for coin in exchanges.coinbase_exchange])
-    binance_available_coins = set([coin["baseAsset"] for coin in exchanges.binance_exchange["symbols"]])
+    binance_available_coins = set([coin["baseAsset"] for coin in exchanges.binance_all_symbol_info()])
 
     print("Available, regardless of purchasing currency:")
     print(f"coinbase:\t{len(coinbase_available_coins)}")
@@ -35,7 +35,7 @@ def analyze():
         [coin["base_currency"] for coin in exchanges.coinbase_exchange if coin["quote_currency"] == user.purchasing_currency]
     )
     binance_available_coins_in_purchasing_currency = set(
-        [coin["baseAsset"] for coin in exchanges.binance_exchange["symbols"] if coin["quoteAsset"] == user.purchasing_currency]
+        [coin["baseAsset"] for coin in exchanges.binance_all_symbol_info() if coin["quoteAsset"] == user.purchasing_currency]
     )
 
     print("\nAvailable in purchasing currency:")
@@ -98,6 +98,9 @@ def portfolio(format):
 
     purchase_balance = bot.market_buy.purchasing_currency_in_portfolio(user, portfolio)
     click.echo(f"\nPurchasing Balance: {purchase_balance}")
+
+    purchase_total = sum([coin["usd_total"] for coin in portfolio])
+    click.echo(f"Portfolio Total: {purchase_total}")
 
 
 @cli.command(

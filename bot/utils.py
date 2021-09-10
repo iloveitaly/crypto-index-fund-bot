@@ -6,6 +6,7 @@ install_rich_tracebacks(width=200)
 import structlog
 import logging
 from decouple import config
+import typing as t
 
 from structlog.threadlocal import wrap_dict
 
@@ -26,6 +27,30 @@ setLevel(log_level)
 
 log = structlog.get_logger()
 
+_cached_result = {}
+def cached_result(key: str, func: t.Callable):
+    if in_django_environment():
+        from django.core.cache import cache
+
+        if cached_value := cache.get(key):
+            return cached_value
+
+        value = func()
+        cache.set(key, value)
+        return value
+    else:
+        # if no django, then setup a simple dict-based cache to avoid
+        # hitting the APIs too many times within a single process
+        global _cached_result
+        if key in _cached_result:
+            return _cached_result[key]
+
+        value = func()
+        _cached_result[key] = value
+        return value
+
+def in_django_environment():
+    return config("DJANGO_SETTINGS_MODULE", default=None) != None
 
 def table_output_with_format(array_of_dicts, format):
     if not array_of_dicts:

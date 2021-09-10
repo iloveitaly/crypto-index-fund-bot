@@ -1,8 +1,8 @@
-import requests
 from decimal import Decimal
 
 from .utils import log
 from .user import User
+from . import utils
 
 import typing as t
 from . import exchanges
@@ -11,12 +11,16 @@ from .data_types import CryptoData, MarketIndexStrategy
 
 def coinmarketcap_data():
     import decouple
+    import requests
 
     coinmarketcap_api_key = decouple.config("COINMARKETCAP_API_KEY")
     coinbase_endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=1000&sort=market_cap"
 
-    # TODO should we cache or at minimum memoize this?
-    return requests.get(coinbase_endpoint, headers={"X-CMC_PRO_API_KEY": coinmarketcap_api_key}).json()
+    return utils.cached_result(
+        'coinmarketcap_data',
+        # TODO specify decimal parser for json?
+        lambda: requests.get(coinbase_endpoint, headers={"X-CMC_PRO_API_KEY": coinmarketcap_api_key}).json(),
+    )
 
 
 # for debugging / testing only
