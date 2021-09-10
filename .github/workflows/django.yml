@@ -26,8 +26,16 @@ jobs:
         set -eax
         black --version
         black --check .
-    - name: Type checking
-      run: mypy . --exclude=test --show-error-codes --disable-error-code=import
+
+    - name: Setup node.js (for pyright)
+      uses: actions/setup-node@v1
+      with:
+        node-version: "12"
+    - name: Run type checking
+      run: |
+        npm install -g pyright
+        pyright .
+
     - name: Run Tests
       run: |
         python manage.py test
