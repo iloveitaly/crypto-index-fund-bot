@@ -142,9 +142,24 @@ python manage.py shell_plus
 
 ## Testing
 
+A separate database is used for the test environment. To create it and setup the schema:
+
 ```shell
+poetry shell
 DJANGO_SETTINGS_MODULE="botweb.settings.test" python manage.py sqlcreate
 DJANGO_SETTINGS_MODULE="botweb.settings.test" python manage.py migrate
+```
+
+Then, you can run tests:
+
+```shell
+pytest
+```
+
+Note that VCR is used to record interactions for some of the tests. If tests are failing, you may need to re-record a test:
+
+```shell
+pytest -k 'test_test_name' --record-mode=rewrite
 ```
 
 ## Implementation Details
@@ -170,6 +185,7 @@ If a limit order is not filled, by default it [remains open indefinitely.](https
 The bot will *not* submit an order for a token that has an existing open order.
 
 ### Order Minimums
+
 Exchanges specify a minimum buy order value for each crypto (i.e. `minNotional` in Binance). Let's say you're looking to buy equal amounts of 10 different cryptos and only want to spend 0.005 BTC altogether, which would result in 0.0005 BTC of each token being purchased.
 
 However, let's say the `minNotional` for BTC orders is 0.001; an exchange will not let you place an order whose value is smaller than that. In this case, we will ensure the minimum order amount is satisfied even if it means exceeding your target allocation (this would only happen small small amounts of total crypto holdings).
