@@ -37,5 +37,8 @@ jobs:
         pyright .
 
     - name: Run Tests
+      env:
+        DJANGO_FIELD_ENCRYPTION_KEY: v6AYhriFBEktgOrXXdKK0X4IU6noDCfSbqPxJ1fIoW0=
+        DJANGO_SECRET_KEY: django-insecure-@o-)qrym-cn6_*mx8dnmy#m4*$j%8wyy+l=)va&pe)9e7@o4i)
       run: |
         python manage.py test
