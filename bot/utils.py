@@ -35,8 +35,9 @@ def cached_result(key: str, func: t.Callable):
         if cached_value := cache.get(key):
             return cached_value
 
+        # use a 30m timeout by default for now
         value = func()
-        cache.set(key, value)
+        cache.set(key, value, timeout=60 * 30)
         return value
     else:
         # if no django, then setup a simple dict-based cache to avoid
