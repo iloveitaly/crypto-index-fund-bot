@@ -1,0 +1,140 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87
+        Safari/537.36
+    method: GET
+    uri: https://api.binance.us/api/v3/ping
+  response:
+    body:
+      string: '{}'
+    headers:
+      Access-Control-Allow-Methods:
+      - GET, HEAD, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - no-cache, no-store, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2'
+      Content-Security-Policy:
+      - default-src 'self'
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Fri, 10 Sep 2021 11:57:25 GMT
+      Expires:
+      - '0'
+      Pragma:
+      - no-cache
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains
+      Via:
+      - 1.1 30ea845097208edbc19305c535a5be99.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - U8uHEsnTF1IOwP8mS2Uwa4cthPteVnQW1aeWSJ7vo4Ym_b08bAzw1w==
+      X-Amz-Cf-Pop:
+      - DEN52-C1
+      X-Cache:
+      - Miss from cloudfront
+      X-Content-Security-Policy:
+      - default-src 'self'
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-WebKit-CSP:
+      - default-src 'self'
+      X-Xss-Protection:
+      - 1; mode=block
+      x-mbx-used-weight:
+      - '4'
+      x-mbx-used-weight-1m:
+      - '4'
+      x-mbx-uuid:
+      - 064278ea-4f32-4778-99b8-7f2ad0a8779b
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87
+        Safari/537.36
+    method: GET
+    uri: https://api.binance.us/api/v3/ping
+  response:
+    body:
+      string: '{}'
+    headers:
+      Access-Control-Allow-Methods:
+      - GET, HEAD, OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - no-cache, no-store, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2'
+      Content-Security-Policy:
+      - default-src 'self'
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Fri, 10 Sep 2021 11:57:26 GMT
+      Expires:
+      - '0'
+      Pragma:
+      - no-cache
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains
+      Via:
+      - 1.1 d50ea39d66fbd0459a5507b1cf70c2dd.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - 35ZYS_T15a4VbWXsTxUPD3f0qbDfZc1MPsn8vrqSSHdJVeJk51CnSQ==
+      X-Amz-Cf-Pop:
+      - DEN52-C1
+      X-Cache:
+      - Miss from cloudfront
+      X-Content-Security-Policy:
+      - default-src 'self'
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-WebKit-CSP:
+      - default-src 'self'
+      X-Xss-Protection:
+      - 1; mode=block
+      x-mbx-used-weight:
+      - '6'
+      x-mbx-used-weight-1m:
+      - '6'
+      x-mbx-uuid:
+      - 0673b263-6601-4d6f-bdf5-8a9fe55a7c5f
+    status:
+      code: 200
+      message: OK
+version: 1
