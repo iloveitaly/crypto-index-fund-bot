@@ -46,10 +46,10 @@ jobs:
       run: poetry install
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
 
-    - name: lint
-      run: |
-        source .venv/bin/activate
-        pylint **/*.py
+    # - name: lint
+    #   run: |
+    #     source .venv/bin/activate
+    #     pylint **/*.py
 
     - name: code formatting
       run: |
