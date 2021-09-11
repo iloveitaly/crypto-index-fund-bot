@@ -57,6 +57,7 @@ jobs:
         source .venv/bin/activate
         black --version
         black --check .
+        isort **/*.py -c -v
 
     - name: Setup node.js (for pyright)
       uses: actions/setup-node@v1
