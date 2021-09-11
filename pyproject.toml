@@ -52,7 +52,7 @@ line-length=150
 target-version=['py39']
 exclude = '''
 /(
-  venv
+  .venv
   | migrations
 )/
 '''
