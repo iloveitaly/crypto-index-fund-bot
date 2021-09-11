@@ -1,5 +1,7 @@
 from .application import *
 
+DATABASES = {"default": dj_database_url.parse(config("TEST_DATABASE_URL"))}
+
 # https://stackoverflow.com/questions/19236771/add-method-imports-to-shell-plus
 SHELL_PLUS_PRE_IMPORTS = [
     ("decimal", "Decimal"),

@@ -80,12 +80,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "botweb.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-DATABASES = {"default": dj_database_url.parse(config("DATABASE_URL"))}
-
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",

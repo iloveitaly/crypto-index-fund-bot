@@ -1,7 +1,5 @@
 from .application import *
 
-from decouple import config
-
 if sentry_dsn := config("SENTRY_DSN", default=None):
     assert isinstance(sentry_dsn, str)
 
@@ -13,3 +11,5 @@ if sentry_dsn := config("SENTRY_DSN", default=None):
         integrations=[DjangoIntegration()],
         traces_sample_rate=1.0,
     )
+
+DATABASES = {"default": dj_database_url.parse(config("TEST_DATABASE_URL"))}
