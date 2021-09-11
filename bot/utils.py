@@ -3,11 +3,11 @@ from rich.traceback import install as install_rich_tracebacks
 # install_rich_tracebacks(show_locals=True, width=200)
 install_rich_tracebacks(width=200)
 
-import structlog
 import logging
-from decouple import config
 import typing as t
 
+import structlog
+from decouple import config
 from structlog.threadlocal import wrap_dict
 
 
@@ -76,8 +76,8 @@ def markdown_table_output(array_of_dicts):
 
 
 def csv_table_output(array_of_dicts):
-    import sys
     import csv
+    import sys
 
     # TODO return CSV as a string
     writer = csv.writer(sys.stdout)

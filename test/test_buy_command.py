@@ -1,11 +1,12 @@
-import pytest
 import unittest
-from unittest.mock import patch
 from decimal import Decimal
+from unittest.mock import patch
 
-from bot.user import user_from_env
 import binance.client
+import pytest
+
 from bot.data_types import MarketBuyStrategy, MarketIndexStrategy
+from bot.user import user_from_env
 
 
 @pytest.mark.vcr

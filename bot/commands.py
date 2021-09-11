@@ -1,15 +1,16 @@
 import typing as t
-
 from decimal import Decimal
-from .user import User
-from .data_types import CryptoBalance, MarketBuyStrategy
 
-from . import exchanges
-from . import convert_stablecoins
-from . import open_orders
-from . import portfolio
-from . import market_cap
-from . import market_buy
+from . import (
+    convert_stablecoins,
+    exchanges,
+    market_buy,
+    market_cap,
+    open_orders,
+    portfolio,
+)
+from .data_types import CryptoBalance, MarketBuyStrategy
+from .user import User
 
 
 # TODO not really sure the best pattern for implementing the command/interactor pattern but we are going to give this a try

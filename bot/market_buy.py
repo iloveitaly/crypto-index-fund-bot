@@ -1,12 +1,10 @@
-from .utils import log
-from .user import User
-
-import math
-from decimal import Decimal
-from . import exchanges
-
-from .data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
 import typing as t
+from decimal import Decimal
+
+from . import exchanges
+from .data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
+from .user import User
+from .utils import log
 
 
 def calculate_market_buy_preferences(
@@ -43,7 +41,6 @@ def calculate_market_buy_preferences(
 
     sorted_by_largest_target_delta = sorted(
         coins_below_index_target,
-        # TODO fsum for math?
         key=lambda coin_data: next((balance["percentage"] for balance in current_portfolio if balance["symbol"] == coin_data["symbol"]), Decimal(0))
         - coin_data["percentage"],
     )
@@ -236,8 +233,6 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
             # looks like they use the bottom of the ask stack to clear market orders (makes sense)
             lowest_ask = order_book["asks"][0][0]
             highest_bid = order_book["bids"][0][0]
-
-            from decimal import Decimal
 
             ask_difference = Decimal(highest_bid) - Decimal(lowest_ask)
 

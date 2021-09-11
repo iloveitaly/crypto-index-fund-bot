@@ -1,9 +1,9 @@
-from .user import User
-from . import exchanges
+import typing as t
 from decimal import Decimal
 
+from . import exchanges
 from .data_types import CryptoBalance, CryptoData
-import typing as t
+from .user import User
 
 
 def portfolio_with_allocation_percentages(portfolio: t.List[CryptoBalance]) -> t.List[CryptoBalance]:

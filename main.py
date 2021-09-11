@@ -1,9 +1,9 @@
 import click
-import bot.utils
 
+import bot.utils
 from bot import utils
-from bot.user import user_from_env
 from bot.data_types import MarketIndexStrategy
+from bot.user import user_from_env
 
 # if you use `cod` it's helpful to disable while you are hacking on the CLI
 # if you are on zsh:
@@ -106,8 +106,8 @@ def portfolio(format):
 # TODO this command needs to be cleaned up with some more options
 @cli.command(short_help="Convert stablecoins to USD for purchasing")
 def convert(self):
-    import bot.exchanges as exchanges
     import bot.convert_stablecoins as convert_stablecoins
+    import bot.exchanges as exchanges
 
     user = user_from_env()
     portfolio = exchanges.binance_portfolio(user)

@@ -1,12 +1,10 @@
+import typing as t
 from decimal import Decimal
 
-from .utils import log
-from .user import User
-from . import utils
-
-import typing as t
-from . import exchanges
+from . import exchanges, utils
 from .data_types import CryptoData, MarketIndexStrategy
+from .user import User
+from .utils import log
 
 
 def coinmarketcap_data():
@@ -25,8 +23,8 @@ def coinmarketcap_data():
 
 # for debugging / testing only
 def coinmarketcap_tags():
-    from functools import reduce
     import operator
+    from functools import reduce
 
     all_data = coinmarketcap_data()
     all_tags = [data["tags"] for data in all_data["data"]]

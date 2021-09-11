@@ -1,9 +1,11 @@
 import datetime
 import typing as t
 
+from binance.client import Client as BINANCE_CONSTANTS
+
 from .user import User, user_from_env
 from .utils import log
-from binance.client import Client as BINANCE_CONSTANTS
+
 
 # TODO abstract out binance specifics
 def cancel_stale_open_orders(user: User) -> t.List:

@@ -1,14 +1,13 @@
 import unittest
-import pytest
 from unittest.mock import patch
 
-from bot.user import user_from_env
+import binance.client
+import pytest
 from click.testing import CliRunner
 
-import binance.client
 import main
-
 from bot.data_types import MarketBuyStrategy, MarketIndexStrategy
+from bot.user import user_from_env
 
 
 @pytest.mark.vcr

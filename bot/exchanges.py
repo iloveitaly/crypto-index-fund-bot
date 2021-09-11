@@ -1,18 +1,17 @@
-from .data_types import CryptoData, CryptoBalance
-import typing as t
-
-from .user import User
-from .utils import log
-from . import utils
-
-from decimal import Decimal
 import math
+import typing as t
+from decimal import Decimal
 
 # https://python-binance.readthedocs.io/en/latest/market_data.html
 # https://binance-docs.github.io/apidocs/spot/en/#change-log
 # https://github.com/binance-us/binance-official-api-docs
 # https://dev.binance.vision/
 from binance.client import Client as BinanceClient
+
+from . import utils
+from .data_types import CryptoBalance, CryptoData
+from .user import User
+from .utils import log
 
 _public_binance_client = None
 
@@ -112,9 +111,7 @@ def low_over_last_day(purchasing_symbol: str) -> Decimal:
     #   start=(datetime.datetime.now() - datetime.timedelta(hours=24)).isoformat(),
     #   stop=datetime.datetime.now().isoformat()
     # )
-
     # min([candle['low'] for candle in candles])
-
     # https://binance-docs.github.io/apidocs/spot/en/#kline-candlestick-data
     # the API just returns an ordered array, which is insane
     """

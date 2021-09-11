@@ -1,5 +1,5 @@
-import typing
 import enum
+import typing
 from decimal import Decimal
 
 # TODO right now it's not possib to mark specific fields as optional

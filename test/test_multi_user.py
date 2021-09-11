@@ -1,10 +1,11 @@
 import unittest
-import pytest
 from unittest.mock import patch
 
-from users.models import User
-import users.tasks
+import pytest
+
 import bot.commands
+import users.tasks
+from users.models import User
 
 # Specifying `@pytest.mark.usefixtures('celery_session_worker')` causes issues with database cleaning
 

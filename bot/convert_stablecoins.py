@@ -1,8 +1,9 @@
 import typing as t
 
-from .utils import log
-from .user import User
 from . import exchanges
+from .user import User
+from .utils import log
+
 
 # convert all stablecoins of the purchasing currency into the purchasing currency so we can use it
 # in binance, you need to purchase in USD and cannot purchase most currencies from a stablecoin

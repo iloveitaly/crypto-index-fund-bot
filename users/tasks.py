@@ -1,8 +1,8 @@
-from celery import Celery
-
 import os
 
 import django.utils.timezone
+from celery import Celery
+
 from bot.commands import BuyCommand
 
 # Set the default Django settings module for the 'celery' program.
@@ -46,8 +46,9 @@ def initiate_user_buys():
 
 @app.task
 def user_buy(user_id):
-    from .models import User
     import bot.utils
+
+    from .models import User
 
     user = User.objects.get(id=user_id)
     bot_user = user.bot_user()

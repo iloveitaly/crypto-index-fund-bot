@@ -1,14 +1,16 @@
-import typing as t
 import decimal
+import typing as t
 
-from .data_types import MarketIndexStrategy, MarketBuyStrategy, CryptoBalance
+from .data_types import CryptoBalance, MarketBuyStrategy, MarketIndexStrategy
 from .utils import log
+
 
 # right now, this is the only way to use User
 # in the future, User could easily be wired up to an ORM
 def user_from_env():
-    from decouple import config
     import json
+
+    from decouple import config
 
     user = User()
     user.binance_api_key = t.cast(str, config("USER_BINANCE_API_KEY"))
