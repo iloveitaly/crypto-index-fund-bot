@@ -31,8 +31,18 @@ jobs:
       run: |
         pip install -U pip
         pip install poetry
-        poetry config virtualenvs.create false
+        poetry config settings.virtualenvs.in-project false
+        poetry config settings.virtualenvs.path ~/.virtualenvs
         poetry install
+    - name: Cache Poetry virtualenv
+      uses: actions/cache@v1
+      id: cache
+      with:
+        path: ~/.virtualenvs
+        key: poetry-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          poetry-${{ hashFiles('**/poetry.lock') }}
+
     - name: code formatting
       run: |
         set -eax
