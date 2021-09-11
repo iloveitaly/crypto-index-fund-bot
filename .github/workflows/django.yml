@@ -49,6 +49,8 @@ jobs:
         pyright .
 
     - name: Run DB migrations
+      env:
+        DJANGO_SETTINGS_MODULE: botweb.settings.test
       run: |
         python manage.py sqlcreate
         python manage.py migrate
