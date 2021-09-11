@@ -1,4 +1,5 @@
 [MASTER]
+django-settings-module=botweb.settings.development
 
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
@@ -45,7 +46,7 @@ limit-inference-results=100
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-load-plugins=
+#load-plugins=pylint_django,pylint_celery
 
 # Pickle collected data for later comparisons.
 persistent=yes
