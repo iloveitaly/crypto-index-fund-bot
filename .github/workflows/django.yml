@@ -22,6 +22,8 @@ jobs:
         image: redis
       postgres:
         image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
 
     steps:
     - uses: actions/checkout@v2
