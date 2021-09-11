@@ -38,6 +38,7 @@ pytest-django = "^4.4.0"
 pytest-celery = "^0.0.0"
 black = "^21.8b0"
 pylint-django = "^2.4.4"
+pylint-celery = "^0.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -57,3 +58,7 @@ exclude = '''
   | migrations
 )/
 '''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
