@@ -27,6 +27,7 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.9.6
+    # https://stackoverflow.com/questions/62977821/how-to-cache-poetry-install-for-github-actions
     - name: Install poetry
       uses: snok/install-poetry@v1.2.0
       with:
@@ -46,6 +47,7 @@ jobs:
     - name: code formatting
       run: |
         set -eax
+        source .venv/bin/activate
         black --version
         black --check .
 
@@ -62,8 +64,10 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: botweb.settings.test
       run: |
+        source .venv/bin/activate
         python manage.py sqlcreate
         python manage.py migrate
     - name: Run Tests
       run: |
+        source .venv/bin/activate
         python manage.py test
