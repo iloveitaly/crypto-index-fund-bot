@@ -66,7 +66,6 @@ jobs:
     - name: Run DB migrations
       run: |
         source .venv/bin/activate
-        # python manage.py sqlcreate
         python manage.py migrate
     - name: Run Tests
       run: |
