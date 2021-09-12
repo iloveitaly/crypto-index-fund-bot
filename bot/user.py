@@ -18,8 +18,8 @@ def user_from_env():
     from decouple import config
 
     user = User()
-    user.binance_api_key = t.cast(str, config("USER_BINANCE_API_KEY"))
-    user.binance_secret_key = t.cast(str, config("USER_BINANCE_SECRET_KEY"))
+    user.binance_api_key = t.cast(str, config("USER_BINANCE_API_KEY", ""))
+    user.binance_secret_key = t.cast(str, config("USER_BINANCE_SECRET_KEY", ""))
 
     user.livemode = t.cast(str, config("USER_LIVEMODE", "false")).lower() == "true"
     user.convert_stablecoins = t.cast(str, config("USER_CONVERT_STABLECOINS", "false")).lower() == "true"
