@@ -11,7 +11,7 @@ from bot.user import user_from_env
 
 @pytest.mark.vcr
 class TestBuyCommand(unittest.TestCase):
-    PURCHASE_MIN = Decimal(25)
+    PURCHASE_MIN = 25
 
     # initial buys should prioritize coins that take up a large amount of the index first
     @patch.object(binance.client.Client, "order_market_buy", return_value={})
@@ -22,6 +22,7 @@ class TestBuyCommand(unittest.TestCase):
 
         user = user_from_env()
         user.external_portfolio = []
+        user.purchase_min = self.PURCHASE_MIN
 
         assert user.external_portfolio == []
         assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB"])
@@ -30,7 +31,7 @@ class TestBuyCommand(unittest.TestCase):
         assert MarketBuyStrategy.MARKET == user.buy_strategy
         assert MarketIndexStrategy.MARKET_CAP == user.index_strategy
 
-        BuyCommand.execute(user=user, purchase_balance=self.PURCHASE_MIN * 3)
+        BuyCommand.execute(user=user, purchase_balance=Decimal(self.PURCHASE_MIN * 3))
 
         # make sure the user minimum is respected
         assert float(order_market_buy_mock.mock_calls[0].kwargs["quoteOrderQty"]) == self.PURCHASE_MIN
@@ -47,6 +48,7 @@ class TestBuyCommand(unittest.TestCase):
         from bot.commands import BuyCommand
 
         user = user_from_env()
+        user.purchase_min = self.PURCHASE_MIN
         user.external_portfolio = [  # type: ignore
             {"symbol": "DOGE", "amount": Decimal("1000000")},
             {"symbol": "ETH", "amount": Decimal("0.05")},
@@ -59,7 +61,7 @@ class TestBuyCommand(unittest.TestCase):
         assert MarketBuyStrategy.MARKET == user.buy_strategy
         assert MarketIndexStrategy.MARKET_CAP == user.index_strategy
 
-        BuyCommand.execute(user=user, purchase_balance=self.PURCHASE_MIN * 4)
+        BuyCommand.execute(user=user, purchase_balance=Decimal(self.PURCHASE_MIN * 4))
 
         all_order_tokens = [mock_call.kwargs["symbol"] for mock_call in order_market_buy_mock.mock_calls]
 
