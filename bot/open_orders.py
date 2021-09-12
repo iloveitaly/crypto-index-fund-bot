@@ -31,7 +31,7 @@ def cancel_stale_open_orders(user: User, exchange: SupportedExchanges) -> t.List
 
     for order in old_orders:
         log.info("cancelling order", order=order)
-        cancelled_orders.append(binance_client.cancel_order(symbol=order["symbol"], orderId=order["orderId"]))
+        cancelled_orders.append(binance_client.cancel_order(symbol=order["symbol"], orderId=order["id"]))
 
     return cancelled_orders
 
