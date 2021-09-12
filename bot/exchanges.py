@@ -10,10 +10,9 @@ from binance.client import Client as BinanceClient
 
 from . import utils
 from .data_types import CryptoBalance, CryptoData, SupportedExchanges
+from .supported_exchanges.binance import *
 from .user import User
 from .utils import log
-
-from .supported_exchanges.binance import *
 
 
 def portfolio(exchange: SupportedExchanges, user: User) -> t.List[CryptoBalance]:

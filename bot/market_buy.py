@@ -2,7 +2,13 @@ import typing as t
 from decimal import Decimal
 
 from . import exchanges
-from .data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy, SupportedExchanges
+from .data_types import (
+    CryptoBalance,
+    CryptoData,
+    MarketBuy,
+    MarketBuyStrategy,
+    SupportedExchanges,
+)
 from .user import User
 from .utils import log
 

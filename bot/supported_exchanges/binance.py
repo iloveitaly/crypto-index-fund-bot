@@ -1,10 +1,10 @@
 import typing as t
 from decimal import Decimal
 
+from binance.client import Client as BINANCE_CONSTANTS
+
 from ..data_types import CryptoBalance, ExchangeOrder
 from ..user import User
-
-from binance.client import Client as BINANCE_CONSTANTS
 
 # https://algotrading101.com/learn/binance-python-api-guide/
 # https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types

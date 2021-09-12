@@ -1,12 +1,13 @@
-from bot.data_types import SupportedExchanges
 import datetime
 import typing as t
 
 from binance.client import Client as BINANCE_CONSTANTS
 
+from bot.data_types import SupportedExchanges
+
+from . import exchanges
 from .user import User, user_from_env
 from .utils import log
-from . import exchanges
 
 
 # TODO abstract out binance specifics

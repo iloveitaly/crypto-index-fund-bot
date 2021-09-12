@@ -1,5 +1,6 @@
-from bot.data_types import CryptoBalance, SupportedExchanges
 import typing as t
+
+from bot.data_types import CryptoBalance, SupportedExchanges
 
 from . import exchanges
 from .user import User
