@@ -20,3 +20,13 @@ class TestMultiUser(unittest.TestCase):
         users.tasks.initiate_user_buys.delay()
 
         assert buy_command_mock.call_count == 2
+
+    def test_external_portfolio(self):
+        from decimal import Decimal
+
+        user = User(external_portfolio=[{"symbol": "BTC", "amount": 1.05}])
+        user.save()
+
+        fresh_user = User.objects.get(id=user.id)
+
+        assert isinstance(fresh_user.external_portfolio[0]["amount"], Decimal)
