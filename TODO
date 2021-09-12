@@ -1,8 +1,10 @@
 # Bot
 
 * Refactor all binance stuff into a exchange-wrapped module
-* https://algotrading101.com/learn/binance-python-api-guide/
-* https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
+  * Open orders
+  * Sell orders
+  * Market orders
+  * Limit orders
 * Offer a SME-based index?
   * https://taapi.io
   * Calculate on our own using klines and https://mrjbq7.github.io/ta-lib/
@@ -12,7 +14,6 @@
   * Which exchange has the most tokens, reasonable fees, and mostly trustworthy?
 * Play around with purchasing at different points in the order book when using a limit strategy
   * Inspect market depth to help determine the most realistic low price to purchase at
-* Can we use cointracker to get external portfolio data?
 
 # System
 * Conditionally load up rich depending on the env
@@ -26,5 +27,8 @@
 
 * Python linter?
 * Add cassettes for e22 tests
-* isort on CI
 * cache poetry on github CI https://medium.com/@vanflymen/blazing-fast-ci-with-github-actions-poetry-black-and-pytest-9e74299dd4a5
+
+# Ideas
+
+* Can we use cointracker to get external portfolio data?
