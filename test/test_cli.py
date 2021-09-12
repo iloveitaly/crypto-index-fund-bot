@@ -29,7 +29,7 @@ class TestCLI(unittest.TestCase):
         # output is redirected to the result object, let's output for debugging
         print(result.output)
 
-        assert result.exception is None
+        self.assertIsNone(result.exception)
         assert result.exit_code == 0
 
         # 60 should be split into two orders
@@ -52,19 +52,19 @@ class TestCLI(unittest.TestCase):
         # output is redirected to the result object, let's output for debugging
         print(result.output)
 
-        assert result.exception is None
+        self.assertIsNone(result.exception)
         assert result.exit_code == 0
 
     def test_index(self):
         runner = CliRunner()
         result = runner.invoke(main.index, [])
 
-        assert result.exception is None
+        self.assertIsNone(result.exception)
         assert result.exit_code == 0
 
     def test_analyze(self):
         runner = CliRunner()
         result = runner.invoke(main.analyze, [])
 
-        assert result.exception is None
+        self.assertIsNone(result.exception)
         assert result.exit_code == 0
