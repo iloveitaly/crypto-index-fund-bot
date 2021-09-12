@@ -8,9 +8,10 @@ from .utils import log
 
 
 def coinmarketcap_data():
+    import decimal
+
     import decouple
     import requests
-    import decimal
 
     coinmarketcap_api_key = decouple.config("COINMARKETCAP_API_KEY")
     coinbase_endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=1000&sort=market_cap"
