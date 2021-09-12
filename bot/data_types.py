@@ -40,6 +40,11 @@ MarketBuy = typing.TypedDict(
 )
 
 
+class SupportedExchanges(str, enum.Enum):
+    BINANCE = "binance"
+    COINBASE = "coinbase"
+
+
 class MarketBuyStrategy(str, enum.Enum):
     LIMIT = "limit"
     MARKET = "market"

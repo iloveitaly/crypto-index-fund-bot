@@ -1,7 +1,7 @@
 import decimal
 import typing as t
 
-from .data_types import CryptoBalance, MarketBuyStrategy, MarketIndexStrategy
+from .data_types import CryptoBalance, MarketBuyStrategy, MarketIndexStrategy, SupportedExchanges
 from .utils import log
 
 
@@ -52,7 +52,7 @@ class User:
     purchase_max: int = 50
     purchase_min: int = 25
     excluded_tags: t.List[str] = ["wrapped-tokens", "stablecoin"]
-    exchanges: t.List[str] = ["binance"]
+    exchanges: t.List[SupportedExchanges] = [SupportedExchanges.BINANCE]
 
     def __init__(self):
         pass

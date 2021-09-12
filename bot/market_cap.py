@@ -2,7 +2,7 @@ import typing as t
 from decimal import Decimal
 
 from . import exchanges, utils
-from .data_types import CryptoData, MarketIndexStrategy
+from .data_types import CryptoData, MarketIndexStrategy, SupportedExchanges
 from .user import User
 from .utils import log
 
@@ -40,7 +40,9 @@ def coinmarketcap_data_for_symbol(symbol):
 
 # TODO should indicate that this is married to coinmarketcap data a bit more
 # market_data is pulled from coinmarketcap
-def filtered_coins_by_market_cap(market_data, purchasing_currency: str, enabled_exchanges: t.List[str], exclude_tags=[], exclude_coins=[], limit=-1):
+def filtered_coins_by_market_cap(
+    market_data, purchasing_currency: str, enabled_exchanges: t.List[SupportedExchanges], exclude_tags=[], exclude_coins=[], limit=-1
+):
 
     exclude_tags = set(exclude_tags)
     coins = []
