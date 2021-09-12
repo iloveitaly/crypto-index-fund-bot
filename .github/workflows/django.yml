@@ -14,7 +14,7 @@ jobs:
     env:
       DJANGO_FIELD_ENCRYPTION_KEY: v6AYhriFBEktgOrXXdKK0X4IU6noDCfSbqPxJ1fIoW0=
       DJANGO_SECRET_KEY: django-insecure-@o-)qrym-cn6_*mx8dnmy#m4*$j%8wyy+l=)va&pe)9e7@o4i)
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://localhost:6379
       TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
       DJANGO_SETTINGS_MODULE: botweb.settings.test
 
