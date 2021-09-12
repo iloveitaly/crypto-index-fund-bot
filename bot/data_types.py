@@ -2,9 +2,45 @@ import enum
 import typing
 from decimal import Decimal
 
+
+class SupportedExchanges(str, enum.Enum):
+    BINANCE = "binance"
+    COINBASE = "coinbase"
+
+
+class MarketBuyStrategy(str, enum.Enum):
+    LIMIT = "limit"
+    MARKET = "market"
+
+
+# by subclassing str you can use == to compare strings to enums
+class MarketIndexStrategy(str, enum.Enum):
+    MARKET_CAP = "market_cap"
+    SQRT_MARKET_CAP = "sqrt_market_cap"
+    SMA = "sma"
+
+
+class OrderType(str, enum.Enum):
+    BUY = "buy"
+    SELL = "sell"
+
+
+class OrderTimeInForce(str, enum.Enum):
+    GTC = "GTC"
+
+
 ExchangeOrder = typing.TypedDict(
     "ExchangeOrder",
-    {"symbol": str, "time_in_force": str, "type": str, "created_at": int, "id": str, "quantity": Decimal, "price": Decimal},
+    {
+        "symbol": str,
+        "time_in_force": OrderTimeInForce,
+        "type": OrderType,
+        "created_at": int,
+        "id": str,
+        "quantity": Decimal,
+        "price": Decimal,
+        "exchange": SupportedExchanges,
+    },
 )
 
 # TODO right now it's not possib to mark specific fields as optional
@@ -43,20 +79,3 @@ MarketBuy = typing.TypedDict(
         "amount": Decimal,
     },
 )
-
-
-class SupportedExchanges(str, enum.Enum):
-    BINANCE = "binance"
-    COINBASE = "coinbase"
-
-
-class MarketBuyStrategy(str, enum.Enum):
-    LIMIT = "limit"
-    MARKET = "market"
-
-
-# by subclassing str you can use == to compare strings to enums
-class MarketIndexStrategy(str, enum.Enum):
-    MARKET_CAP = "market_cap"
-    SQRT_MARKET_CAP = "sqrt_market_cap"
-    SMA = "sma"
