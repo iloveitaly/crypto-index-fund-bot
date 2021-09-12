@@ -57,6 +57,14 @@ def in_django_environment():
     return config("DJANGO_SETTINGS_MODULE", default=None) != None
 
 
+def currency_format(value):
+    # https://stackoverflow.com/questions/320929/currency-formatting-in-python
+    import locale
+
+    locale.setlocale(locale.LC_ALL, "")
+    return locale.currency(value, grouping=True)
+
+
 def table_output_with_format(array_of_dicts, format):
     if not array_of_dicts:
         return None

@@ -97,10 +97,10 @@ def portfolio(format):
     import bot.market_buy
 
     purchase_balance = bot.market_buy.purchasing_currency_in_portfolio(user, portfolio)
-    click.echo(f"\nPurchasing Balance: {purchase_balance}")
+    click.echo(f"\nPurchasing Balance: {utils.currency_format(purchase_balance)}")
 
     purchase_total = sum([coin["usd_total"] for coin in portfolio])
-    click.echo(f"Portfolio Total: {purchase_total}")
+    click.echo(f"Portfolio Total: {utils.currency_format(purchase_total)}")
 
 
 # TODO this command needs to be cleaned up with some more options
@@ -169,7 +169,7 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
 
     purchase_balance, market_buys, completed_orders = BuyCommand.execute(user, purchase_balance)
 
-    click.secho(f"Purchasing Balance: {purchase_balance}\n", fg="green")
+    click.secho(f"Purchasing Balance: {utils.currency_format(purchase_balance)}", fg="green")
 
     click.echo(bot.utils.table_output_with_format(market_buys, format))
 
