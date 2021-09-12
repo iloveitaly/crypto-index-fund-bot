@@ -1,5 +1,6 @@
 import decimal
 import typing as t
+import functools
 
 from .data_types import (
     CryptoBalance,
@@ -62,10 +63,10 @@ class User:
     def __init__(self):
         pass
 
+    @functools.cache
     def binance_client(self):
         from binance.client import Client
 
-        # TODO memoize client
         # TODO error check for empty keys?
 
         return Client(self.binance_api_key, self.binance_secret_key, tld="us")

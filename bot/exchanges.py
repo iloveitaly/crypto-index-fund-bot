@@ -42,21 +42,6 @@ def open_orders(exchange: SupportedExchanges, user: User) -> t.List[ExchangeOrde
     return mapping[exchange](user)
 
 
-_public_binance_client = None
-
-
-# TODO maybe use `@functools.cache` here?
-def public_binance_client() -> BinanceClient:
-    global _public_binance_client
-
-    if _public_binance_client is None:
-        # initializing a new client actually hits the `ping` endpoint on the API
-        # which is on of the reasons we want to cache it
-        _public_binance_client = BinanceClient("", "", tld="us")
-
-    return _public_binance_client
-
-
 # TODO is there a way to enforce trading pair via typing?
 def binance_price_for_symbol(trading_pair: str) -> Decimal:
     """

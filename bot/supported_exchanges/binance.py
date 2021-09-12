@@ -1,13 +1,21 @@
 import typing as t
+import functools
 from decimal import Decimal
 
-from binance.client import Client as BINANCE_CONSTANTS
+from binance.client import Client as BinanceClient
 
-from ..data_types import CryptoBalance, ExchangeOrder
+from ..data_types import CryptoBalance, ExchangeOrder, SupportedExchanges
 from ..user import User
 
 # https://algotrading101.com/learn/binance-python-api-guide/
 # https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
+
+
+# initializing a new client actually hits the `ping` endpoint on the API
+# which is on of the reasons we want to cache it
+@functools.cache
+def public_binance_client() -> BinanceClient:
+    return BinanceClient("", "", tld="us")
 
 
 def binance_purchase_minimum() -> Decimal:
@@ -71,7 +79,8 @@ def binance_open_orders(user: User) -> t.List[ExchangeOrder]:
             time_in_force=order["timeInForce"],
             type=order["side"],
             id=order["orderId"],
+            exchange=SupportedExchanges.BINANCE,
         )
         for order in user.binance_client().get_open_orders()
-        if order["side"] == BINANCE_CONSTANTS.SIDE_BUY
+        if order["side"] == BinanceClient.SIDE_BUY
     ]
