@@ -9,9 +9,21 @@ from decimal import Decimal
 from binance.client import Client as BinanceClient
 
 from . import utils
-from .data_types import CryptoBalance, CryptoData
+from .data_types import CryptoBalance, CryptoData, SupportedExchanges
 from .user import User
 from .utils import log
+
+from .supported_exchanges.binance import *
+
+
+def portfolio(exchange: SupportedExchanges, user: User) -> t.List[CryptoBalance]:
+    mapping = {
+        SupportedExchanges.BINANCE: binance_portfolio,
+        # SupportedExchanges.COINBASE: coinbase_portfolio,
+    }
+
+    return mapping[exchange](user)
+
 
 _public_binance_client = None
 
@@ -213,23 +225,4 @@ def binance_open_orders(user: User) -> t.List[CryptoBalance]:
         )
         for order in user.binance_client().get_open_orders()
         if order["side"] == "BUY"
-    ]
-
-
-def binance_portfolio(user: User) -> t.List[CryptoBalance]:
-    account = user.binance_client().get_account()
-
-    # TODO return an incomplete CryptoBalance that will be augmented with additional fields later on
-    return [
-        CryptoBalance(
-            symbol=balance["asset"],
-            amount=Decimal(balance["free"]),
-            # to satisify typer; hopefully there is a better way to do this in the future
-            usd_price=Decimal(0),
-            usd_total=Decimal(0),
-            percentage=Decimal(0),
-            target_percentage=Decimal(0),
-        )
-        for balance in account["balances"]
-        if float(balance["free"]) > 0
     ]

@@ -2,7 +2,7 @@ import click
 
 import bot.utils
 from bot import utils
-from bot.data_types import MarketIndexStrategy
+from bot.data_types import MarketIndexStrategy, SupportedExchanges
 from bot.user import user_from_env
 
 # if you use `cod` it's helpful to disable while you are hacking on the CLI
@@ -110,7 +110,7 @@ def convert(self):
     import bot.exchanges as exchanges
 
     user = user_from_env()
-    portfolio = exchanges.binance_portfolio(user)
+    portfolio = exchanges.portfolio(SupportedExchanges.BINANCE, user)
     convert_stablecoins.convert_stablecoins(user, portfolio)
 
 

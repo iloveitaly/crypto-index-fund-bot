@@ -9,7 +9,7 @@ from . import (
     open_orders,
     portfolio,
 )
-from .data_types import CryptoBalance, MarketBuyStrategy
+from .data_types import CryptoBalance, MarketBuyStrategy, SupportedExchanges
 from .user import User
 
 
@@ -18,11 +18,15 @@ class PortfolioCommand:
     @classmethod
     def execute(cls, user: User) -> t.List[CryptoBalance]:
         portfolio_target = market_cap.coins_with_market_cap(user)
-
         external_portfolio = user.external_portfolio
+        user_portfolio = []
 
         # pull a raw binance reportfolio from exchanges.py and add percentage allocations to it
-        user_portfolio = exchanges.binance_portfolio(user)
+        for exchange in user.exchanges:
+            user_portfolio = exchanges.portfolio(exchange, user)
+            # TODO when we actually support multiple exchanges we'll need to do something like this
+            # user_portfolio = portfolio.merge_portfolio(user_portfolio, external_portfolio)
+
         user_portfolio = portfolio.merge_portfolio(user_portfolio, external_portfolio)
         user_portfolio = portfolio.add_price_to_portfolio(user_portfolio, user.purchasing_currency)
         user_portfolio = portfolio.portfolio_with_allocation_percentages(user_portfolio)
@@ -43,7 +47,8 @@ class BuyCommand:
         if user.buy_strategy == MarketBuyStrategy.LIMIT and user.cancel_stale_orders:
             open_orders.cancel_stale_open_orders(user)
 
-        current_portfolio = exchanges.binance_portfolio(user)
+        # TODO support multiple exchanges here
+        current_portfolio = exchanges.portfolio(SupportedExchanges.BINANCE, user)
 
         if user.convert_stablecoins:
             convert_stablecoins.convert_stablecoins(user, current_portfolio)
