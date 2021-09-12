@@ -13,13 +13,13 @@ from bot.user import user_from_env
 @pytest.mark.vcr
 class TestCLI(unittest.TestCase):
     @patch.object(binance.client.Client, "order_market_buy", return_value={})
-    @patch("bot.market_buy.purchasing_currency_in_portfolio", return_value=50.0)
+    @patch("bot.market_buy.purchasing_currency_in_portfolio", return_value=20)
     def test_market_buy(self, _purchasing_currency_mock, order_market_buy_mock):
         # user preconditions
         user = user_from_env()
 
         assert True == user.livemode
-        assert 25 == user.purchase_min
+        assert 10 == user.purchase_min
         assert MarketBuyStrategy.MARKET == user.buy_strategy
         assert MarketIndexStrategy.MARKET_CAP == user.index_strategy
 
@@ -37,12 +37,12 @@ class TestCLI(unittest.TestCase):
         assert {
             "symbol": "ADAUSD",
             "newOrderRespType": "FULL",
-            "quoteOrderQty": "25.0000",
+            "quoteOrderQty": "10.0000",
         } == order_market_buy_mock.mock_calls[0].kwargs
         assert {
             "symbol": "SOLUSD",
             "newOrderRespType": "FULL",
-            "quoteOrderQty": "25.0000",
+            "quoteOrderQty": "10.0000",
         } == order_market_buy_mock.mock_calls[1].kwargs
 
     def test_portfolio(self):
