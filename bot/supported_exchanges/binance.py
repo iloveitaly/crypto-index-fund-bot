@@ -1,5 +1,5 @@
-import typing as t
 import functools
+import typing as t
 from decimal import Decimal
 
 from binance.client import Client as BinanceClient

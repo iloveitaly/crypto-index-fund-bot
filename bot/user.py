@@ -1,6 +1,6 @@
 import decimal
-import typing as t
 import functools
+import typing as t
 
 from .data_types import (
     CryptoBalance,
