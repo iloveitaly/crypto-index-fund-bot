@@ -140,7 +140,7 @@ def determine_market_buys(
     purchase_total = purchase_balance
     purchases = []
 
-    existing_orders = exchanges.binance_open_orders(user)
+    existing_orders = exchanges.open_orders(SupportedExchanges.BINANCE, user)
     symbols_of_existing_orders = [order["symbol"] for order in existing_orders]
 
     for coin in sorted_buy_preferences:
@@ -223,6 +223,8 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
         }
 
         if user.buy_strategy == MarketBuyStrategy.LIMIT:
+            # TODO extract this out into a separate file
+
             # order depth returns the lowest asks and the highest bids
             # increasing limits returns lower bids and higher asks
             # grab a long-ish order book to get some analytics on the order book

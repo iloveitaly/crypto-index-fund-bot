@@ -83,8 +83,6 @@ def filtered_coins_by_market_cap(
 def calculate_market_cap_from_coin_list(
     purchasing_currency: str, coins, strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP
 ) -> t.List[CryptoData]:
-    import math
-
     log.info("calculating market index", strategy=strategy)
 
     if strategy == MarketIndexStrategy.SMA:

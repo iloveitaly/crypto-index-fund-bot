@@ -45,7 +45,7 @@ class BuyCommand:
     @classmethod
     def execute(cls, user: User, purchase_balance: t.Optional[Decimal] = None) -> t.Tuple[Decimal, t.List, t.List]:
         if user.buy_strategy == MarketBuyStrategy.LIMIT and user.cancel_stale_orders:
-            open_orders.cancel_stale_open_orders(user)
+            open_orders.cancel_stale_open_orders(user, SupportedExchanges.BINANCE)
 
         # TODO support multiple exchanges here
         current_portfolio = exchanges.portfolio(SupportedExchanges.BINANCE, user)
@@ -64,6 +64,7 @@ class BuyCommand:
 
         # TODO we should protect against specifying purchasing currency when in livemode
         #      also, I don't love that this parameter is passed in, feels odd
+        # TODO this needs to be adjusted for a particular exchange
         if not purchase_balance:
             purchase_balance = market_buy.purchasing_currency_in_portfolio(user, current_portfolio)
 

@@ -2,6 +2,11 @@ import enum
 import typing
 from decimal import Decimal
 
+ExchangeOrder = typing.TypedDict(
+    "ExchangeOrder",
+    {"symbol": str, "time_in_force": str, "type": str, "created_at": int, "id": str, "quantity": Decimal, "price": Decimal},
+)
+
 # TODO right now it's not possib to mark specific fields as optional
 # https://www.python.org/dev/peps/pep-0655/
 CryptoBalance = typing.TypedDict(

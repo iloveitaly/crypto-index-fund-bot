@@ -26,6 +26,7 @@ def convert_stablecoins(user: User, exchange: SupportedExchanges, portfolio: t.L
     stablecoin_portfolio = [balance for balance in portfolio if balance["symbol"] in stablecoin_symbols]
 
     for balance in stablecoin_portfolio:
+        # TODO probably needs to be passed to a function to generate the symbol for a particular exchange
         purchase_symbol = balance["symbol"] + "USD"
         amount = balance["amount"]
 

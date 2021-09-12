@@ -1,3 +1,4 @@
+from bot.data_types import SupportedExchanges
 import datetime
 import typing as t
 
@@ -5,20 +6,20 @@ from binance.client import Client as BINANCE_CONSTANTS
 
 from .user import User, user_from_env
 from .utils import log
+from . import exchanges
 
 
 # TODO abstract out binance specifics
-def cancel_stale_open_orders(user: User) -> t.List:
+def cancel_stale_open_orders(user: User, exchange: SupportedExchanges) -> t.List:
     binance_client = user.binance_client()
     order_time_limit = user.stale_order_hour_limit
 
     old_orders = [
         order
-        # TODO should use binance_open_orders
-        for order in binance_client.get_open_orders()
-        if order["side"] == BINANCE_CONSTANTS.SIDE_BUY and order["timeInForce"] == BINANCE_CONSTANTS.TIME_IN_FORCE_GTC and
+        for order in exchanges.open_orders(exchange, user)
+        if order["type"] == BINANCE_CONSTANTS.SIDE_BUY and order["time_in_force"] == BINANCE_CONSTANTS.TIME_IN_FORCE_GTC and
         # `time` from binance is expressed in milliseconds
-        order["time"] < (datetime.datetime.now() - datetime.timedelta(hours=order_time_limit)).timestamp() * 1000.0
+        order["created_at"] < (datetime.datetime.now() - datetime.timedelta(hours=order_time_limit)).timestamp()
     ]
 
     if not old_orders:
@@ -35,4 +36,6 @@ def cancel_stale_open_orders(user: User) -> t.List:
 
 
 if __name__ == "__main__":
-    cancel_stale_open_orders(user_from_env())
+    user = user_from_env()
+    for exchange in user.exchanges:
+        cancel_stale_open_orders(user, exchange)

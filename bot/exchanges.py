@@ -34,6 +34,15 @@ def purchase_minimum(exchange: SupportedExchanges) -> Decimal:
     return mapping[exchange]()
 
 
+def open_orders(exchange: SupportedExchanges, user: User) -> t.List[ExchangeOrder]:
+    mapping = {
+        SupportedExchanges.BINANCE: binance_open_orders,
+        # SupportedExchanges.COINBASE: coinbase_open_orders,
+    }
+
+    return mapping[exchange](user)
+
+
 _public_binance_client = None
 
 
@@ -214,20 +223,3 @@ def binance_normalize_price(amount: t.Union[str, Decimal], symbol: str) -> str:
     rounding_precision = min(asset_rounding_precision, tick_size_rounding_precision)
 
     return format(Decimal(amount), f"0.{rounding_precision}f")
-
-
-def binance_open_orders(user: User) -> t.List[CryptoBalance]:
-    return [
-        CryptoBalance(
-            # TODO PURCHASING_CURRENCY should make this dynamic for different purchasing currencies
-            # cut off the 'USD' at the end of the symbol
-            symbol=order["symbol"][:-3],
-            amount=Decimal(order["origQty"]),
-            usd_price=Decimal(order["price"]),
-            usd_total=Decimal(order["origQty"]) * Decimal(order["price"]),
-            percentage=Decimal(0),
-            target_percentage=Decimal(0),
-        )
-        for order in user.binance_client().get_open_orders()
-        if order["side"] == "BUY"
-    ]
