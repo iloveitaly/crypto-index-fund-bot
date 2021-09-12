@@ -27,7 +27,19 @@ def vcr_config():
     }
 
 
-# mock out ping; it's a useless call and causes issues with VCR
-from binance.client import Client
+# https://stackoverflow.com/questions/22627659/run-code-before-and-after-each-test-in-py-test
+@pytest.fixture(autouse=True)
+def clear_function_cache():
+    # clear all LRU cache
+    # https://stackoverflow.com/questions/40273767/clear-all-lru-cache-in-python
+    # these sort of hacks are making me think this is an anti-pattern
+    import functools
+    import gc
 
-Client.ping = lambda _self: {}
+    gc.collect()
+    wrappers = [a for a in gc.get_objects() if isinstance(a, functools._lru_cache_wrapper)]
+
+    for wrapper in wrappers:
+        wrapper.cache_clear()
+
+    yield
