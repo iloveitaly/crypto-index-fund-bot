@@ -2,7 +2,7 @@ import typing as t
 from decimal import Decimal
 
 from . import exchanges
-from .data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy
+from .data_types import CryptoBalance, CryptoData, MarketBuy, MarketBuyStrategy, SupportedExchanges
 from .user import User
 from .utils import log
 
@@ -120,7 +120,7 @@ def determine_market_buys(
     # it doesn't look like this is specified in the API, and the minimum is different
     # depending on if you are using the pro vs simple view. This is the purchasing minimum on binance
     # but not on
-    exchange_purchase_minimum = exchanges.binance_purchase_minimum()
+    exchange_purchase_minimum = exchanges.purchase_minimum(SupportedExchanges.BINANCE)
 
     user_purchase_minimum = user.purchase_min
     user_purchase_maximum = user.purchase_max

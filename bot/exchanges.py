@@ -25,6 +25,15 @@ def portfolio(exchange: SupportedExchanges, user: User) -> t.List[CryptoBalance]
     return mapping[exchange](user)
 
 
+def purchase_minimum(exchange: SupportedExchanges) -> Decimal:
+    mapping = {
+        SupportedExchanges.BINANCE: binance_purchase_minimum,
+        # SupportedExchanges.COINBASE: coinbase_purchase_minimum,
+    }
+
+    return mapping[exchange]()
+
+
 _public_binance_client = None
 
 
@@ -175,10 +184,6 @@ def price_of_symbol(symbol: str, purchasing_currency: str) -> Decimal:
         from . import market_cap
 
         return Decimal(market_cap.coinmarketcap_data_for_symbol(symbol)["quote"][purchasing_currency]["price"])
-
-
-def binance_purchase_minimum() -> Decimal:
-    return Decimal(10)
 
 
 def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str) -> str:

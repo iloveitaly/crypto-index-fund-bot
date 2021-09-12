@@ -1,3 +1,4 @@
+from bot.data_types import CryptoBalance, SupportedExchanges
 import typing as t
 
 from . import exchanges
@@ -7,7 +8,7 @@ from .utils import log
 
 # convert all stablecoins of the purchasing currency into the purchasing currency so we can use it
 # in binance, you need to purchase in USD and cannot purchase most currencies from a stablecoin
-def convert_stablecoins(user: User, portfolio) -> t.List[t.Dict]:
+def convert_stablecoins(user: User, exchange: SupportedExchanges, portfolio: t.List[CryptoBalance]) -> t.List[t.Dict]:
     purchasing_currency = user.purchasing_currency
     stablecoin_symbols = []
 
@@ -20,6 +21,7 @@ def convert_stablecoins(user: User, portfolio) -> t.List[t.Dict]:
 
     binance_client = user.binance_client()
     orders = []
+    exchange_purchase_min = exchanges.purchase_minimum(exchange)
 
     stablecoin_portfolio = [balance for balance in portfolio if balance["symbol"] in stablecoin_symbols]
 
@@ -27,8 +29,8 @@ def convert_stablecoins(user: User, portfolio) -> t.List[t.Dict]:
         purchase_symbol = balance["symbol"] + "USD"
         amount = balance["amount"]
 
-        if amount < exchanges.binance_purchase_minimum():
-            log.info("cannot convert stablecoin, not above minimum", symbol=purchase_symbol, amount=amount)
+        if amount < exchange_purchase_min:
+            log.info("cannot convert stablecoin, not above minimum", min=exchange_purchase_min, symbol=purchase_symbol, amount=amount)
             continue
 
         # TODO I ran into a case where I needed to subtract a cent to get binance not to fail

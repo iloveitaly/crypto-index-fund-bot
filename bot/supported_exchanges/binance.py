@@ -5,6 +5,10 @@ from ..data_types import CryptoBalance, CryptoData
 from ..user import User
 
 
+def binance_purchase_minimum() -> Decimal:
+    return Decimal(10)
+
+
 def binance_portfolio(user: User) -> t.List[CryptoBalance]:
     account = user.binance_client().get_account()
 

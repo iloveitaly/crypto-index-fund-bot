@@ -51,7 +51,7 @@ class BuyCommand:
         current_portfolio = exchanges.portfolio(SupportedExchanges.BINANCE, user)
 
         if user.convert_stablecoins:
-            convert_stablecoins.convert_stablecoins(user, current_portfolio)
+            convert_stablecoins.convert_stablecoins(user, SupportedExchanges.BINANCE, current_portfolio)
 
         # TODO we should wait for the stablecoin sells to clear and then refresh the portfolio
 
