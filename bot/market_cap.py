@@ -10,14 +10,14 @@ from .utils import log
 def coinmarketcap_data():
     import decouple
     import requests
+    import decimal
 
     coinmarketcap_api_key = decouple.config("COINMARKETCAP_API_KEY")
     coinbase_endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=1000&sort=market_cap"
 
     return utils.cached_result(
         "coinmarketcap_data",
-        # TODO specify decimal parser for json?
-        lambda: requests.get(coinbase_endpoint, headers={"X-CMC_PRO_API_KEY": coinmarketcap_api_key}).json(),
+        lambda: requests.get(coinbase_endpoint, headers={"X-CMC_PRO_API_KEY": coinmarketcap_api_key}).json(parse_float=decimal.Decimal),
     )
 
 
