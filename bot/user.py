@@ -55,7 +55,7 @@ class User:
     deprioritized_coins: t.List[str] = ["BNB", "DOGE", "XRP"]
     purchasing_currency: str = "USD"
     purchase_max: int = 50
-    purchase_min: int = 25
+    purchase_min: int = 10
     excluded_tags: t.List[str] = ["wrapped-tokens", "stablecoin"]
     exchanges: t.List[SupportedExchanges] = [SupportedExchanges.BINANCE]
 
