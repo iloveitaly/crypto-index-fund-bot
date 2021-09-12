@@ -27,9 +27,7 @@ def vcr_config():
     }
 
 
-# https://stackoverflow.com/questions/22627659/run-code-before-and-after-each-test-in-py-test
-@pytest.fixture(autouse=True)
-def clear_function_cache():
+def clear_functools_cache():
     # clear all LRU cache
     # https://stackoverflow.com/questions/40273767/clear-all-lru-cache-in-python
     # these sort of hacks are making me think this is an anti-pattern
@@ -41,6 +39,12 @@ def clear_function_cache():
 
     for wrapper in wrappers:
         wrapper.cache_clear()
+
+
+# https://stackoverflow.com/questions/22627659/run-code-before-and-after-each-test-in-py-test
+@pytest.fixture(autouse=True)
+def clear_state():
+    clear_functools_cache()
 
     # clear redis cache
     from django.core.cache import cache
