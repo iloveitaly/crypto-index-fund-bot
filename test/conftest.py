@@ -25,3 +25,9 @@ def vcr_config():
         # https://github.com/kevin1024/vcrpy/issues/516
         "allow_playback_repeats": True,
     }
+
+
+# mock out ping; it's a useless call and causes issues with VCR
+from binance.client import Client
+
+Client.ping = lambda _self: {}
