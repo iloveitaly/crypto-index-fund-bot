@@ -42,4 +42,13 @@ def clear_function_cache():
     for wrapper in wrappers:
         wrapper.cache_clear()
 
+    # clear redis cache
+    from django.core.cache import cache
+
+    cache.clear()
+
+    import bot.utils
+
+    bot.utils._cached_result = {}
+
     yield
