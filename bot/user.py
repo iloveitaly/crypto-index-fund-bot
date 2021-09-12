@@ -1,7 +1,12 @@
 import decimal
 import typing as t
 
-from .data_types import CryptoBalance, MarketBuyStrategy, MarketIndexStrategy, SupportedExchanges
+from .data_types import (
+    CryptoBalance,
+    MarketBuyStrategy,
+    MarketIndexStrategy,
+    SupportedExchanges,
+)
 from .utils import log
 
 
