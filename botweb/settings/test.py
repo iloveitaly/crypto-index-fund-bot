@@ -10,3 +10,12 @@ CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 
 DATABASES = {"default": dj_database_url.parse(config("TEST_DATABASE_URL"))}
+
+# right now, some tests rely on the ability to pull a valid user config from the ENV
+# let's make sure `config` doesn't throw an exception in this case. Since the cassettes
+# are recorded when there is a valid ENV-based user configuration we only need to worry
+# about this in CI
+os.environ.setdefault("USER_LIVEMODE", "true")
+os.environ.setdefault("USER_BINANCE_API_KEY", "")
+os.environ.setdefault("USER_BINANCE_SECRET_KEY", "")
+os.environ.setdefault("COINMARKETCAP_API_KEY", "")
