@@ -837,7 +837,7 @@ vcrpy = ">=2.0.1"
 
 [[package]]
 name = "python-binance"
-version = "1.0.12"
+version = "1.0.14"
 description = "Binance REST API python implementation"
 category = "main"
 optional = false
@@ -1154,7 +1154,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "aa60ee7faf614b480f9b5dd4bf180d45851da01978355c945b84a8de7c01488e"
+content-hash = "25087d34650569b4edc48d545763430ebdd7b99341539dd629edbe42b7d76afb"
 
 [metadata.files]
 aiohttp = [
@@ -1578,8 +1578,8 @@ pytest-recording = [
     {file = "pytest_recording-0.12.0-py3-none-any.whl", hash = "sha256:a94b000640fe5d05b34fa9e25dca1671dd7f21195502c5f4d2f600c31dc14f7e"},
 ]
 python-binance = [
-    {file = "python-binance-1.0.12.tar.gz", hash = "sha256:f3eaa3e93ce6f227073bc6cd131fb1fe9c9bd22195d3305ba75d523511474d49"},
-    {file = "python_binance-1.0.12-py2.py3-none-any.whl", hash = "sha256:941f0aa9420559e175612fcb2b9f836b98ffe06a812c01dd8ef7bdb132635435"},
+    {file = "python-binance-1.0.14.tar.gz", hash = "sha256:df5de5b2841a0a8f0be1941b30714b8251e1de98dd474e6101238f6f2a782d41"},
+    {file = "python_binance-1.0.14-py2.py3-none-any.whl", hash = "sha256:0ba5454653282c72d5a26f1501403bdabf1bce46fff8891f00946af370aae437"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
