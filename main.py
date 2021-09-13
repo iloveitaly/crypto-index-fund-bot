@@ -142,8 +142,10 @@ def convert(_self):
 @click.option("--cancel-orders", is_flag=True, help="Cancel all stale orders")
 def buy(format, dry_run, purchase_balance, convert, cancel_orders):
     from bot.commands import BuyCommand
+    from decimal import Decimal
 
     if purchase_balance:
+        purchase_balance = Decimal(purchase_balance)
         utils.log.info("dry run using fake purchase balance", purchase_balance=purchase_balance)
         dry_run = True
 

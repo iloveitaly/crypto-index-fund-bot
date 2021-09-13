@@ -5,7 +5,6 @@ A bot to build your own index fund of cryptocurrencies using dollar-cost averagi
 There are [bots](https://allcryptobots.com) out there that do this, so why build another? They are missing key features that I wanted:
 
 * Never sell any tokens. Instead, rebalance using USD deposits. ([HodlBot](https://www.hodlbot.io) can't do this)
-  * Selling triggers capital gains. This increases tax liability in the current year *and* adds tax reporting complexity.
 * Control which tokens are treated as deposits. Specifically, only use USD deposits for purchasing new currencies. ([Shrimpy](https://www.shrimpy.io) can't do this)
 * Build a cross-chain index (otherwise [TokenSets](https://www.tokensets.com) would have been perfect)
 * When new deposits come in, asset purchases should be prioritized by:
