@@ -1,5 +1,16 @@
+import json
+
 from django.db import models
 from encrypted_model_fields.fields import EncryptedCharField
+
+
+# for ensuring all floats are parsed as decimals
+class CustomJSONDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        from decimal import Decimal
+
+        kwargs["parse_float"] = Decimal
+        super().__init__(*args, **kwargs)
 
 
 class User(models.Model):
@@ -8,7 +19,7 @@ class User(models.Model):
     binance_api_key = EncryptedCharField(max_length=100, null=True)
     binance_secret_key = EncryptedCharField(max_length=100, null=True)
 
-    external_portfolio = models.JSONField(default=dict)
+    external_portfolio = models.JSONField(default=dict, decoder=CustomJSONDecoder)
     preferences = models.JSONField(default=dict)
     name = models.CharField(max_length=100)
     date_checked = models.DateTimeField(null=True)
