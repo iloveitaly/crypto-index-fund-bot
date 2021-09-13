@@ -6,7 +6,7 @@ authors = ["Michael Bianco <mike@mikebian.co>"]
 
 [tool.poetry.dependencies]
 python = ">=3.9.6,<=3.10"
-python-binance = "^1.0.12"
+python-binance = "^1.0.14"
 tabulate = "^0.8.9"
 coinbasepro = "^0.3.0"
 structlog = "^21.1.0"
