@@ -174,3 +174,15 @@ def binance_market_sell(user: User, symbol: str, purchasing_currency: str, amoun
     'transactTime': 1626264391365,
     'type': 'MARKET'}
     """
+
+    return ExchangeOrder(
+        symbol=sell_pair,
+        quantity=order["origQty"],
+        # TODO price doesn't mean anything in this context since the order is not filled
+        price=order["price"],
+        created_at=int(Decimal(order["time"]) / 1000),
+        time_in_force=order["timeInForce"],
+        type=order["side"],
+        id=order["orderId"],
+        exchange=SupportedExchanges.BINANCE,
+    )

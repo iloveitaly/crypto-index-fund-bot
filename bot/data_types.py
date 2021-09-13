@@ -32,6 +32,7 @@ class OrderTimeInForce(str, enum.Enum):
 ExchangeOrder = typing.TypedDict(
     "ExchangeOrder",
     {
+        # TODO should we change to trading pair?
         "symbol": str,
         "time_in_force": OrderTimeInForce,
         "type": OrderType,
