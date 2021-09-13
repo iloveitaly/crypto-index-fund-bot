@@ -1,8 +1,8 @@
 # Bot
 
+* Purchase more than the minimum
+* Make sure MIN_NOTIONAL is respected when LIMIT strategy is used
 * Refactor all binance stuff into a exchange-wrapped module
-  * Open orders
-  * Sell orders
   * Market orders
   * Limit orders
 * Offer a SME-based index?
@@ -32,3 +32,4 @@
 # Ideas
 
 * Can we use cointracker to get external portfolio data?
+* Check prices across exchanges?
