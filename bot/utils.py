@@ -61,7 +61,7 @@ def currency_format(value):
     # https://stackoverflow.com/questions/320929/currency-formatting-in-python
     import locale
 
-    locale.setlocale(locale.LC_ALL, "")
+    locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
     return locale.currency(value, grouping=True)
 
 
