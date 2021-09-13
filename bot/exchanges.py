@@ -42,6 +42,15 @@ def open_orders(exchange: SupportedExchanges, user: User) -> t.List[ExchangeOrde
     return mapping[exchange](user)
 
 
+def market_sell(exchange: SupportedExchanges, user: User, symbol: str, purchasing_currency: str, amount: Decimal):
+    mapping = {
+        SupportedExchanges.BINANCE: binance_market_sell,
+        # SupportedExchanges.COINBASE: coinbase_market_sell,
+    }
+
+    return mapping[exchange](user, symbol, purchasing_currency, amount)
+
+
 # TODO is there a way to enforce trading pair via typing?
 def binance_price_for_symbol(trading_pair: str) -> Decimal:
     """
@@ -61,19 +70,6 @@ def binance_price_for_symbol(trading_pair: str) -> Decimal:
             for price_dict in public_binance_client().get_all_tickers()
         },
     ).get(trading_pair)
-
-
-# TODO maybe document struct of dict?
-def binance_all_symbol_info() -> t.List[t.Dict]:
-    return utils.cached_result(
-        "binance_all_symbol_info",
-        # exchange info includes filters, status, etc but does NOT include pricing data
-        lambda: public_binance_client().get_exchange_info()["symbols"],
-    )
-
-
-def binance_get_symbol_info(trading_pair: str):
-    return next((symbol_info for symbol_info in binance_all_symbol_info() if symbol_info["symbol"] == trading_pair))
 
 
 def can_buy_amount_in_exchange(symbol: str):
@@ -177,33 +173,3 @@ def price_of_symbol(symbol: str, purchasing_currency: str) -> Decimal:
         from . import market_cap
 
         return Decimal(market_cap.coinmarketcap_data_for_symbol(symbol)["quote"][purchasing_currency]["price"])
-
-
-def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str) -> str:
-    symbol_info = binance_get_symbol_info(symbol)
-
-    # not 100% sure of the logic below, but I imagine it's possible for the quote asset precision
-    # and the step size precision to be different. In this case, to satisfy both filters, we'd need to pick the min
-    # asset_rounding_precision = symbol_info['quoteAssetPrecision']
-
-    # the quote precision is not what we need to round by, the stepSize needs to be used instead:
-    # https://github.com/sammchardy/python-binance/issues/219
-    step_size = next(f["stepSize"] for f in symbol_info["filters"] if f["filterType"] == "LOT_SIZE")
-    step_size_rounding_precision = int(round(-math.log(float(step_size), 10), 0))
-
-    # rounding_precision = min(asset_rounding_precision, step_size_rounding_precision)
-    rounding_precision = step_size_rounding_precision
-    return format(Decimal(amount), f"0.{rounding_precision}f")
-
-
-def binance_normalize_price(amount: t.Union[str, Decimal], symbol: str) -> str:
-    symbol_info = binance_get_symbol_info(symbol)
-
-    asset_rounding_precision = symbol_info["quoteAssetPrecision"]
-
-    tick_size = next(f["tickSize"] for f in symbol_info["filters"] if f["filterType"] == "PRICE_FILTER")
-    tick_size_rounding_precision = int(round(-math.log(float(tick_size), 10), 0))
-
-    rounding_precision = min(asset_rounding_precision, tick_size_rounding_precision)
-
-    return format(Decimal(amount), f"0.{rounding_precision}f")

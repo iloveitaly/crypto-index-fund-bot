@@ -141,8 +141,9 @@ def convert(_self):
 )
 @click.option("--cancel-orders", is_flag=True, help="Cancel all stale orders")
 def buy(format, dry_run, purchase_balance, convert, cancel_orders):
-    from bot.commands import BuyCommand
     from decimal import Decimal
+
+    from bot.commands import BuyCommand
 
     if purchase_balance:
         purchase_balance = Decimal(purchase_balance)

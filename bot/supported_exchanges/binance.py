@@ -1,9 +1,11 @@
 import functools
+import math
 import typing as t
 from decimal import Decimal
 
 from binance.client import Client as BinanceClient
 
+from .. import utils
 from ..data_types import CryptoBalance, ExchangeOrder, SupportedExchanges
 from ..user import User
 
@@ -84,3 +86,91 @@ def binance_open_orders(user: User) -> t.List[ExchangeOrder]:
         for order in user.binance_client().get_open_orders()
         if order["side"] == BinanceClient.SIDE_BUY
     ]
+
+
+# TODO maybe document struct of dict?
+def binance_all_symbol_info() -> t.List[t.Dict]:
+    return utils.cached_result(
+        "binance_all_symbol_info",
+        # exchange info includes filters, status, etc but does NOT include pricing data
+        lambda: public_binance_client().get_exchange_info()["symbols"],
+    )
+
+
+def binance_get_symbol_info(trading_pair: str):
+    return next((symbol_info for symbol_info in binance_all_symbol_info() if symbol_info["symbol"] == trading_pair))
+
+
+def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str) -> str:
+    symbol_info = binance_get_symbol_info(symbol)
+
+    # not 100% sure of the logic below, but I imagine it's possible for the quote asset precision
+    # and the step size precision to be different. In this case, to satisfy both filters, we'd need to pick the min
+    # asset_rounding_precision = symbol_info['quoteAssetPrecision']
+
+    # the quote precision is not what we need to round by, the stepSize needs to be used instead:
+    # https://github.com/sammchardy/python-binance/issues/219
+    step_size = next(f["stepSize"] for f in symbol_info["filters"] if f["filterType"] == "LOT_SIZE")
+    step_size_rounding_precision = int(round(-math.log(float(step_size), 10), 0))
+
+    # rounding_precision = min(asset_rounding_precision, step_size_rounding_precision)
+    rounding_precision = step_size_rounding_precision
+    return format(Decimal(amount), f"0.{rounding_precision}f")
+
+
+def binance_normalize_price(amount: t.Union[str, Decimal], symbol: str) -> str:
+    symbol_info = binance_get_symbol_info(symbol)
+
+    asset_rounding_precision = symbol_info["quoteAssetPrecision"]
+
+    tick_size = next(f["tickSize"] for f in symbol_info["filters"] if f["filterType"] == "PRICE_FILTER")
+    tick_size_rounding_precision = int(round(-math.log(float(tick_size), 10), 0))
+
+    rounding_precision = min(asset_rounding_precision, tick_size_rounding_precision)
+
+    return format(Decimal(amount), f"0.{rounding_precision}f")
+
+
+def binance_market_sell(user: User, symbol: str, purchasing_currency: str, amount: Decimal) -> ExchangeOrder:
+    # TODO I ran into a case where I needed to subtract a cent to get binance not to fail
+    #      this could have been a FPA bug, remove this if it doesn't come up again
+    # amount -= 0.01
+
+    sell_pair = symbol + purchasing_currency
+    normalized_amount = binance_normalize_price(amount, sell_pair)
+
+    order_params = {
+        "symbol": sell_pair,
+        "newOrderRespType": "FULL",
+        # allows us to purchase crypto in a currency of choice
+        # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
+        "quoteOrderQty": normalized_amount,
+    }
+
+    client = user.binance_client()
+
+    if user.livemode:
+        order = client.order_market_sell(**order_params)
+    else:
+        order = client.create_test_order(**({"side": client.SIDE_SELL} | order_params))
+
+    """
+    {'clientOrderId': 'nW6LJNE8YF1R0KWVR9r1qU',
+    'cummulativeQuoteQty': '84.0000',
+    'executedQty': '84.00000000',
+    'fills': [{'commission': '0.00020754',
+                'commissionAsset': 'BNB',
+                'price': '1.0000',
+                'qty': '84.00000000',
+                'tradeId': 191621}],
+    'orderId': 9624122,
+    'orderListId': -1,
+    'origQty': '84.00000000',
+    'price': '0.0000',
+    'side': 'SELL',
+    'status': 'FILLED',
+    'symbol': 'USDCUSD',
+    'timeInForce': 'GTC',
+    'transactTime': 1626264391365,
+    'type': 'MARKET'}
+    """
