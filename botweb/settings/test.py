@@ -16,6 +16,9 @@ DATABASES = {"default": dj_database_url.parse(config("TEST_DATABASE_URL"))}
 # are recorded when there is a valid ENV-based user configuration we only need to worry
 # about this in CI
 os.environ.setdefault("USER_LIVEMODE", "true")
-os.environ.setdefault("USER_BINANCE_API_KEY", "")
-os.environ.setdefault("USER_BINANCE_SECRET_KEY", "")
-os.environ.setdefault("COINMARKETCAP_API_KEY", "")
+if not config("USER_BINANCE_API_KEY", default=None):
+    os.environ.setdefault("USER_BINANCE_API_KEY", "")
+if not config("USER_BINANCE_SECRET_KEY", default=None):
+    os.environ.setdefault("USER_BINANCE_SECRET_KEY", "")
+if not config("COINMARKETCAP_API_KEY", default=None):
+    os.environ.setdefault("COINMARKETCAP_API_KEY", "")
