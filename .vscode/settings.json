@@ -1,0 +1,18 @@
+{
+  "cSpell.enableFiletypes": [
+    "!python",
+    "plaintext"
+  ],
+  "editor.formatOnSave": true,
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.linting.pylintArgs": ["--verbose"],
+  // https://gist.github.com/cb109/47496649640c9c5f4287b06db7a7c197
+  "python.sortImports.args": [
+    "--settings-path", "${workspaceFolder}",
+  ],
+  "[python]": {
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
+}
