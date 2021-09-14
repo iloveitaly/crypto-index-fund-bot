@@ -6,7 +6,8 @@ from decimal import Decimal
 from binance.client import Client as BinanceClient
 
 from .. import utils
-from ..data_types import CryptoBalance, ExchangeOrder, SupportedExchanges
+from ..utils import log
+from ..data_types import CryptoBalance, ExchangeOrder, SupportedExchanges, OrderTimeInForce, OrderType
 from ..user import User
 
 # https://algotrading101.com/learn/binance-python-api-guide/
@@ -74,12 +75,13 @@ def binance_open_orders(user: User) -> t.List[ExchangeOrder]:
             # TODO PURCHASING_CURRENCY should make this dynamic for different purchasing currencies
             # cut off the 'USD' at the end of the symbol
             symbol=order["symbol"][:-3],
+            trading_pair=order["symbol"],
             quantity=Decimal(order["origQty"]),
             price=Decimal(order["price"]),
             # binance represents time in milliseconds
             created_at=int(Decimal(order["time"]) / 1000),
-            time_in_force=order["timeInForce"],
-            type=order["side"],
+            time_in_force=OrderTimeInForce(order["timeInForce"]),
+            type=OrderType(order["side"]),
             id=order["orderId"],
             exchange=SupportedExchanges.BINANCE,
         )
@@ -176,7 +178,8 @@ def binance_market_sell(user: User, symbol: str, purchasing_currency: str, amoun
     """
 
     return ExchangeOrder(
-        symbol=sell_pair,
+        symbol=symbol,
+        trading_pair=sell_pair,
         quantity=order["origQty"],
         # TODO price doesn't mean anything in this context since the order is not filled
         price=order["price"],
@@ -186,3 +189,35 @@ def binance_market_sell(user: User, symbol: str, purchasing_currency: str, amoun
         id=order["orderId"],
         exchange=SupportedExchanges.BINANCE,
     )
+
+
+def binance_cancel_order(user: User, order: ExchangeOrder) -> ExchangeOrder:
+    client = user.binance_client()
+
+    order_params = {"orderId": order["id"], "symbol": order["trading_pair"]}
+
+    if user.livemode:
+        cancelled_order = client.cancel_order(**order_params)
+    else:
+        # there is no order cancellation in test mode
+        log.info("test mode order cancellation")
+
+    """
+    {'clientOrderId': 'hash',
+    'cummulativeQuoteQty': '0.0000',
+    'executedQty': '0.00000000',
+    'orderId': 259074455,
+    'orderListId': -1,
+    'origClientOrderId': 'hash',
+    'origQty': '5.10000000',
+    'price': '2.0000',
+    'side': 'BUY',
+    'status': 'CANCELED',
+    'symbol': 'ADAUSD',
+    'timeInForce': 'GTC',
+    'type': 'LIMIT'}
+    """
+
+    # TODO should we change the structure of the order at all to note that it is cancelled?
+
+    return order

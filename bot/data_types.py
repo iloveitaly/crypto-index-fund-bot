@@ -21,8 +21,8 @@ class MarketIndexStrategy(str, enum.Enum):
 
 
 class OrderType(str, enum.Enum):
-    BUY = "buy"
-    SELL = "sell"
+    BUY = "BUY"
+    SELL = "SELL"
 
 
 class OrderTimeInForce(str, enum.Enum):
@@ -32,8 +32,8 @@ class OrderTimeInForce(str, enum.Enum):
 ExchangeOrder = typing.TypedDict(
     "ExchangeOrder",
     {
-        # TODO should we change to trading pair?
         "symbol": str,
+        "trading_pair": str,
         "time_in_force": OrderTimeInForce,
         "type": OrderType,
         "created_at": int,

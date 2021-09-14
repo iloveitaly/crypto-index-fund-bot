@@ -51,6 +51,15 @@ def market_sell(exchange: SupportedExchanges, user: User, symbol: str, purchasin
     return mapping[exchange](user, symbol, purchasing_currency, amount)
 
 
+def cancel_order(exchange: SupportedExchanges, user: User, order: ExchangeOrder):
+    mapping = {
+        SupportedExchanges.BINANCE: binance_cancel_order,
+        # SupportedExchanges.COINBASE: coinbase_cancel_order,
+    }
+
+    return mapping[exchange](user, order)
+
+
 # TODO is there a way to enforce trading pair via typing?
 def binance_price_for_symbol(trading_pair: str) -> Decimal:
     """
@@ -90,7 +99,7 @@ def can_buy_amount_in_exchange(symbol: str):
     return True
 
 
-def can_buy_in_exchange(exchange, symbol, purchasing_currency):
+def can_buy_in_exchange(exchange: SupportedExchanges, symbol: str, purchasing_currency: str) -> bool:
     mapping = {"binance": can_buy_in_binance, "coinbase": can_buy_in_coinbase}
 
     return mapping[exchange](symbol, purchasing_currency)
