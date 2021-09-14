@@ -21,6 +21,8 @@ def setLevel(level):
         cache_logger_on_first_use=True,
     )
 
+    # TODO maybe round floats automatically? https://github.com/kiwicom/kiwi-structlog-config/blob/dc6bba731de956e0a76f148d0c77bd419bd95283/kw/structlog_config/processors.py#L16
+
 
 log_level = config("LOG_LEVEL", default="WARN")
 setLevel(log_level)

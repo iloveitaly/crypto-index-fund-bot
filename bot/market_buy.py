@@ -229,41 +229,11 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
         }
 
         if user.buy_strategy == MarketBuyStrategy.LIMIT:
-            # TODO extract this out into a separate file
+            from . import limit_buy
 
-            # order depth returns the lowest asks and the highest bids
-            # increasing limits returns lower bids and higher asks
-            # grab a long-ish order book to get some analytics on the order book
+            limit_price = limit_buy.determine_limit_price(user, purchase_symbol)
 
-            order_book = binance_client.get_order_book(symbol=purchase_symbol, limit=100)
-
-            # price that binance reports is at the bottom of the order book
-            # looks like they use the bottom of the ask stack to clear market orders (makes sense)
-            lowest_ask = order_book["asks"][0][0]
-            highest_bid = order_book["bids"][0][0]
-
-            ask_difference = Decimal(highest_bid) - Decimal(lowest_ask)
-
-            log.info(
-                "price analytics",
-                symbol=purchase_symbol,
-                difference=str(ask_difference),
-                percentage_difference=str(ask_difference / Decimal(lowest_ask) * Decimal(-100.0)),
-                bid=highest_bid,
-                ask=lowest_ask,
-                reported_price=exchanges.price_of_symbol(buy["symbol"], purchasing_currency),
-            )
-
-            # TODO calculate momentum, or low price over last 24hrs, to determine the ideal drop price
-            # TODO pull percentage drop attempt from user model
-            limit_price = min(Decimal(highest_bid), Decimal(lowest_ask) * Decimal(0.97))
-            limit_price = min(exchanges.low_over_last_day(purchase_symbol), limit_price)
             order_quantity = Decimal(buy["amount"]) / limit_price
-
-            # TODO can we inspect the order book depth here? Or general liquidity for the market?
-            #      what else can we do to improve our purchase strategy?
-
-            # TODO add option to use the midpoint, or some other position, of the order book instead of the lowest ask
 
             order_params |= {
                 # TODO is there a way to specify a number of hours? It seems like only the three standard TIF options are available
