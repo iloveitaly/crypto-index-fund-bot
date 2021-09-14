@@ -5,8 +5,10 @@ from unittest.mock import patch
 import binance.client
 import pytest
 
-from bot.data_types import MarketBuyStrategy, MarketIndexStrategy
+from bot.data_types import ExchangeOrder, MarketBuyStrategy, MarketIndexStrategy, SupportedExchanges
 from bot.user import user_from_env
+
+from bot.commands import BuyCommand
 
 
 @pytest.mark.vcr
@@ -45,8 +47,6 @@ class TestBuyCommand(unittest.TestCase):
     @patch.object(binance.client.Client, "get_open_orders", return_value=[])
     @patch("bot.exchanges.binance_portfolio", return_value=[])
     def test_off_allocation_portfolio(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):
-        from bot.commands import BuyCommand
-
         user = user_from_env()
         user.purchase_min = self.PURCHASE_MIN
         user.external_portfolio = [  # type: ignore
@@ -67,6 +67,33 @@ class TestBuyCommand(unittest.TestCase):
 
         # top market tokens should be prioritized
         assert set(all_order_tokens) == set(["BTCUSD", "ETHUSD", "ADAUSD", "SOLUSD"])
+
+    @patch(
+        "bot.exchanges.open_orders",
+        return_value=[
+            ExchangeOrder(
+                symbol="ADA",
+                trading_pair="ADAUSD",
+                quantity=Decimal("5.10000000"),
+                price=Decimal("2.0000"),
+                created_at=1631457393,
+                time_in_force="GTC",
+                type="BUY",
+                id="259074455",
+                exchange=SupportedExchanges.BINANCE,
+            )
+        ],
+    )
+    @patch("bot.exchanges.portfolio", return_value=[])
+    def test_cancelling_stale_orders(self, _mock_portfolio, _mock_open_orders):
+        user = user_from_env()
+        user.livemode = False
+
+        assert user.livemode == False
+        assert user.cancel_stale_orders == True
+        assert user.buy_strategy == MarketBuyStrategy.LIMIT
+
+        BuyCommand.execute(user=user)
 
     def test_not_buying_open_orders(self):
         pass
