@@ -1,8 +1,7 @@
 import typing as t
 
-from bot.data_types import CryptoBalance, SupportedExchanges
-
 from . import exchanges
+from .data_types import CryptoBalance, SupportedExchanges
 from .user import User
 from .utils import log
 

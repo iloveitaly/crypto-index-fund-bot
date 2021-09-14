@@ -1,9 +1,8 @@
 import datetime
 import typing as t
 
-from bot.data_types import OrderTimeInForce, OrderType, SupportedExchanges
-
 from . import exchanges
+from .data_types import OrderTimeInForce, OrderType, SupportedExchanges
 from .user import User, user_from_env
 from .utils import log
 

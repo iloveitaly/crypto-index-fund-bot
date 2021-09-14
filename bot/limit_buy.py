@@ -1,8 +1,7 @@
 from decimal import Decimal
 
-from bot.user import User
-
 from . import exchanges
+from .user import User
 from .utils import log
 
 # TODO this logic isn't scientific in any way, mostly a playground

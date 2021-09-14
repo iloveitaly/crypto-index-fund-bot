@@ -15,4 +15,5 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
     }
+  }
 }

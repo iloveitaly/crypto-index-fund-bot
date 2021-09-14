@@ -10,6 +10,8 @@ from bot.data_types import (
     ExchangeOrder,
     MarketBuyStrategy,
     MarketIndexStrategy,
+    OrderTimeInForce,
+    OrderType,
     SupportedExchanges,
 )
 from bot.user import user_from_env
@@ -81,8 +83,8 @@ class TestBuyCommand(unittest.TestCase):
                 quantity=Decimal("5.10000000"),
                 price=Decimal("2.0000"),
                 created_at=1631457393,
-                time_in_force="GTC",
-                type="BUY",
+                time_in_force=OrderTimeInForce("GTC"),
+                type=OrderType("BUY"),
                 id="259074455",
                 exchange=SupportedExchanges.BINANCE,
             )
