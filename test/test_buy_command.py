@@ -5,10 +5,14 @@ from unittest.mock import patch
 import binance.client
 import pytest
 
-from bot.data_types import ExchangeOrder, MarketBuyStrategy, MarketIndexStrategy, SupportedExchanges
-from bot.user import user_from_env
-
 from bot.commands import BuyCommand
+from bot.data_types import (
+    ExchangeOrder,
+    MarketBuyStrategy,
+    MarketIndexStrategy,
+    SupportedExchanges,
+)
+from bot.user import user_from_env
 
 
 @pytest.mark.vcr

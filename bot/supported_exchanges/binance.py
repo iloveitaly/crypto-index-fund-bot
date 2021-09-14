@@ -6,9 +6,15 @@ from decimal import Decimal
 from binance.client import Client as BinanceClient
 
 from .. import utils
-from ..utils import log
-from ..data_types import CryptoBalance, ExchangeOrder, SupportedExchanges, OrderTimeInForce, OrderType
+from ..data_types import (
+    CryptoBalance,
+    ExchangeOrder,
+    OrderTimeInForce,
+    OrderType,
+    SupportedExchanges,
+)
 from ..user import User
+from ..utils import log
 
 # https://algotrading101.com/learn/binance-python-api-guide/
 # https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
