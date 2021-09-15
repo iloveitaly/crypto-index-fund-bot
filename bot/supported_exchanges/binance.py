@@ -1,3 +1,4 @@
+import decimal
 import functools
 import math
 import typing as t
@@ -118,12 +119,13 @@ def binance_normalize_purchase_amount(amount: t.Union[str, Decimal], symbol: str
 
     # the quote precision is not what we need to round by, the stepSize needs to be used instead:
     # https://github.com/sammchardy/python-binance/issues/219
-    step_size = next(f["stepSize"] for f in symbol_info["filters"] if f["filterType"] == "LOT_SIZE")
-    step_size_rounding_precision = int(round(-math.log(float(step_size), 10), 0))
+    # {'filterType': 'LOT_SIZE', 'minQty': '0.10000000', 'maxQty': '9000000.00000000', 'stepSize': '0.10000000'},
+    step_size = next(Decimal(f["stepSize"]) for f in symbol_info["filters"] if f["filterType"] == "LOT_SIZE")
+    amount = Decimal(amount)
 
-    # rounding_precision = min(asset_rounding_precision, step_size_rounding_precision)
-    rounding_precision = step_size_rounding_precision
-    return format(Decimal(amount), f"0.{rounding_precision}f")
+    # normalize removes trailing zeros, which modifies the precision that quantize uses for rounding
+    # https://stackoverflow.com/questions/11227620/drop-trailing-zeros-from-decimal
+    return str(amount.quantize(Decimal(step_size).normalize(), rounding=decimal.ROUND_UP))
 
 
 def binance_normalize_price(amount: t.Union[str, Decimal], symbol: str) -> str:
@@ -189,7 +191,7 @@ def binance_market_sell(user: User, symbol: str, purchasing_currency: str, amoun
         quantity=order["origQty"],
         # TODO price doesn't mean anything in this context since the order is not filled
         price=order["price"],
-        created_at=int(Decimal(order["time"]) / 1000),
+        created_at=int(Decimal(order["transactTime"]) / 1000),
         time_in_force=order["timeInForce"],
         type=order["side"],
         id=order["orderId"],

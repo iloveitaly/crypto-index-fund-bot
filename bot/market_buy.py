@@ -78,7 +78,6 @@ def calculate_market_buy_preferences(
             return 0
 
         current_allocation_delta = coin_data["percentage"] / current_percentage
-
         if current_allocation_delta > 6:
             return 0
         else:
