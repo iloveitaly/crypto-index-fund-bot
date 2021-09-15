@@ -94,6 +94,7 @@ class TestBuyCommand(unittest.TestCase):
     def test_cancelling_stale_orders(self, _mock_portfolio, _mock_open_orders):
         user = user_from_env()
         user.livemode = False
+        user.cancel_stale_orders = True
 
         assert user.livemode == False
         assert user.cancel_stale_orders == True
