@@ -105,7 +105,7 @@ def portfolio(format):
 
 # TODO this command needs to be cleaned up with some more options
 @cli.command(short_help="Convert stablecoins to USD for purchasing")
-def convert(_self):
+def convert():
     import bot.convert_stablecoins as convert_stablecoins
     import bot.exchanges as exchanges
 
