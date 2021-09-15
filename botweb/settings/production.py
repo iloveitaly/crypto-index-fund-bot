@@ -12,4 +12,4 @@ if sentry_dsn := config("SENTRY_DSN", default=None):
         traces_sample_rate=1.0,
     )
 
-DATABASES = {"default": dj_database_url.parse(config("TEST_DATABASE_URL"))}
+DATABASES = {"default": dj_database_url.parse(config("DATABASE_URL"))}
