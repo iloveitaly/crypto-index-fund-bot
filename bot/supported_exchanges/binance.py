@@ -251,7 +251,7 @@ Binance Order structure:
 """
 
 
-def binance_market_buy(user: User, symbol: str, purchasing_currency: str, amount: Decimal) -> ExchangeOrder:
+def binance_market_buy(user: User, symbol: str, purchasing_currency: str, amount: Decimal) -> t.Optional[ExchangeOrder]:
     from binance.exceptions import BinanceAPIException
 
     client = user.binance_client()
@@ -290,7 +290,7 @@ def binance_market_buy(user: User, symbol: str, purchasing_currency: str, amount
     )
 
 
-def binance_limit_buy(user: User, symbol: str, purchasing_currency: str, quantity: Decimal, price: Decimal) -> ExchangeOrder:
+def binance_limit_buy(user: User, symbol: str, purchasing_currency: str, quantity: Decimal, price: Decimal) -> t.Optional[ExchangeOrder]:
     from binance.exceptions import BinanceAPIException
 
     client = user.binance_client()
