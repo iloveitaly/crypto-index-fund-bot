@@ -81,6 +81,24 @@ def binance_price_for_symbol(trading_pair: str) -> Decimal:
     ).get(trading_pair)
 
 
+def limit_buy(exchange: SupportedExchanges, user: User, purchasing_currency: str, symbol: str, quantity: Decimal, price: Decimal):
+    mapping = {
+        SupportedExchanges.BINANCE: binance_limit_buy,
+        # SupportedExchanges.COINBASE: coinbase_limit_buy,
+    }
+
+    return mapping[exchange](user, symbol, purchasing_currency, quantity, price)
+
+
+def market_buy(exchange: SupportedExchanges, user: User, purchasing_currency: str, symbol: str, amount: Decimal):
+    mapping = {
+        SupportedExchanges.BINANCE: binance_market_buy,
+        # SupportedExchanges.COINBASE: coinbase_limit_buy,
+    }
+
+    return mapping[exchange](user, symbol, purchasing_currency, amount)
+
+
 def can_buy_amount_in_exchange(symbol: str):
     binance_symbol_info = binance_get_symbol_info(symbol)
 

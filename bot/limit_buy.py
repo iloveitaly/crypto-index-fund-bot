@@ -7,8 +7,10 @@ from .utils import log
 # TODO this logic isn't scientific in any way, mostly a playground
 
 
-def determine_limit_price(user: User, trading_pair: str):
+def determine_limit_price(user: User, symbol: str, purchasing_currency: str) -> Decimal:
     # TODO this is binance-specific right now, refactor this out
+
+    trading_pair = symbol + purchasing_currency
 
     client = user.binance_client()
 
@@ -34,7 +36,8 @@ def determine_limit_price(user: User, trading_pair: str):
         "price analytics",
         symbol=trading_pair,
         ask_bid_difference=ask_difference,
-        percentage_difference=ask_difference / Decimal(lowest_ask) * Decimal(-100.0),
+        ask_bid_percentage_difference=ask_difference / Decimal(lowest_ask) * Decimal(-100.0),
+        last_day_low_difference=last_day_low / Decimal(lowest_ask) * Decimal(-100.0),
         bid=highest_bid,
         ask=lowest_ask,
         last_day_low=last_day_low,

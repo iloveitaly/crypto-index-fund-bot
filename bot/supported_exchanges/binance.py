@@ -229,3 +229,102 @@ def binance_cancel_order(user: User, order: ExchangeOrder) -> ExchangeOrder:
     # TODO should we change the structure of the order at all to note that it is cancelled?
 
     return order
+
+
+"""
+Binance Order structure:
+
+[{'clientOrderId': 'Egjlu8owfhb0GTnp5auohS',
+'cummulativeQuoteQty': '0.0000',
+'executedQty': '0.00000000',
+'fills': [],
+'orderId': 18367859,
+'orderListId': -1,
+'origQty': '0.24700000',
+'price': '56.8830',
+'side': 'BUY',
+'status': 'NEW',
+'symbol': 'ZENUSD',
+'timeInForce': 'GTC',
+'transactTime': 1628012040277,
+'type': 'LIMIT'}]
+"""
+
+
+def binance_market_buy(user: User, symbol: str, purchasing_currency: str, amount: Decimal) -> ExchangeOrder:
+    from binance.exceptions import BinanceAPIException
+
+    client = user.binance_client()
+    trading_pair = symbol + purchasing_currency
+
+    order_params = {
+        "symbol": trading_pair,
+        "newOrderRespType": "FULL",
+        # `quoteOrderQty` allows us to purchase crypto in a currency of choice, instead of an amount in the token we are buying
+        # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
+        "quoteOrderQty": binance_normalize_price(amount, trading_pair),
+    }
+
+    log.info("submitting market buy order", order=order_params)
+
+    try:
+        if user.livemode:
+            binance_order = client.order_market_buy(**order_params)
+        else:
+            binance_order = client.create_test_order(**({"side": client.SIDE_BUY, "type": client.ORDER_TYPE_MARKET} | order_params))
+    except BinanceAPIException as e:
+        log.error("failed to submit market buy order", error=e)
+        return None
+
+    return ExchangeOrder(
+        symbol=symbol,
+        trading_pair=trading_pair,
+        quantity=binance_order["origQty"],
+        # TODO price doesn't mean anything in this context since the order is not filled
+        price=binance_order["price"],
+        created_at=int(Decimal(binance_order["transactTime"]) / 1000),
+        time_in_force=OrderTimeInForce(binance_order["timeInForce"]),
+        type=OrderType(binance_order["side"]),
+        id=binance_order["orderId"],
+        exchange=SupportedExchanges.BINANCE,
+    )
+
+
+def binance_limit_buy(user: User, symbol: str, purchasing_currency: str, quantity: Decimal, price: Decimal) -> ExchangeOrder:
+    from binance.exceptions import BinanceAPIException
+
+    client = user.binance_client()
+    trading_pair = symbol + purchasing_currency
+
+    order_params = {
+        "symbol": trading_pair,
+        "newOrderRespType": "FULL",
+        # TODO is there a way to specify a number of hours? It seems like only the three standard TIF options are available
+        "timeInForce": "GTC",
+        "quantity": binance_normalize_purchase_amount(quantity, trading_pair),
+        "price": binance_normalize_price(price, trading_pair),
+    }
+
+    log.info("submitting limit buy order", order=order_params)
+
+    try:
+        if user.livemode:
+            binance_order = client.order_limit_buy(**order_params)
+        else:
+            binance_order = client.create_test_order(**({"side": client.SIDE_BUY, "type": client.ORDER_TYPE_LIMIT} | order_params))
+    except BinanceAPIException as e:
+        log.error("failed to submit limit buy order", error=e)
+        return None
+
+    return ExchangeOrder(
+        symbol=symbol,
+        trading_pair=trading_pair,
+        quantity=binance_order["origQty"],
+        # TODO price doesn't mean anything in this context since the order is not filled
+        price=binance_order["price"],
+        created_at=int(Decimal(binance_order["transactTime"]) / 1000),
+        time_in_force=OrderTimeInForce(binance_order["timeInForce"]),
+        type=OrderType(binance_order["side"]),
+        id=binance_order["orderId"],
+        exchange=SupportedExchanges.BINANCE,
+    )

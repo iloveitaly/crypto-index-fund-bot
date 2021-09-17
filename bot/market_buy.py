@@ -104,7 +104,6 @@ def purchasing_currency_in_portfolio(user: User, portfolio: t.List[CryptoBalance
     return max(total - reserve_amount, Decimal(0))  # type: ignore
 
 
-# TODO pass exchange reference into this method and remove hardcoded binance stuff
 def determine_market_buys(
     user: User,
     sorted_buy_preferences: t.List[CryptoData],
@@ -210,94 +209,37 @@ def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
         return []
 
     purchasing_currency = user.purchasing_currency
-    binance_client = user.binance_client()
     orders = []
 
     # TODO consider executing limit orders based on the current market orders
     #      this could ensure we don't overpay for an asset with low liquidity
 
     for buy in market_buys:
-        # TODO extract this out into a binance specific method
-
-        # symbol is: `baseasset` + `quoteasset`
-        purchase_symbol = buy["symbol"] + purchasing_currency
-
-        order_params = {
-            "symbol": purchase_symbol,
-            "newOrderRespType": "FULL",
-        }
+        symbol = buy["symbol"]
+        amount = buy["amount"]
 
         if user.buy_strategy == MarketBuyStrategy.LIMIT:
             from . import limit_buy
 
-            limit_price = limit_buy.determine_limit_price(user, purchase_symbol)
+            limit_price = limit_buy.determine_limit_price(user, symbol, purchasing_currency)
 
             order_quantity = Decimal(buy["amount"]) / limit_price
 
-            order_params |= {
-                # TODO is there a way to specify a number of hours? It seems like only the three standard TIF options are available
-                "timeInForce": "GTC",
-                "quantity": exchanges.binance_normalize_purchase_amount(order_quantity, purchase_symbol),
-                "price": exchanges.binance_normalize_price(limit_price, purchase_symbol),
-            }
-
-            log.info("submitting limit buy order", order=order_params)
+            order = exchanges.limit_buy(
+                exchange=SupportedExchanges.BINANCE,
+                user=user,
+                purchasing_currency=purchasing_currency,
+                symbol=symbol,
+                quantity=order_quantity,
+                price=limit_price,
+            )
         else:  # market
-            order_params |= {
-                # `quoteOrderQty` allows us to purchase crypto in a currency of choice, instead of an amount in the token we are buying
-                # https://dev.binance.vision/t/beginners-guide-to-quoteorderqty-market-orders/404
-                "quoteOrderQty": exchanges.binance_normalize_price(buy["amount"], purchase_symbol),
-            }
+            order = exchanges.market_buy(
+                exchange=SupportedExchanges.BINANCE, user=user, symbol=symbol, purchasing_currency=purchasing_currency, amount=amount
+            )
 
-            log.info("submitting market buy order", order=order_params)
+        orders.append(order)
 
-        from binance.exceptions import BinanceAPIException
-
-        """
-    Order structure:
-
-    [{'clientOrderId': 'Egjlu8owfhb0GTnp5auohS',
-    'cummulativeQuoteQty': '0.0000',
-    'executedQty': '0.00000000',
-    'fills': [],
-    'orderId': 18367859,
-    'orderListId': -1,
-    'origQty': '0.24700000',
-    'price': '56.8830',
-    'side': 'BUY',
-    'status': 'NEW',
-    'symbol': 'ZENUSD',
-    'timeInForce': 'GTC',
-    'transactTime': 1628012040277,
-    'type': 'LIMIT'}]
-    """
-
-        try:
-            if user.livemode:
-                if user.buy_strategy == MarketBuyStrategy.LIMIT:
-                    order = binance_client.order_limit_buy(**order_params)
-                else:
-                    order = binance_client.order_market_buy(**order_params)
-            else:
-                from binance.client import Client
-
-                # if test is successful, order will be an empty dict
-                order = binance_client.create_test_order(
-                    **(
-                        {
-                            "side": Client.SIDE_BUY,
-                            "type": Client.ORDER_TYPE_LIMIT if user.buy_strategy == MarketBuyStrategy.LIMIT else Client.ORDER_TYPE_MARKET,
-                        }
-                        | order_params
-                    )
-                )
-
-            log.info("order successfully completed", order=order)
-
-            orders.append(order)
-        except BinanceAPIException as e:
-            log.error("failed to submit market buy order", error=e)
-
-    # in testmode, the result is an empty dict
+    # in testmode, or in the case of an error, the result is an empty dict
     # remove this since it doesn't provide any useful information and is confusing to parse downstream
     return list(filter(None, orders))
