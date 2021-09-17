@@ -139,6 +139,12 @@ docker compose run worker bash
 python manage.py shell_plus
 ```
 
+Here's how to create a new user once you are in the django shell:
+
+```
+User.objects.create(name="peter pan", binance_api_key="...", binance_secret_key="...")
+```
+
 If you want to update your deployment to the latest version:
 
 ```shell
