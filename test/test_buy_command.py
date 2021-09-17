@@ -95,6 +95,7 @@ class TestBuyCommand(unittest.TestCase):
         user = user_from_env()
         user.livemode = False
         user.cancel_stale_orders = True
+        user.buy_strategy = MarketBuyStrategy.LIMIT
 
         assert user.livemode == False
         assert user.cancel_stale_orders == True
