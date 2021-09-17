@@ -18,6 +18,15 @@ jobs:
       TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
       DJANGO_SETTINGS_MODULE: botweb.settings.test
 
+      # right now, some tests rely on the ability to pull a valid user config from the ENV
+      # let's make sure `config` doesn't throw an exception in this case. Since the cassettes
+      # are recorded when there is a valid ENV-based user configuration we only need to worry
+      # about this in CI
+      USER_LIVEMODE: true
+      USER_BINANCE_API_KEY: ""
+      USER_BINANCE_SECRET_KEY: ""
+      COINMARKETCAP_API_KEY: ""
+
     services:
       redis:
         image: redis
