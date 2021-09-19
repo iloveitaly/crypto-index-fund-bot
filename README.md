@@ -26,7 +26,7 @@ Here are some features I *didn't* want that I could imagine others would like:
 * Rebalancing by selling existing tokens
 * Using a DEX vs a centralized exchange
 
-Also, [I wanted to learn python](https://mikebian.co/building-a-crypto-index-bot-and-learning-python/), and this was a perfect [learning project.](http://mikebian.co/my-process-for-intentional-learning/) Please excuse any beginner-python code (and submit PRs to fix!).
+Also, [I wanted to learn python](https://mikebian.co/building-a-crypto-index-bot-and-learning-python/) and [learn django](https://github.com/iloveitaly/crypto-index-fund-bot#heroku-deployment), and this was a perfect [learning project.](http://mikebian.co/my-process-for-intentional-learning/) Please excuse any beginner-python code (and submit PRs to fix!).
 
 ## Install
 
@@ -61,6 +61,8 @@ Then, you'll be ready to jump into a venv and start playing:
 poetry shell
 python main.py
 ```
+
+Not all configuration options are available via the CLI or the `USER_*` env vars. Checkout `bot/user.py` for more configuration options.
 
 ## Command Line Usage
 
@@ -118,7 +120,7 @@ I'm not running this on Heroku, so it will need a bit of work. Here are some not
 * Redis + postgres would need to be configured, along with `DJANGO_SETTINGS_MODULE`
 
 
-## Single-user Deployment
+## Single-user Docker Deployment
 
 You can use docker to deploy a single-user instance of this bot to a VPS or a local machine like a Raspberry Pi.
 
@@ -132,7 +134,7 @@ There is a `SCHEDULE` variable which you can use to configure how often the acco
 
 `external_portfolio.json` is copied into the container if it exists locally.
 
-## Multi-user Deployment
+## Multi-user Docker Deployment
 
 In addition to sourcing the user configuration from `.env` and running the bot in single-user mode, you can run the bot in multi-user mode. If you do this:
 
