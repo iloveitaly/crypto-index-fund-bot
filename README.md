@@ -102,6 +102,22 @@ This is the command you'll want to setup on a cron job:
 python main.py buy
 ```
 
+## Heroku Deployment
+
+I'm not running this on Heroku, so it will need a bit of work. Here are some notes on what needs to be done, feel free to submit a PR!
+
+#### Single-user
+
+* Repo should build just fine on heroku as-is
+* You'll need a Procfile with something like `worker: python main.py buy` which is triggered via the heroku scheduler
+* You'd need to figure out how to get `external_portfolio.json` in the image, or modify the `user_from_env` to parse JSON from an environment variable or something.
+
+#### Multi-user
+
+* You'll need a worker process modeled after `celery.sh`
+* Redis + postgres would need to be configured, along with `DJANGO_SETTINGS_MODULE`
+
+
 ## Single-user Deployment
 
 You can use docker to deploy a single-user instance of this bot to a VPS or a local machine like a Raspberry Pi.
