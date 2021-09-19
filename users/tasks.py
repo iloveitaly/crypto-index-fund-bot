@@ -53,6 +53,10 @@ def user_buy(user_id):
     user = User.objects.get(id=user_id)
     bot_user = user.bot_user()
 
+    import sentry_sdk
+
+    sentry_sdk.set_user({"id": user_id, "username": user.name})
+
     bot.utils.log.bind(user_id=user.id)
     bot.utils.log.info("initiating buys for user")
 
