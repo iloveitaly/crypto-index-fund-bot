@@ -162,7 +162,7 @@ def binance_market_sell(user: User, symbol: str, purchasing_currency: str, amoun
     if user.livemode:
         order = client.order_market_sell(**order_params)
     else:
-        order = client.create_test_order(**({"side": client.SIDE_SELL} | order_params))
+        order = client.create_test_order(**({"side": client.SIDE_SELL, "type": client.ORDER_TYPE_MARKET} | order_params))
 
     """
     {'clientOrderId': 'nW6LJNE8YF1R0KWVR9r1qU',
