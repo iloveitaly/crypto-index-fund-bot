@@ -17,32 +17,12 @@ from bot.data_types import (
 from bot.user import user_from_env
 
 
-# TODO improve some of the fields to look more real
-def mocked_order_result(*args, **order_params):
-    return {
-        "clientOrderId": "Egjlu8owfhb0GTnp5auohS",
-        "cummulativeQuoteQty": "0.0000",
-        "executedQty": "0.00000000",
-        "fills": [],
-        "orderId": 18367859,
-        "orderListId": -1,
-        "origQty": order_params["quoteOrderQty"],
-        "price": "56.8830",
-        "side": "BUY",
-        "status": "NEW",
-        "symbol": order_params["symbol"],
-        "timeInForce": "GTC",
-        "transactTime": 1628012040277,
-        "type": "LIMIT",
-    }
-
-
 @pytest.mark.vcr
 class TestBuyCommand(unittest.TestCase):
     PURCHASE_MIN = 25
 
     # initial buys should prioritize coins that take up a large amount of the index first
-    @patch.object(binance.client.Client, "order_market_buy", side_effect=mocked_order_result)
+    @patch.object(binance.client.Client, "order_market_buy", side_effect=pytest.helpers.mocked_order_result)
     @patch.object(binance.client.Client, "get_open_orders", return_value=[])
     @patch("bot.exchanges.binance_portfolio", return_value=[])
     def test_initial_buy(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):
@@ -70,7 +50,7 @@ class TestBuyCommand(unittest.TestCase):
         # top market tokens should be prioritized
         assert set(all_order_tokens) == set(["BTCUSD", "ETHUSD", "ADAUSD"])
 
-    @patch.object(binance.client.Client, "order_market_buy", side_effect=mocked_order_result)
+    @patch.object(binance.client.Client, "order_market_buy", side_effect=pytest.helpers.mocked_order_result)
     @patch.object(binance.client.Client, "get_open_orders", return_value=[])
     @patch("bot.exchanges.binance_portfolio", return_value=[])
     def test_off_allocation_portfolio(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):

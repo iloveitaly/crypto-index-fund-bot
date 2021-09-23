@@ -5,18 +5,18 @@ import binance.client
 import pytest
 from click.testing import CliRunner
 
+import bot.user
 import main
 from bot.data_types import MarketBuyStrategy, MarketIndexStrategy
-from bot.user import user_from_env
 
 
 @pytest.mark.vcr
 class TestCLI(unittest.TestCase):
-    @patch.object(binance.client.Client, "order_market_buy", return_value={})
+    @patch.object(binance.client.Client, "order_market_buy", side_effect=pytest.helpers.mocked_order_result)
     @patch("bot.market_buy.purchasing_currency_in_portfolio", return_value=20)
     def test_market_buy(self, _purchasing_currency_mock, order_market_buy_mock):
         # user preconditions
-        user = user_from_env()
+        user = bot.user.user_from_env()
         user.buy_strategy = MarketBuyStrategy.MARKET
 
         assert True == user.livemode
@@ -24,8 +24,9 @@ class TestCLI(unittest.TestCase):
         assert MarketBuyStrategy.MARKET == user.buy_strategy
         assert MarketIndexStrategy.MARKET_CAP == user.index_strategy
 
-        runner = CliRunner()
-        result = runner.invoke(main.buy, [])
+        with patch("main.user_from_env", return_value=user):
+            runner = CliRunner()
+            result = runner.invoke(main.buy, [])
 
         # output is redirected to the result object, let's output for debugging
         print(result.output)
