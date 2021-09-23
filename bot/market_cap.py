@@ -8,18 +8,21 @@ from .utils import log
 
 
 def coinmarketcap_data():
-    import decimal
-
     import decouple
     import requests
 
-    coinmarketcap_api_key = decouple.config("COINMARKETCAP_API_KEY")
-    coinbase_endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=1000&sort=market_cap"
+    def get_coinmarketcap_data():
+        coinmarketcap_api_key = decouple.config("COINMARKETCAP_API_KEY")
+        coinbase_endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=1000&sort=market_cap"
+        headers = {"X-CMC_PRO_API_KEY": coinmarketcap_api_key}
+        response = requests.get(coinbase_endpoint, headers=headers)
 
-    return utils.cached_result(
-        "coinmarketcap_data",
-        lambda: requests.get(coinbase_endpoint, headers={"X-CMC_PRO_API_KEY": coinmarketcap_api_key}).json(parse_float=decimal.Decimal),
-    )
+        if not response.ok:
+            raise Exception("invalid response from coinmarketcap, probably bad api key")
+
+        return response.json(parse_float=Decimal)
+
+    return utils.cached_result("coinmarketcap_data", get_coinmarketcap_data)
 
 
 # for debugging / testing only
