@@ -32,6 +32,35 @@ def binance_purchase_minimum() -> Decimal:
     return Decimal(10)
 
 
+def can_buy_in_binance(symbol, purchasing_currency):
+    for coin in binance_all_symbol_info():
+        if coin["baseAsset"] == symbol and coin["quoteAsset"] == purchasing_currency:
+            return True
+
+    return False
+
+
+# TODO is there a way to enforce trading pair via typing?
+def binance_price_for_symbol(trading_pair: str) -> Decimal:
+    """
+    trading_pair must be in the format of "BTCUSD"
+
+    This method will throw an exception if the price does not exist.
+    """
+
+    # `symbol` is a trading pair
+    # this includes both USDT and USD prices
+    # the pair formatting is 'BTCUSD'
+    return utils.cached_result(
+        "binance_price_for_symbol",
+        lambda: {
+            price_dict["symbol"]: Decimal(price_dict["price"])
+            # `get_all_tickers` is only called once
+            for price_dict in public_binance_client().get_all_tickers()
+        },
+    ).get(trading_pair)
+
+
 def binance_portfolio(user: User) -> t.List[CryptoBalance]:
     account = user.binance_client().get_account()
 
