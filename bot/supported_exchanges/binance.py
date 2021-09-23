@@ -272,6 +272,9 @@ def binance_market_buy(user: User, symbol: str, purchasing_currency: str, amount
             binance_order = client.order_market_buy(**order_params)
         else:
             binance_order = client.create_test_order(**({"side": client.SIDE_BUY, "type": client.ORDER_TYPE_MARKET} | order_params))
+
+            # test orders do not generate a valid response hash
+            return None
     except BinanceAPIException as e:
         log.error("failed to submit market buy order", error=e)
         return None
@@ -312,6 +315,9 @@ def binance_limit_buy(user: User, symbol: str, purchasing_currency: str, quantit
             binance_order = client.order_limit_buy(**order_params)
         else:
             binance_order = client.create_test_order(**({"side": client.SIDE_BUY, "type": client.ORDER_TYPE_LIMIT} | order_params))
+
+            # test orders do not generate a valid response hash
+            return None
     except BinanceAPIException as e:
         log.error("failed to submit limit buy order", error=e)
         return None
