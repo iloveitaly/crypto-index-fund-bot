@@ -17,6 +17,7 @@ class TestCLI(unittest.TestCase):
     def test_market_buy(self, _purchasing_currency_mock, order_market_buy_mock):
         # user preconditions
         user = user_from_env()
+        user.buy_strategy = MarketBuyStrategy.MARKET
 
         assert True == user.livemode
         assert 10 == user.purchase_min

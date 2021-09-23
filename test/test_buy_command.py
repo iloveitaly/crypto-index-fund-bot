@@ -31,6 +31,7 @@ class TestBuyCommand(unittest.TestCase):
         user = user_from_env()
         user.external_portfolio = []
         user.purchase_min = self.PURCHASE_MIN
+        user.buy_strategy = MarketBuyStrategy.MARKET
 
         assert user.external_portfolio == []
         assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB"])
@@ -55,6 +56,7 @@ class TestBuyCommand(unittest.TestCase):
     def test_off_allocation_portfolio(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):
         user = user_from_env()
         user.purchase_min = self.PURCHASE_MIN
+        user.buy_strategy = MarketBuyStrategy.MARKET
         user.external_portfolio = [  # type: ignore
             {"symbol": "DOGE", "amount": Decimal("1000000")},
             {"symbol": "ETH", "amount": Decimal("0.05")},
