@@ -60,7 +60,6 @@ def clear_state():
 
 # TODO improve some of the fields to look more real
 # https://stackoverflow.com/questions/16162015/mocking-python-function-based-on-input-arguments
-@pytest.helpers.register
 def mocked_order_result(*args, **order_params):
     return {
         "clientOrderId": "Egjlu8owfhb0GTnp5auohS",

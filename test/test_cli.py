@@ -1,4 +1,5 @@
 import unittest
+from test.conftest import mocked_order_result
 from unittest.mock import patch
 
 import binance.client
@@ -12,7 +13,7 @@ from bot.data_types import MarketBuyStrategy, MarketIndexStrategy
 
 @pytest.mark.vcr
 class TestCLI(unittest.TestCase):
-    @patch.object(binance.client.Client, "order_market_buy", side_effect=pytest.helpers.mocked_order_result)
+    @patch.object(binance.client.Client, "order_market_buy", side_effect=mocked_order_result)
     @patch("bot.market_buy.purchasing_currency_in_portfolio", return_value=20)
     def test_market_buy(self, _purchasing_currency_mock, order_market_buy_mock):
         # user preconditions

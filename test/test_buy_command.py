@@ -1,5 +1,6 @@
 import unittest
 from decimal import Decimal
+from test.conftest import mocked_order_result
 from unittest.mock import patch
 
 import binance.client
@@ -22,7 +23,7 @@ class TestBuyCommand(unittest.TestCase):
     PURCHASE_MIN = 25
 
     # initial buys should prioritize coins that take up a large amount of the index first
-    @patch.object(binance.client.Client, "order_market_buy", side_effect=pytest.helpers.mocked_order_result)
+    @patch.object(binance.client.Client, "order_market_buy", side_effect=mocked_order_result)
     @patch.object(binance.client.Client, "get_open_orders", return_value=[])
     @patch("bot.exchanges.binance_portfolio", return_value=[])
     def test_initial_buy(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):
@@ -50,7 +51,7 @@ class TestBuyCommand(unittest.TestCase):
         # top market tokens should be prioritized
         assert set(all_order_tokens) == set(["BTCUSD", "ETHUSD", "ADAUSD"])
 
-    @patch.object(binance.client.Client, "order_market_buy", side_effect=pytest.helpers.mocked_order_result)
+    @patch.object(binance.client.Client, "order_market_buy", side_effect=mocked_order_result)
     @patch.object(binance.client.Client, "get_open_orders", return_value=[])
     @patch("bot.exchanges.binance_portfolio", return_value=[])
     def test_off_allocation_portfolio(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):
