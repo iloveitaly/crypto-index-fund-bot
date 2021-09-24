@@ -41,7 +41,6 @@ black = "^21.8b0"
 pylint-django = "^2.4.4"
 pylint-celery = "^0.3"
 isort = "^5.9.3"
-pytest-helpers-namespace = "^2021.4.29"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
