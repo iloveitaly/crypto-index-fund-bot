@@ -56,3 +56,25 @@ def clear_state():
     bot.utils._cached_result = {}
 
     yield
+
+
+# TODO improve some of the fields to look more real
+# https://stackoverflow.com/questions/16162015/mocking-python-function-based-on-input-arguments
+@pytest.helpers.register
+def mocked_order_result(*args, **order_params):
+    return {
+        "clientOrderId": "Egjlu8owfhb0GTnp5auohS",
+        "cummulativeQuoteQty": "0.0000",
+        "executedQty": "0.00000000",
+        "fills": [],
+        "orderId": 18367859,
+        "orderListId": -1,
+        "origQty": order_params["quoteOrderQty"],
+        "price": "56.8830",
+        "side": "BUY",
+        "status": "NEW",
+        "symbol": order_params["symbol"],
+        "timeInForce": "GTC",
+        "transactTime": 1628012040277,
+        "type": "LIMIT",
+    }

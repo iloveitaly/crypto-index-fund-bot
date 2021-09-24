@@ -11,6 +11,7 @@ from binance.client import Client as BinanceClient
 from . import utils
 from .data_types import CryptoBalance, CryptoData, SupportedExchanges
 from .supported_exchanges.binance import *
+from .supported_exchanges.coinbase import *
 from .user import User
 from .utils import log
 
@@ -60,27 +61,6 @@ def cancel_order(exchange: SupportedExchanges, user: User, order: ExchangeOrder)
     return mapping[exchange](user, order)
 
 
-# TODO is there a way to enforce trading pair via typing?
-def binance_price_for_symbol(trading_pair: str) -> Decimal:
-    """
-    trading_pair must be in the format of "BTCUSD"
-
-    This method will throw an exception if the price does not exist.
-    """
-
-    # `symbol` is a trading pair
-    # this includes both USDT and USD prices
-    # the pair formatting is 'BTCUSD'
-    return utils.cached_result(
-        "binance_price_for_symbol",
-        lambda: {
-            price_dict["symbol"]: Decimal(price_dict["price"])
-            # `get_all_tickers` is only called once
-            for price_dict in public_binance_client().get_all_tickers()
-        },
-    ).get(trading_pair)
-
-
 def limit_buy(exchange: SupportedExchanges, user: User, purchasing_currency: str, symbol: str, quantity: Decimal, price: Decimal):
     mapping = {
         SupportedExchanges.BINANCE: binance_limit_buy,
@@ -121,27 +101,6 @@ def can_buy_in_exchange(exchange: SupportedExchanges, symbol: str, purchasing_cu
     mapping = {"binance": can_buy_in_binance, "coinbase": can_buy_in_coinbase}
 
     return mapping[exchange](symbol, purchasing_currency)
-
-
-def can_buy_in_binance(symbol, purchasing_currency):
-    for coin in binance_all_symbol_info():
-        if coin["baseAsset"] == symbol and coin["quoteAsset"] == purchasing_currency:
-            return True
-
-    return False
-
-
-# https://docs.pro.coinbase.com/#client-libraries
-import coinbasepro as cbpro
-
-coinbase_public_client = cbpro.PublicClient()
-coinbase_exchange = coinbase_public_client.get_products()
-
-
-def can_buy_in_coinbase(symbol, purchasing_currency):
-    for coin in coinbase_exchange:
-        if coin["base_currency"] == symbol and coin["quote_currency"] == purchasing_currency:
-            return True
 
 
 def price_of_symbol(symbol: str, purchasing_currency: str) -> Decimal:
