@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import click
 
 import bot.utils
@@ -22,8 +24,8 @@ def cli(verbose):
 def analyze():
     import bot.exchanges as exchanges
 
-    coinbase_available_coins = set([coin["base_currency"] for coin in exchanges.coinbase_exchange])
-    binance_available_coins = set([coin["baseAsset"] for coin in exchanges.binance_all_symbol_info()])
+    coinbase_available_coins = {coin["base_currency"] for coin in exchanges.coinbase_exchange}
+    binance_available_coins = {coin["baseAsset"] for coin in exchanges.binance_all_symbol_info()}
 
     print("Available, regardless of purchasing currency:")
     print(f"coinbase:\t{len(coinbase_available_coins)}")
@@ -31,16 +33,17 @@ def analyze():
 
     user = user_from_env()
 
-    coinbase_available_coins_in_purchasing_currency = set(
-        [coin["base_currency"] for coin in exchanges.coinbase_exchange if coin["quote_currency"] == user.purchasing_currency]
-    )
-    binance_available_coins_in_purchasing_currency = set(
-        [coin["baseAsset"] for coin in exchanges.binance_all_symbol_info() if coin["quoteAsset"] == user.purchasing_currency]
-    )
+    coinbase_available_coins_in_purchasing_currency = {
+        coin["base_currency"] for coin in exchanges.coinbase_exchange if coin["quote_currency"] == user.purchasing_currency
+    }
+    binance_available_coins_in_purchasing_currency = {
+        coin["baseAsset"] for coin in exchanges.binance_all_symbol_info() if coin["quoteAsset"] == user.purchasing_currency
+    }
 
     print("\nAvailable in purchasing currency:")
     print(f"coinbase:\t{len(coinbase_available_coins_in_purchasing_currency)}")
     print(f"binance:\t{len(binance_available_coins_in_purchasing_currency)}")
+    print(f"unique to coinbase:\n%s" % ("\n".join(coinbase_available_coins_in_purchasing_currency - binance_available_coins_in_purchasing_currency)))
 
 
 @cli.command(help="Print index by market cap")
@@ -74,7 +77,7 @@ def index(format, limit, strategy):
 
     coins_by_exchange = bot.market_cap.coins_with_market_cap(user)
 
-    click.echo(utils.table_output_with_format(coins_by_exchange, format))
+    click.echo(bot.utils.table_output_with_format(coins_by_exchange, format))
 
 
 @cli.command(help="Print current portfolio with targets")
@@ -141,8 +144,6 @@ def convert():
 )
 @click.option("--cancel-orders", is_flag=True, help="Cancel all stale orders")
 def buy(format, dry_run, purchase_balance, convert, cancel_orders):
-    from decimal import Decimal
-
     from bot.commands import BuyCommand
 
     if purchase_balance:
@@ -157,7 +158,7 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
         dry_run = True
 
     if dry_run:
-        click.secho(f"Bot running in dry-run mode\n", fg="green")
+        click.secho("Bot running in dry-run mode\n", fg="green")
 
     if convert:
         user.convert_stablecoins = True
