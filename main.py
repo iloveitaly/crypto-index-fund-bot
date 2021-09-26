@@ -2,8 +2,10 @@ from decimal import Decimal
 
 import click
 
+import bot.market_buy
+import bot.market_cap
 import bot.utils
-from bot import utils
+from bot.commands import BuyCommand, PortfolioCommand
 from bot.data_types import MarketIndexStrategy, SupportedExchanges
 from bot.user import user_from_env
 
@@ -73,8 +75,6 @@ def index(format, limit, strategy):
     if limit:
         user.index_limit = limit
 
-    import bot.market_cap
-
     coins_by_exchange = bot.market_cap.coins_with_market_cap(user)
 
     click.echo(bot.utils.table_output_with_format(coins_by_exchange, format))
@@ -90,20 +90,18 @@ def index(format, limit, strategy):
     help="Output format",
 )
 def portfolio(format):
-    from bot.commands import PortfolioCommand
-
     user = user_from_env()
     portfolio = PortfolioCommand.execute(user)
 
-    click.echo(utils.table_output_with_format(portfolio, format))
+    click.echo(bot.utils.table_output_with_format(portfolio, format))
 
-    import bot.market_buy
+    # import bot.market_buy
 
     purchase_balance = bot.market_buy.purchasing_currency_in_portfolio(user, portfolio)
-    click.echo(f"\nPurchasing Balance: {utils.currency_format(purchase_balance)}")
+    click.echo(f"\nPurchasing Balance: {bot.utils.currency_format(purchase_balance)}")
 
     purchase_total = sum([coin["usd_total"] for coin in portfolio])
-    click.echo(f"Portfolio Total: {utils.currency_format(purchase_total)}")
+    click.echo(f"Portfolio Total: {bot.utils.currency_format(purchase_total)}")
 
 
 # TODO this command needs to be cleaned up with some more options
@@ -144,11 +142,10 @@ def convert():
 )
 @click.option("--cancel-orders", is_flag=True, help="Cancel all stale orders")
 def buy(format, dry_run, purchase_balance, convert, cancel_orders):
-    from bot.commands import BuyCommand
 
     if purchase_balance:
         purchase_balance = Decimal(purchase_balance)
-        utils.log.info("dry run using fake purchase balance", purchase_balance=purchase_balance)
+        bot.utils.log.debug("dry run using fake purchase balance", purchase_balance=purchase_balance)
         dry_run = True
 
     user = user_from_env()
@@ -177,7 +174,7 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
         exchange, purchase_balance, market_buys, completed_orders = exchange_result
 
         click.secho(f"\nResults for {exchange}", fg="green")
-        click.secho(f"Purchasing Balance: {utils.currency_format(purchase_balance)}", fg="green")
+        click.secho(f"Purchasing Balance: {bot.utils.currency_format(purchase_balance)}", fg="green")
 
         click.echo(bot.utils.table_output_with_format(market_buys, format))
 
