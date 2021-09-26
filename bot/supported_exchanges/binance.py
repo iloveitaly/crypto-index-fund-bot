@@ -17,6 +17,10 @@ from ..data_types import (
 from ..user import User
 from ..utils import log
 
+# https://python-binance.readthedocs.io/en/latest/market_data.html
+# https://binance-docs.github.io/apidocs/spot/en/#change-log
+# https://github.com/binance-us/binance-official-api-docs
+# https://dev.binance.vision/
 # https://algotrading101.com/learn/binance-python-api-guide/
 # https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
 
@@ -32,12 +36,30 @@ def binance_purchase_minimum() -> Decimal:
     return Decimal(10)
 
 
-def can_buy_in_binance(symbol, purchasing_currency):
+def can_buy_in_binance(symbol: str, purchasing_currency: str) -> bool:
     for coin in binance_all_symbol_info():
         if coin["baseAsset"] == symbol and coin["quoteAsset"] == purchasing_currency:
             return True
 
     return False
+
+
+def is_trading_active_for_coin_in_binance(symbol: str) -> bool:
+    binance_symbol_info = binance_get_symbol_info(symbol)
+
+    if binance_symbol_info is None:
+        log.warn("symbol did not return any data", symbol=symbol)
+        return False
+
+    # the min notional amount specified on the symbol data is the min in USD
+    # that needs to be purchased. Most of the time, the minimum is enforced by
+    # the binance-wide minimum, but this is not always the case.
+
+    if binance_symbol_info["status"] != "TRADING":
+        log.info("symbol is not trading, skipping", symbol=symbol)
+        return False
+
+    return True
 
 
 # TODO is there a way to enforce trading pair via typing?

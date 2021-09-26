@@ -1,15 +1,7 @@
-import math
 import typing as t
 from decimal import Decimal
 
-# https://python-binance.readthedocs.io/en/latest/market_data.html
-# https://binance-docs.github.io/apidocs/spot/en/#change-log
-# https://github.com/binance-us/binance-official-api-docs
-# https://dev.binance.vision/
-from binance.client import Client as BinanceClient
-
-from . import utils
-from .data_types import CryptoBalance, CryptoData, SupportedExchanges
+from .data_types import CryptoBalance, SupportedExchanges
 from .supported_exchanges.binance import *
 from .supported_exchanges.coinbase import *
 from .user import User
@@ -79,22 +71,18 @@ def market_buy(exchange: SupportedExchanges, user: User, purchasing_currency: st
     return mapping[exchange](user, symbol, purchasing_currency, amount)
 
 
-def can_buy_amount_in_exchange(symbol: str):
-    binance_symbol_info = binance_get_symbol_info(symbol)
+def is_trading_active_for_coin_in_exchange(exchange: SupportedExchanges, symbol: str):
+    """
+    In some cases, it may be possible to buy a given symbol, but the exchange
+    may not allow you to purchase it at this very moment.
+    """
 
-    if binance_symbol_info is None:
-        log.warn("symbol did not return any data", symbol=symbol)
-        return False
+    mapping = {
+        SupportedExchanges.BINANCE: is_trading_active_for_coin_in_binance,
+        # SupportedExchanges.COINBASE: coinbase_is_trading_active_for_coin,
+    }
 
-    # the min notional amount specified on the symbol data is the min in USD
-    # that needs to be purchased. Most of the time, the minimum is enforced by
-    # the binance-wide minimum, but this is not always the case.
-
-    if binance_symbol_info["status"] != "TRADING":
-        log.info("symbol is not trading, skipping", symbol=symbol)
-        return False
-
-    return True
+    return mapping[exchange](symbol)
 
 
 def can_buy_in_exchange(exchange: SupportedExchanges, symbol: str, purchasing_currency: str) -> bool:
