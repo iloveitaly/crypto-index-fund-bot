@@ -63,6 +63,9 @@ class User:
     def __init__(self):
         pass
 
+    def is_primary_exchange(self, exchange: SupportedExchanges) -> bool:
+        return exchange == self.exchanges[0]
+
     @functools.cache
     def binance_client(self):
         from binance.client import Client
