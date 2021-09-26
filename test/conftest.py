@@ -2,7 +2,7 @@ import pytest
 from vcr.persisters.deduplicated_filesystem import DeduplicatedFilesystemPersister
 
 
-def pytest_recording_configure(config, vcr):
+def pytest_recording_configure(_config, vcr):
     vcr.register_persister(DeduplicatedFilesystemPersister)
 
 
@@ -60,7 +60,7 @@ def clear_state():
 
 # TODO improve some of the fields to look more real
 # https://stackoverflow.com/questions/16162015/mocking-python-function-based-on-input-arguments
-def mocked_order_result(*args, **order_params):
+def mocked_order_result(*_args, **order_params):
     return {
         "clientOrderId": "Egjlu8owfhb0GTnp5auohS",
         "cummulativeQuoteQty": "0.0000",

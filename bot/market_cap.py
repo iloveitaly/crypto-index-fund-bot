@@ -72,7 +72,7 @@ def filtered_coins_by_market_cap(
 
         coins.append(coin)
 
-        if limit != -1 and limit != None:
+        if limit not in (-1, None):
             limit -= 1
             if limit == 0:
                 break
@@ -100,9 +100,9 @@ def calculate_market_cap_from_coin_list(
     else:
         total_market_cap = sum([cap for cap in market_cap_list])
 
-    coins_with_market_cap = []
-
     log.info("total market cap", total_market_cap=total_market_cap)
+
+    coins_with_market_cap = []
 
     for coin in coins:
         market_cap = Decimal(coin["quote"][purchasing_currency]["market_cap"])
