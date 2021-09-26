@@ -171,17 +171,21 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
         user.cancel_stale_orders = False
         user.livemode = False
 
-    purchase_balance, market_buys, completed_orders = BuyCommand.execute(user, purchase_balance)
+    results_by_exchange = BuyCommand.execute(user, purchase_balance)
 
-    click.secho(f"Purchasing Balance: {utils.currency_format(purchase_balance)}", fg="green")
+    for exchange_result in results_by_exchange:
+        exchange, purchase_balance, market_buys, completed_orders = exchange_result
 
-    click.echo(bot.utils.table_output_with_format(market_buys, format))
+        click.secho(f"\nResults for {exchange}", fg="green")
+        click.secho(f"Purchasing Balance: {utils.currency_format(purchase_balance)}", fg="green")
 
-    if not market_buys:
-        click.secho("\nNot enough purchasing currency to make any trades.", fg="red")
-    else:
-        purchased_token_list = ", ".join([order["symbol"] for order in completed_orders])
-        click.secho(f"\nSuccessfully purchased: {purchased_token_list}", fg="green")
+        click.echo(bot.utils.table_output_with_format(market_buys, format))
+
+        if not market_buys:
+            click.secho("\nNot enough purchasing currency to make any trades.", fg="red")
+        else:
+            purchased_token_list = ", ".join([order["symbol"] for order in completed_orders])
+            click.secho(f"\nSuccessfully purchased: {purchased_token_list}", fg="green")
 
 
 if __name__ == "__main__":

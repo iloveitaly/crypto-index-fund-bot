@@ -5,6 +5,7 @@ from . import exchanges
 from .data_types import (
     CryptoBalance,
     CryptoData,
+    ExchangeOrder,
     MarketBuy,
     MarketBuyStrategy,
     SupportedExchanges,
@@ -15,16 +16,18 @@ from .utils import log
 
 def calculate_market_buy_preferences(
     target_index: t.List[CryptoData],
-    current_portfolio: t.List[CryptoBalance],
+    merged_portfolio: t.List[CryptoBalance],
     deprioritized_coins: t.List[str],
+    exchange: SupportedExchanges,
+    user: User,
 ) -> t.List[CryptoData]:
 
     """
     Buying priority:
 
     1. Buying what hasn't be deprioritized by the user
-    2. Buying what has > 1% of the market cap
-    3. Buying what's unique to this exchange
+    2. Buying what's unique to this exchange
+    3. Buying what has > 1% of the market cap
     4. Buying something new, as opposed to getting closer to a new allocation
     5. Buying whatever has dropped the most
     6. Buying what has the most % delta from the target
@@ -32,34 +35,53 @@ def calculate_market_buy_preferences(
     Filter out coins that have exceeded their targets
     """
 
-    log.info("calculating market buy preferences", target_index=len(target_index), current_portfolio=len(current_portfolio))
+    log.info("calculating market buy preferences", target_index=len(target_index), current_portfolio=len(merged_portfolio))
+
+    # for loops instead of list comprehensions because we want to log and debug various details
 
     coins_below_index_target: t.List[CryptoData] = []
 
     # first, let's exclude all coins that we've exceeded target on
     for coin_data in target_index:
-        current_percentage = next((balance["percentage"] for balance in current_portfolio if balance["symbol"] == coin_data["symbol"]), 0)
+        current_percentage = next((balance["percentage"] for balance in merged_portfolio if balance["symbol"] == coin_data["symbol"]), 0)
 
         if current_percentage < coin_data["percentage"]:
             coins_below_index_target.append(coin_data)
         else:
             log.debug("coin exceeding target, skipping", symbol=coin_data["symbol"], percentage=current_percentage, target=coin_data["percentage"])
 
+    coins_unique_to_exchange: t.List[CryptoData] = []
+
+    # if this is a secondary exchange, we want to only buy tokens that are unique to this exchange
+    # TODO should we give users the option to prioritize coins unique to this exchange but not making buying them the only option?
+    if not user.is_primary_exchange(exchange):
+        for coin_data in coins_below_index_target:
+            if [exchange] == exchanges.exchanges_with_symbol(coin_data["symbol"], user.purchasing_currency):
+                coins_unique_to_exchange.append(coin_data)
+            else:
+                log.debug("coin not unique to exchange, skipping", symbol=coin_data["symbol"], exchange=exchange)
+    else:
+        coins_unique_to_exchange = coins_below_index_target
+
+    # TODO pretty sure this sort is nearly useless given the order sorts below
+    # sort by coins with the largest allocation delta
     sorted_by_largest_target_delta = sorted(
         coins_below_index_target,
-        key=lambda coin_data: next((balance["percentage"] for balance in current_portfolio if balance["symbol"] == coin_data["symbol"]), Decimal(0))
+        key=lambda coin_data: next((balance["percentage"] for balance in merged_portfolio if balance["symbol"] == coin_data["symbol"]), Decimal(0))
         - coin_data["percentage"],
     )
 
     # TODO think about grouping drops into tranches so the above sort isn't completely useless
+    # prioritize coins with the highest drop/lowest gains in the last 30d
     sorted_by_largest_recent_drop = sorted(
         sorted_by_largest_target_delta,
         # TODO should we use 7d change vs 30?
+        # TODO is the sort order here correct?
         key=lambda coin_data: coin_data["change_30d"],
     )
 
     # prioritize tokens we don't own yet
-    symbols_in_current_allocation = [item["symbol"] for item in current_portfolio]
+    symbols_in_current_allocation = [item["symbol"] for item in merged_portfolio]
     sorted_by_unowned_coins = sorted(
         sorted_by_largest_recent_drop, key=lambda coin_data: 1 if coin_data["symbol"] in symbols_in_current_allocation else 0
     )
@@ -72,7 +94,7 @@ def calculate_market_buy_preferences(
         if coin_data["percentage"] < 1:
             return 1
 
-        current_percentage = next((balance["percentage"] for balance in current_portfolio if balance["symbol"] == coin_data["symbol"]), 0)
+        current_percentage = next((balance["percentage"] for balance in merged_portfolio if balance["symbol"] == coin_data["symbol"]), 0)
 
         if current_percentage == 0:
             return 0
@@ -80,8 +102,8 @@ def calculate_market_buy_preferences(
         current_allocation_delta = coin_data["percentage"] / current_percentage
         if current_allocation_delta > 6:
             return 0
-        else:
-            return 1
+
+        return 1
 
     sorted_by_large_market_cap_coins = sorted(sorted_by_unowned_coins, key=should_token_be_treated_as_unowned)
 
@@ -93,12 +115,19 @@ def calculate_market_buy_preferences(
     return sorted_by_deprioritized_coins
 
 
-def purchasing_currency_in_portfolio(user: User, portfolio: t.List[CryptoBalance]) -> Decimal:
+def purchasing_currency_in_portfolio(user: User, unmerged_portfolio: t.List[CryptoBalance]) -> Decimal:
+    """
+    Important that the portfolio here is not merged with an external portfolio representation
+    or a portfolio from another exchange.
+    """
+
+    # TODO I think we just need to hold back the estimated fees here
+
     # ideally, we wouldn't need to have a reserve amount. However, FP math is challenging and it's easy
     # to be off a cent or two. It's easier just to reserve $1 and not deal with it. Especially for a fun project.
     reserve_amount = 1
 
-    total = sum([balance["usd_total"] for balance in portfolio if balance["symbol"] == user.purchasing_currency])
+    total = sum([balance["usd_total"] for balance in unmerged_portfolio if balance["symbol"] == user.purchasing_currency])
 
     # TODO we need some sort of `max` overload to treat a decimal as a `SupportsLessThanT`
     return max(total - reserve_amount, Decimal(0))  # type: ignore
@@ -107,9 +136,10 @@ def purchasing_currency_in_portfolio(user: User, portfolio: t.List[CryptoBalance
 def determine_market_buys(
     user: User,
     sorted_buy_preferences: t.List[CryptoData],
-    current_portfolio: t.List[CryptoBalance],
+    merged_portfolio: t.List[CryptoBalance],
     target_portfolio: t.List[CryptoData],
     purchase_balance: Decimal,
+    exchange: SupportedExchanges,
 ) -> t.List[MarketBuy]:
     """
     1. Is the asset currently trading?
@@ -124,14 +154,14 @@ def determine_market_buys(
     # it doesn't look like this is specified in the API, and the minimum is different
     # depending on if you are using the pro vs simple view. This is the purchasing minimum on binance
     # but not on
-    exchange_purchase_minimum = exchanges.purchase_minimum(SupportedExchanges.BINANCE)
+    exchange_purchase_minimum = exchanges.purchase_minimum(exchange)
 
     user_purchase_minimum = user.purchase_min
     user_purchase_maximum = user.purchase_max
-    portfolio_total = sum(balance["usd_total"] for balance in current_portfolio)
+    portfolio_total = sum(balance["usd_total"] for balance in merged_portfolio)
 
     if purchase_balance < exchange_purchase_minimum:
-        log.info("not enough USD to buy anything", purchase_balance=purchase_balance)
+        log.info("not enough purchasing currency to buy anything", purchase_balance=purchase_balance)
         return []
 
     log.info(
@@ -144,7 +174,7 @@ def determine_market_buys(
     purchase_total = purchase_balance
     purchases = []
 
-    existing_orders = exchanges.open_orders(SupportedExchanges.BINANCE, user)
+    existing_orders = exchanges.open_orders(exchange, user)
     symbols_of_existing_orders = [order["symbol"] for order in existing_orders]
 
     for coin in sorted_buy_preferences:
@@ -154,8 +184,7 @@ def determine_market_buys(
             log.info("already have an open order for this coin", coin=coin)
             continue
 
-        paired_symbol = coin["symbol"] + user.purchasing_currency
-        if not exchanges.can_buy_amount_in_exchange(paired_symbol):
+        if not exchanges.is_trading_active_for_coin_in_exchange(exchange, coin["symbol"], user.purchasing_currency):
             continue
 
         # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
@@ -204,21 +233,22 @@ def determine_market_buys(
 
 
 # https://www.binance.us/en/usercenter/wallet/money-log
-def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List:
+def make_market_buys(user: User, market_buys: t.List[MarketBuy]) -> t.List[ExchangeOrder]:
     if not market_buys:
         return []
 
     purchasing_currency = user.purchasing_currency
     orders = []
 
-    # TODO consider executing limit orders based on the current market orders
-    #      this could ensure we don't overpay for an asset with low liquidity
+    log.info("executing orders", strategy=user.buy_strategy)
 
     for buy in market_buys:
         symbol = buy["symbol"]
         amount = buy["amount"]
 
         if user.buy_strategy == MarketBuyStrategy.LIMIT:
+            # TODO consider executing limit orders based on the current market orders
+            #      this could ensure we don't overpay for an asset with low liquidity
             from . import limit_buy
 
             limit_price = limit_buy.determine_limit_price(user, symbol, purchasing_currency)

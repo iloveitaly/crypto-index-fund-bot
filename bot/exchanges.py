@@ -71,7 +71,15 @@ def market_buy(exchange: SupportedExchanges, user: User, purchasing_currency: st
     return mapping[exchange](user, symbol, purchasing_currency, amount)
 
 
-def is_trading_active_for_coin_in_exchange(exchange: SupportedExchanges, symbol: str):
+def exchanges_with_symbol(symbol: str, purchasing_currency: str) -> t.List[SupportedExchanges]:
+    """
+    This method is used to determine which exchange trades a given symbol
+    """
+
+    return [exchange for exchange in SupportedExchanges if can_buy_in_exchange(exchange, symbol, purchasing_currency)]
+
+
+def is_trading_active_for_coin_in_exchange(exchange: SupportedExchanges, paired_symbol: str, purchasing_currency: str) -> bool:
     """
     In some cases, it may be possible to buy a given symbol, but the exchange
     may not allow you to purchase it at this very moment.
@@ -82,7 +90,7 @@ def is_trading_active_for_coin_in_exchange(exchange: SupportedExchanges, symbol:
         # SupportedExchanges.COINBASE: coinbase_is_trading_active_for_coin,
     }
 
-    return mapping[exchange](symbol)
+    return mapping[exchange](paired_symbol, purchasing_currency)
 
 
 def can_buy_in_exchange(exchange: SupportedExchanges, symbol: str, purchasing_currency: str) -> bool:

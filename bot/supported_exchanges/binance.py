@@ -44,8 +44,9 @@ def can_buy_in_binance(symbol: str, purchasing_currency: str) -> bool:
     return False
 
 
-def is_trading_active_for_coin_in_binance(symbol: str) -> bool:
-    binance_symbol_info = binance_get_symbol_info(symbol)
+def is_trading_active_for_coin_in_binance(symbol: str, purchasing_currency: str) -> bool:
+    paired_symbol = symbol + purchasing_currency
+    binance_symbol_info = binance_get_symbol_info(paired_symbol)
 
     if binance_symbol_info is None:
         log.warn("symbol did not return any data", symbol=symbol)
