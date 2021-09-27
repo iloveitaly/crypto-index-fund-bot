@@ -135,11 +135,11 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "celery"
-version = "5.2.0b3"
+version = "5.2.0rc1"
 description = "Distributed Task Queue."
 category = "main"
 optional = false
-python-versions = ">=3.6,"
+python-versions = ">=3.7,"
 
 [package.dependencies]
 billiard = ">=3.6.4.0,<4.0"
@@ -147,7 +147,7 @@ click = ">=8.0,<9.0"
 click-didyoumean = ">=0.0.3"
 click-plugins = ">=1.1.1"
 click-repl = ">=0.2.0"
-kombu = ">=5.1.0,<6.0"
+kombu = ">=5.2.0rc1,<6.0"
 pytz = ">0.0-dev"
 vine = ">=5.0.0,<6.0"
 
@@ -518,7 +518,7 @@ testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<6.0.0)"]
 
 [[package]]
 name = "kombu"
-version = "5.1.0"
+version = "5.2.0rc1"
 description = "Messaging library for Python."
 category = "main"
 optional = false
@@ -1156,7 +1156,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "c8953ea5425ec5f4e6c142367dcb0e3aac10c44c276216946697cf5707e92ebd"
+content-hash = "e5fb4681778ffdde98e5a31453497345ea07631efbd2d2073c35cfa4064d3cab"
 
 [metadata.files]
 aiohttp = [
@@ -1239,8 +1239,8 @@ black = [
     {file = "black-21.9b0.tar.gz", hash = "sha256:7de4cfc7eb6b710de325712d40125689101d21d25283eed7e9998722cf10eb91"},
 ]
 celery = [
-    {file = "celery-5.2.0b3-py3-none-any.whl", hash = "sha256:8db37760c7d025322deb9bccef22eabc4f84e6b452dc1aa28f6844c0093994a8"},
-    {file = "celery-5.2.0b3.tar.gz", hash = "sha256:13c3b405a21d692689d842db881c3a0ca95f1b6f2a73598d4b6c916c07a4be17"},
+    {file = "celery-5.2.0rc1-py3-none-any.whl", hash = "sha256:a15bcd2ec688f5333d71b2e9bcc994c9b00a4c5bceb51a80844b810cdeb885f1"},
+    {file = "celery-5.2.0rc1.tar.gz", hash = "sha256:bed8390828b11b538e3a0cea79c97005ee49ce1b94bf5c45c5b28ff84bcf88ae"},
 ]
 certifi = [
     {file = "certifi-2021.5.30-py2.py3-none-any.whl", hash = "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"},
@@ -1409,8 +1409,8 @@ jedi = [
     {file = "jedi-0.18.0.tar.gz", hash = "sha256:92550a404bad8afed881a137ec9a461fed49eca661414be45059329614ed0707"},
 ]
 kombu = [
-    {file = "kombu-5.1.0-py3-none-any.whl", hash = "sha256:e2dedd8a86c9077c350555153825a31e456a0dc20c15d5751f00137ec9c75f0a"},
-    {file = "kombu-5.1.0.tar.gz", hash = "sha256:01481d99f4606f6939cdc9b637264ed353ee9e3e4f62cfb582324142c41a572d"},
+    {file = "kombu-5.2.0rc1-py3-none-any.whl", hash = "sha256:da7b78984015341d05c90cdc1794436ec2bf795b8f64daebe59458869a1e49a1"},
+    {file = "kombu-5.2.0rc1.tar.gz", hash = "sha256:5035ddb9b52a5e4682e62a1990431b4cd4adc9a63e66be857305b54715c3a617"},
 ]
 lazy-object-proxy = [
     {file = "lazy-object-proxy-1.6.0.tar.gz", hash = "sha256:489000d368377571c6f982fba6497f2aa13c6d1facc40660963da62f5c379726"},
