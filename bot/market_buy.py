@@ -127,7 +127,9 @@ def purchasing_currency_in_portfolio(user: User, unmerged_portfolio: t.List[Cryp
     # to be off a cent or two. It's easier just to reserve $1 and not deal with it. Especially for a fun project.
     reserve_amount = 1
 
-    total = sum([balance["usd_total"] for balance in unmerged_portfolio if balance["symbol"] == user.purchasing_currency])
+    # in the case of USD, the amount is the total. Let's use that instead, which eliminates the need to run the portfolio
+    # through various functions which ammend the data to add additional metadata used for the purchasing decisions later on
+    total = sum([balance["amount"] for balance in unmerged_portfolio if balance["symbol"] == user.purchasing_currency])
 
     # TODO we need some sort of `max` overload to treat a decimal as a `SupportsLessThanT`
     return max(total - reserve_amount, Decimal(0))  # type: ignore
