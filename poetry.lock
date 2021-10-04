@@ -415,7 +415,7 @@ redis = ">=3.0.0"
 
 [[package]]
 name = "django-structlog"
-version = "2.1.2"
+version = "2.1.3"
 description = "Structured Logging for Django"
 category = "main"
 optional = false
@@ -1156,7 +1156,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "01b583b7759188acd9b61da213344d88cc074a0263e5818e43f3b95710ebf3af"
+content-hash = "2504e32cc0a24788cf327a042c96b0dc09d1e126350fa1df75575eb9dd83707f"
 
 [metadata.files]
 aiohttp = [
@@ -1382,8 +1382,8 @@ django-redis = [
     {file = "django_redis-5.0.0-py3-none-any.whl", hash = "sha256:97739ca9de3f964c51412d1d7d8aecdfd86737bb197fce6e1ff12620c63c97ee"},
 ]
 django-structlog = [
-    {file = "django-structlog-2.1.2.tar.gz", hash = "sha256:9566c7fdf6bfe7e4de9c6138e096a1b8d9d6d57a2fda517c50fe45963a38d1ae"},
-    {file = "django_structlog-2.1.2-py3-none-any.whl", hash = "sha256:3d2003f1dd389c77055f6e2351cfbe0098569abd0468e57656b920ea06472ec6"},
+    {file = "django-structlog-2.1.3.tar.gz", hash = "sha256:eda70d97217a14f610a59f0d638e5206c59861c5031584c67f0017c88bfdf6c0"},
+    {file = "django_structlog-2.1.3-py3-none-any.whl", hash = "sha256:4923f944e35b26920efba5e3254672b55dae064ed5b747c194c4eb3400ac0ee1"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},
