@@ -11,6 +11,9 @@
   "python.sortImports.args": [
     "--settings-path", "${workspaceFolder}",
   ],
+  "[dockerfile]": {
+    "editor.formatOnSave": false
+  },
   "[python]": {
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
