@@ -81,7 +81,7 @@ jobs:
         isort **/*.py -c -v
 
     - name: Setup node.js (for pyright)
-      uses: actions/setup-node@v2.4.0
+      uses: actions/setup-node@v2.4.1
       with:
         node-version: "12"
     - name: Run type checking
