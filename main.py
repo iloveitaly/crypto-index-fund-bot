@@ -20,9 +20,13 @@ def user_for_cli():
     if user_id == -1:
         return bot.user.user_from_env()
 
+    import django
+
+    django.setup()
+
     from users.models import User as DatabaseUser
 
-    return DatabaseUser.objects.get(id=user_id)
+    return DatabaseUser.objects.get(id=user_id).bot_user()
 
 
 @click.group(help="Tool for building your own crypto index fund.")
