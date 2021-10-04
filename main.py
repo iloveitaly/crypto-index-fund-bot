@@ -1,17 +1,28 @@
 from decimal import Decimal
 
 import click
+from decouple import config
 
 import bot.market_buy
 import bot.market_cap
+import bot.user
 import bot.utils
 from bot.commands import BuyCommand, PortfolioCommand
 from bot.data_types import MarketIndexStrategy, SupportedExchanges
-from bot.user import user_from_env
 
 # if you use `cod` it's helpful to disable while you are hacking on the CLI
 # if you are on zsh:
 #   `preexec_functions=(${preexec_functions#__cod_preexec_zsh})`
+
+
+def user_for_cli():
+    user_id = config("USER_ID", default=-1, cast=int)
+    if user_id == -1:
+        return bot.user.user_from_env()
+
+    from users.models import User as DatabaseUser
+
+    return DatabaseUser.objects.get(id=user_id)
 
 
 @click.group(help="Tool for building your own crypto index fund.")
@@ -33,7 +44,7 @@ def analyze():
     print(f"coinbase:\t{len(coinbase_available_coins)}")
     print(f"binance:\t{len(binance_available_coins)}")
 
-    user = user_from_env()
+    user = user_for_cli()
 
     coinbase_available_coins_in_purchasing_currency = {
         coin["base_currency"] for coin in exchanges.coinbase_exchange if coin["quote_currency"] == user.purchasing_currency
@@ -67,7 +78,7 @@ def analyze():
 )
 @click.option("-l", "--limit", type=int, help="Maximum size of index")
 def index(format, limit, strategy):
-    user = user_from_env()
+    user = user_for_cli()
 
     if strategy:
         user.index_strategy = strategy
@@ -90,7 +101,7 @@ def index(format, limit, strategy):
     help="Output format",
 )
 def portfolio(format):
-    user = user_from_env()
+    user = user_for_cli()
     portfolio = PortfolioCommand.execute(user)
 
     click.echo(bot.utils.table_output_with_format(portfolio, format))
@@ -110,7 +121,7 @@ def convert():
     import bot.convert_stablecoins as convert_stablecoins
     import bot.exchanges as exchanges
 
-    user = user_from_env()
+    user = user_for_cli()
     portfolio = exchanges.portfolio(SupportedExchanges.BINANCE, user)
     convert_stablecoins.convert_stablecoins(user, SupportedExchanges.BINANCE, portfolio)
 
@@ -148,7 +159,7 @@ def buy(format, dry_run, purchase_balance, convert, cancel_orders):
         bot.utils.log.debug("dry run using fake purchase balance", purchase_balance=purchase_balance)
         dry_run = True
 
-    user = user_from_env()
+    user = user_for_cli()
 
     # if user is in testmode, assume user wants dry run
     if not dry_run and not user.livemode:
