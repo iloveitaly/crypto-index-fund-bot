@@ -3,7 +3,10 @@ import os
 import django.utils.timezone
 from celery import Celery
 
+import bot.utils
 from bot.commands import BuyCommand
+
+from .models import User
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "botweb.settings.development")
@@ -38,18 +41,15 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @app.task
 def initiate_user_buys():
-    from .models import User
+    bot.utils.log.info("initiating all buys for user")
 
-    for user in User.objects.iterator():
+    # TODO using `iterator` here was causing the queryset contents to be cached
+    for user in User.objects.all():
         user_buy.delay(user.id)
 
 
 @app.task
 def user_buy(user_id):
-    import bot.utils
-
-    from .models import User
-
     user = User.objects.get(id=user_id)
     bot_user = user.bot_user()
 
