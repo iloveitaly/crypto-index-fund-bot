@@ -866,7 +866,7 @@ six = ">=1.5"
 
 [[package]]
 name = "python-decouple"
-version = "3.4"
+version = "3.5"
 description = "Strict separation of settings from code."
 category = "main"
 optional = false
@@ -1156,7 +1156,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "2504e32cc0a24788cf327a042c96b0dc09d1e126350fa1df75575eb9dd83707f"
+content-hash = "9798fe113fcc9b1361c247e86d94b4b4700a1d3680cd0c7598ce90df2809da8c"
 
 [metadata.files]
 aiohttp = [
@@ -1590,8 +1590,7 @@ python-dateutil = [
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
 ]
 python-decouple = [
-    {file = "python-decouple-3.4.tar.gz", hash = "sha256:2e5adb0263a4f963b58d7407c4760a2465d464ee212d733e2a2c179e54c08d8f"},
-    {file = "python_decouple-3.4-py3-none-any.whl", hash = "sha256:a8268466e6389a639a20deab9d880faee186eb1eb6a05e54375bdf158d691981"},
+    {file = "python-decouple-3.5.tar.gz", hash = "sha256:68e4b3fcc97e24bc90eecc514852d0bf970f4ff031f5f7a6728ddafa9afefcaf"},
 ]
 pytz = [
     {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
