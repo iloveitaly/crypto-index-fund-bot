@@ -256,6 +256,7 @@ Nice to have:
 * https://www.hodlbot.io. Interesting product, but looks abandoned. Doesn't support DCA, it will sell your assets to rebalance.
 * https://www.shrimpy.io. Best bot that I could find. They have [an advanced DCA product](https://help.shrimpy.io/hc/en-us/articles/1260803098690-Dollar-Cost-Averaging-DCA-in-Shrimpy) which only reallocates new deposits to the account.
 * https://www.tokensets.com. Really interesting solution to this problem using smart contracts. Only supports EC20 tokens.
+* https://www.bitfract.com Exchange one coin for multiple. This tool does *not* use a centralized exchange, which is really interesting. It was acquired and looks abandoned.
 
 ### Funds
 
