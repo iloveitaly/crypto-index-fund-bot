@@ -14,9 +14,17 @@ RUN set -eux; \
   \
   apt-get update; \
   apt-get install -y --no-install-recommends \
-      bash \
-#      build-essential libssl-dev libffi-dev libpython3.9-dev cargo \
-      cron; \
+    bash \
+    nano \
+    locales \
+    # TODO figure out how to build a recent version of rust that's supported on the pi
+    #      build-essential libssl-dev libffi-dev libpython3.9-dev cargo \
+    cron; \
+  # this is required for the `locale` settings for the CLI to work
+  # https://stackoverflow.com/questions/14547631/python-locale-error-unsupported-locale-setting
+  # https://stackoverflow.com/questions/59633558/python-based-dockerfile-throws-locale-error-unsupported-locale-setting
+  sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen; \
+  locale-gen; \
   apt-get clean;
 
 # TODO this will not work once the cryptography package is updated
