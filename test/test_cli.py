@@ -25,7 +25,7 @@ class TestCLI(unittest.TestCase):
         assert MarketBuyStrategy.MARKET == user.buy_strategy
         assert MarketIndexStrategy.MARKET_CAP == user.index_strategy
 
-        with patch("main.user_from_env", return_value=user):
+        with patch("bot.user.user_from_env", return_value=user):
             runner = CliRunner()
             result = runner.invoke(main.buy, [])
 
