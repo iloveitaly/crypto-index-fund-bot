@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     # image: mdnwebdocs/kuma_base
+    restart: always
     command: ./celery.sh
     # user: ${UID:-1000}
     # volumes:
@@ -38,6 +39,7 @@ services:
   # https://hub.docker.com/_/postgres/
   postgres:
     image: postgres:13.4
+    restart: always
     environment:
       # Create the superuser account
       - POSTGRES_USER=postgres
