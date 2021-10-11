@@ -26,7 +26,7 @@ django-redis = "^5.0.0"
 ipython = "^7.28.0"
 requests = "^2.26.0"
 # lock to 3.4.x to avoid rust compilation issues
-cryptography = "^3.4.8"
+cryptography = "3.4.8"
 
 [tool.poetry.dev-dependencies]
 # TODO must use custom branch until this is merged: https://github.com/kevin1024/vcrpy/pull/603
