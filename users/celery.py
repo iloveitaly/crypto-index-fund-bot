@@ -1,26 +1,26 @@
 import os
 
-import django.utils.timezone
-from celery import Celery
-
-import bot.utils
-from bot.commands import BuyCommand
-
-from .models import User
-
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "botweb.settings.development")
 
-app = Celery("tasks")
+# the load order of celery matters here; if this is not loaded before django components celery will fail to start
+from celery import Celery  # isort:skip
 
+app = Celery("tasks")
 app.config_from_object("django.conf:settings", namespace="CELERY")
+app.autodiscover_tasks()
 
 from django_structlog.celery.steps import DjangoStructLogInitStep
 
 assert app.steps is not None
 app.steps["worker"].add(DjangoStructLogInitStep)
 
+import django.utils.timezone
+import sentry_sdk
 from celery.signals import setup_logging
+
+import bot.utils
+from bot.commands import BuyCommand
 
 
 @setup_logging.connect
@@ -52,8 +52,6 @@ def initiate_user_buys():
 def user_buy(user_id):
     user = User.objects.get(id=user_id)
     bot_user = user.bot_user()
-
-    import sentry_sdk
 
     sentry_sdk.set_user({"id": user_id, "username": user.name})
 

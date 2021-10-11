@@ -1,4 +1,4 @@
 #!/bin/bash -l
 set -eu
 
-celery -A users.tasks worker --loglevel=INFO -B --concurrency=1
+celery -A users worker --loglevel=INFO -B --concurrency=1
