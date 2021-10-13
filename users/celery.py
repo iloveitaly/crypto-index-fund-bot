@@ -22,6 +22,8 @@ from celery.signals import setup_logging
 import bot.utils
 from bot.commands import BuyCommand
 
+from .models import User
+
 
 @setup_logging.connect
 def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
