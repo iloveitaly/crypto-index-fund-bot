@@ -53,10 +53,11 @@ class User:
     cancel_stale_orders: bool = True
     stale_order_hour_limit: int = 24
     excluded_coins: t.List[str] = []
-    deprioritized_coins: t.List[str] = ["BNB", "DOGE", "XRP"]
+    deprioritized_coins: t.List[str] = ["BNB", "DOGE", "XRP", "STORJ"]
     purchasing_currency: str = "USD"
     purchase_max: int = 50
     purchase_min: int = 10
+    allocation_drift_multiple_limit: int = 5
     excluded_tags: t.List[str] = ["wrapped-tokens", "stablecoin"]
     exchanges: t.List[SupportedExchanges] = [SupportedExchanges.BINANCE]
 
