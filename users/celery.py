@@ -22,8 +22,6 @@ from celery.signals import setup_logging
 import bot.utils
 from bot.commands import BuyCommand
 
-from .models import User
-
 
 @setup_logging.connect
 def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
@@ -43,6 +41,8 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @app.task
 def initiate_user_buys():
+    from users.models import User
+
     bot.utils.log.info("initiating all buys for user")
 
     # TODO using `iterator` here was causing the queryset contents to be cached
@@ -52,6 +52,8 @@ def initiate_user_buys():
 
 @app.task
 def user_buy(user_id):
+    from users.models import User
+
     user = User.objects.get(id=user_id)
     bot_user = user.bot_user()
 
