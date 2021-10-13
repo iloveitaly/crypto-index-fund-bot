@@ -153,14 +153,20 @@ docker compose run worker python manage.py migrate
 docker compose restart worker
 
 # after the application is setup you can run a python shell
-docker compose run worker bash
-python manage.py shell_plus
+docker compose run worker scripts/console.sh
 ```
 
 Here's how to create a new user once you are in the django shell:
 
-```
+```python
 User.objects.create(name="peter pan", binance_api_key="...", binance_secret_key="...")
+```
+
+Want to trigger some jobs manually for testing?
+
+```python
+import users.celery
+users.celery.initiate_user_buys.delay()
 ```
 
 If you want to update your deployment to the latest version:
