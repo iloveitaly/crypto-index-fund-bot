@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import bot.commands
-import users.tasks
+import users.celery
 from users.models import User
 
 # Specifying `@pytest.mark.usefixtures('celery_session_worker')` causes issues with database cleaning
@@ -17,7 +17,7 @@ class TestMultiUser(unittest.TestCase):
         user_1 = User.objects.create(name="user 1")
         user_2 = User.objects.create(name="user 2")
 
-        users.tasks.initiate_user_buys.delay()
+        users.celery.initiate_user_buys.delay()
 
         assert buy_command_mock.call_count == 2
 
