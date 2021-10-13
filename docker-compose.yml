@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     # image: mdnwebdocs/kuma_base
     restart: always
-    command: ./celery.sh
+    command: ./scripts/celery.sh
     # user: ${UID:-1000}
     # volumes:
     #   - ./:/app:z

@@ -53,4 +53,4 @@ COPY *external_portfolio.json LICENSE ./
 # run after copying source to chache the earlier steps
 RUN poetry install --no-dev
 
-CMD ["bash", "cron.sh"]
+CMD ["bash", "scripts/cron.sh"]
