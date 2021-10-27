@@ -40,3 +40,6 @@ class User(models.Model):
             setattr(bot_user, k, v)
 
         return bot_user
+
+    def __repr__(self):
+        return "<%s %s %s>" % (self, self.name, self.date_checked)
