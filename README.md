@@ -159,7 +159,7 @@ docker compose run worker scripts/console.sh
 Here's how to create a new user once you are in the django shell:
 
 ```python
-User.objects.create(name="peter pan", binance_api_key="...", binance_secret_key="...")
+User.objects.create(name="peter pan", binance_api_key="...", binance_secret_key="...", preferences={"livemode": True})
 ```
 
 Want to trigger some jobs manually for testing?
@@ -167,6 +167,13 @@ Want to trigger some jobs manually for testing?
 ```python
 import users.celery
 users.celery.initiate_user_buys.delay()
+```
+
+Want to run the CLI tools for a specific user?
+
+```shell
+docker compose run worker bash
+USER_ID=10 python main.py portfolio
 ```
 
 If you want to update your deployment to the latest version:
