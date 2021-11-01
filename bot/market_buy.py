@@ -81,6 +81,7 @@ def calculate_market_buy_preferences(
     )
 
     # prioritize tokens we don't own yet
+    # TODO check if there are any tokens we don't own yet and emit a nice little log message for debugging
     symbols_in_current_allocation = [item["symbol"] for item in merged_portfolio]
     sorted_by_unowned_coins = sorted(
         sorted_by_largest_recent_drop, key=lambda coin_data: 1 if coin_data["symbol"] in symbols_in_current_allocation else 0
@@ -91,6 +92,7 @@ def calculate_market_buy_preferences(
     # why 6? It felt right based on looking at what I wanted out of my current allocation
 
     def should_token_be_treated_as_unowned(coin_data: CryptoData) -> int:
+        # if market cap is less than 1%, don't overwride existing prioritization
         if coin_data["percentage"] < 1:
             return 1
 
