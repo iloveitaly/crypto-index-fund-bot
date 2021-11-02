@@ -26,7 +26,7 @@ Here are some features I *didn't* want that I could imagine others would like:
 * Rebalancing by selling existing tokens
 * Using a DEX vs a centralized exchange
 
-Also, [I wanted to learn python](https://mikebian.co/building-a-crypto-index-bot-and-learning-python/) and [learn django](https://github.com/iloveitaly/crypto-index-fund-bot#heroku-deployment), and this was a perfect [learning project.](http://mikebian.co/my-process-for-intentional-learning/) Please excuse any beginner-python code (and submit PRs to fix!).
+Also, [I wanted to learn python](https://mikebian.co/building-a-crypto-index-bot-and-learning-python/) and [learn django](http://mikebian.co/lessons-learned-building-with-django-celery-and-pytest/), and this was a perfect [learning project.](http://mikebian.co/my-process-for-intentional-learning/) Please excuse any beginner-python code (and submit PRs to fix!).
 
 ## Install
 
