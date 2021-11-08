@@ -417,7 +417,7 @@ Django = ">=2.2"
 
 [[package]]
 name = "django-extensions"
-version = "3.1.3"
+version = "3.1.5"
 description = "Extensions for Django"
 category = "main"
 optional = false
@@ -1203,7 +1203,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "7df6a0d9fc057e7a0854f5b6fba751378b34027588197d2b639c00f258a1815d"
+content-hash = "50b925b4b983d18bad7e2fe2c17d2d9225ca7806f0fa3bec988a27d4e5a7fb19"
 
 [metadata.files]
 aiodns = [
@@ -1426,8 +1426,8 @@ django-encrypted-model-fields = [
     {file = "django_encrypted_model_fields-0.6.0-py3-none-any.whl", hash = "sha256:0d42774ff9231c7523451482e68f631aea5d44ab93c5464ce000f09a17e42c72"},
 ]
 django-extensions = [
-    {file = "django-extensions-3.1.3.tar.gz", hash = "sha256:5f0fea7bf131ca303090352577a9e7f8bfbf5489bd9d9c8aea9401db28db34a0"},
-    {file = "django_extensions-3.1.3-py3-none-any.whl", hash = "sha256:50de8977794a66a91575dd40f87d5053608f679561731845edbd325ceeb387e3"},
+    {file = "django-extensions-3.1.5.tar.gz", hash = "sha256:28e1e1bf49f0e00307ba574d645b0af3564c981a6dfc87209d48cb98f77d0b1a"},
+    {file = "django_extensions-3.1.5-py3-none-any.whl", hash = "sha256:9238b9e016bb0009d621e05cf56ea8ce5cce9b32e91ad2026996a7377ca28069"},
 ]
 django-ipware = [
     {file = "django-ipware-4.0.0.tar.gz", hash = "sha256:1294f916f3b3475e40e1b0ec1bd320aa2397978eae672721c81cbc2ed517e9ee"},
