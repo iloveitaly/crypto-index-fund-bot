@@ -42,7 +42,7 @@ pytest-celery = "^0.0.0"
 black = "^21.10b0"
 pylint-django = "^2.4.4"
 pylint-celery = "^0.3"
-isort = "^5.10.0"
+isort = "^5.10.1"
 ccxt = "^1.61.24"
 
 [build-system]
