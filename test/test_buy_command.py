@@ -64,7 +64,7 @@ class TestBuyCommand(unittest.TestCase):
             {"symbol": "BTC", "amount": Decimal("0.05")},
         ]
 
-        assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB"])
+        assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB", "STORJ"])
         assert True == user.livemode
         assert self.PURCHASE_MIN == user.purchase_min
         assert MarketBuyStrategy.MARKET == user.buy_strategy
