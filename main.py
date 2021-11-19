@@ -119,6 +119,28 @@ def portfolio(format):
     click.echo(f"Portfolio Total: {bot.utils.currency_format(purchase_total)}")
 
 
+# TODO still very much a WIP
+@cli.command(short_help="Calculate cost basis")
+def cost_basis():
+    user = user_for_cli()
+    import ccxt
+
+    exchange = ccxt.binanceus(
+        {
+            "apiKey": user.binance_api_key,
+            "secret": user.binance_secret_key,
+        }
+    )
+
+    # getting this data is a mess from binance https://dev.binance.vision/t/how-to-get-all-past-orders/1828/3
+    # https://github.com/ccxt/ccxt/blob/master/examples/py/binance-fetch-all-my-trades-paginate-by-id.py
+    # fetch trades. fetch_my_trades requires a symbol parameter
+    # filter by: selling all stablecoins
+    # getting deposits would include transfers from other systems, which may not represent real cost basis
+
+    breakpoint()
+
+
 # TODO this command needs to be cleaned up with some more options
 @cli.command(short_help="Convert stablecoins to USD for purchasing")
 def convert():
