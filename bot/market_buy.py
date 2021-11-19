@@ -25,10 +25,10 @@ def calculate_market_buy_preferences(
     """
     Buying priority:
 
-    1. Buying what hasn't be deprioritized by the user
+    1. Buying what hasn't been explicitly deprioritized by the user
     2. Buying what's unique to this exchange
     3. Buying what has > 1% of the market cap
-    4. Buying something new, as opposed to getting closer to a new allocation
+    4. Buying a coin that is not currently held, as opposed to getting closer to a new allocation
     5. Buying whatever has dropped the most
     6. Buying what has the most % delta from the target
 
@@ -96,7 +96,7 @@ def calculate_market_buy_preferences(
     sorted_by_unowned_coins = sorted(sorted_by_largest_recent_drop, key=is_token_unowned)
 
     # prioritize tokens that make up > 1% of the market
-    # and either (a) we don't own or (b) our target allocation is off by a factor of 6
+    # *and* either (a) we don't own or (b) our target allocation is off by a factor of 6
     # why 6? It felt right based on looking at what I wanted out of my current allocation
 
     def should_token_be_treated_as_unowned(coin_data: CryptoData) -> int:

@@ -51,24 +51,39 @@ def user_from_env():
 
 
 class User:
-    index_strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP
-    buy_strategy: MarketBuyStrategy = MarketBuyStrategy.MARKET
     binance_api_key: t.Optional[str] = ""
     binance_secret_key: t.Optional[str] = ""
     external_portfolio: t.List[CryptoBalance] = []
-    convert_stablecoins: bool = True
-    index_limit: t.Optional[int] = None
     livemode: bool = False
-    cancel_stale_orders: bool = True
-    stale_order_hour_limit: int = 24
-    excluded_coins: t.List[str] = []
-    deprioritized_coins: t.List[str] = ["BNB", "DOGE", "XRP", "STORJ"]
+
+    # self explanatory common purchasing configurations
     purchasing_currency: str = "USD"
     purchase_max: int = 50
     purchase_min: int = 10
-    allocation_drift_multiple_limit: int = 5
-    excluded_tags: t.List[str] = ["wrapped-tokens", "stablecoin"]
     exchanges: t.List[SupportedExchanges] = [SupportedExchanges.BINANCE]
+
+    index_strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP
+    buy_strategy: MarketBuyStrategy = MarketBuyStrategy.MARKET
+    # automatically sell stablecoins to USD / purchasing currency?
+    convert_stablecoins: bool = True
+    # max number of items in the market index
+    index_limit: t.Optional[int] = None
+
+    # if you use a limit purchase stratregy, the bot can automatically cancel orders that are stale/old
+    cancel_stale_orders: bool = True
+    stale_order_hour_limit: int = 24
+
+    # coins you'd like to exclude completely from your index
+    excluded_coins: t.List[str] = []
+    # coins you'd like to purchase last, after all other coin purchases have been satisfied
+    deprioritized_coins: t.List[str] = ["BNB", "DOGE", "XRP", "STORJ"]
+    # coinmarketcap tags to exclude completely
+    excluded_tags: t.List[str] = ["wrapped-tokens", "stablecoin"]
+
+    # if the current holding % / target holding % multiple is greater than this value, prioritize purchasing it above other tokens
+    # this is useful if you want to avoid constantly purchasing tokens with smaller total market cap at the risk of not correcting
+    # your allocation on coins with a higher total market cap
+    allocation_drift_multiple_limit: int = 5
 
     def __init__(self):
         pass
