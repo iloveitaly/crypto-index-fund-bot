@@ -19,24 +19,33 @@ def user_from_env():
     from decouple import config
 
     user = User()
+
     user.binance_api_key = t.cast(str, config("USER_BINANCE_API_KEY"))
     user.binance_secret_key = t.cast(str, config("USER_BINANCE_SECRET_KEY"))
 
-    user.livemode = t.cast(str, config("USER_LIVEMODE", "false")).lower() == "true"
-    user.convert_stablecoins = t.cast(str, config("USER_CONVERT_STABLECOINS", "false")).lower() == "true"
-    user.cancel_stale_orders = t.cast(str, config("USER_CANCEL_STALE_ORDERS", "false")).lower() == "true"
+    def extract_individual_environment_variables(user):
+        user.livemode = t.cast(str, config("USER_LIVEMODE", "false")).lower() == "true"
+        user.convert_stablecoins = t.cast(str, config("USER_CONVERT_STABLECOINS", "false")).lower() == "true"
+        user.cancel_stale_orders = t.cast(str, config("USER_CANCEL_STALE_ORDERS", "false")).lower() == "true"
 
-    if index_strategy := config("USER_INDEX_STRATEGY", default=None):
-        user.index_strategy = MarketIndexStrategy(index_strategy)
+        if index_strategy := config("USER_INDEX_STRATEGY", default=None):
+            user.index_strategy = MarketIndexStrategy(index_strategy)
 
-    if buy_strategy := config("USER_BUY_STRATEGY", default=None):
-        user.buy_strategy = MarketBuyStrategy(buy_strategy)
+        if buy_strategy := config("USER_BUY_STRATEGY", default=None):
+            user.buy_strategy = MarketBuyStrategy(buy_strategy)
 
-    try:
-        user.external_portfolio = json.load(open("external_portfolio.json"), parse_float=decimal.Decimal)
-        log.debug("loaded external portfolio")
-    except FileNotFoundError:
-        pass
+        try:
+            user.external_portfolio = json.load(open("external_portfolio.json"), parse_float=decimal.Decimal)
+            log.debug("loaded external portfolio")
+        except FileNotFoundError:
+            pass
+
+    # extract_individual_environment_variables(user)
+    user.external_portfolio = json.loads(t.cast(str, config("USER_EXTERNAL_PORTFOLIO", "")))
+    user_preferences = json.loads(t.cast(str, config("USER_PREFERENCES", "")))
+
+    for k, v in user_preferences.items():
+        setattr(user, k, v)
 
     return user
 
