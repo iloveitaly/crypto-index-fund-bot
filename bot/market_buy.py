@@ -193,11 +193,11 @@ def determine_market_buys(
     purchases = []
 
     existing_orders = exchanges.open_orders(exchange, user)
-    symbols_of_existing_orders = [order["symbol"] for order in existing_orders]
+    symbols_of_open_orders = [order["symbol"] for order in existing_orders]
 
     for coin in sorted_buy_preferences:
         # TODO may make sense in the future to check the purchase amount and adjust the expected
-        if coin["symbol"] in symbols_of_existing_orders:
+        if coin["symbol"] in symbols_of_open_orders:
             # TODO add current order information to logs
             log.info("already have an open order for this coin", coin=coin)
             continue
@@ -205,12 +205,13 @@ def determine_market_buys(
         if not exchanges.is_trading_active_for_coin_in_exchange(exchange, coin["symbol"], user.purchasing_currency):
             continue
 
-        # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
-        purchase_amount = purchase_total if purchase_total < exchange_purchase_minimum * 2 else user_purchase_minimum
-
-        # percentage is not expressed in a < 1 float, so we need to convert it
+        # calculate the maximum amount we could purchase based on the target allocation and total portfolio value
         coin_portfolio_info = next((target for target in target_portfolio if target["symbol"] == coin["symbol"]))
+        # percentage is not expressed in a < 1 float, so we need to convert it
         target_amount = coin_portfolio_info["percentage"] / 100 * portfolio_total
+
+        # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
+        purchase_amount = purchase_total if purchase_total > exchange_purchase_minimum * 2 else user_purchase_minimum
 
         # make sure purchase total will not overflow the target allocation
         purchase_amount = min(purchase_amount, target_amount, user_purchase_maximum)
