@@ -35,7 +35,7 @@ class TestBuyCommand(unittest.TestCase):
         user.buy_strategy = MarketBuyStrategy.MARKET
 
         assert user.external_portfolio == []
-        assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB"])
+        assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB", "STORJ"])
         assert True == user.livemode
         assert self.PURCHASE_MIN == user.purchase_min
         assert MarketBuyStrategy.MARKET == user.buy_strategy
