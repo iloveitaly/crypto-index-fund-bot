@@ -53,25 +53,26 @@ def calculate_market_buy_preferences(
     coins_unique_to_exchange: t.List[CryptoData] = []
 
     # if this is a secondary exchange, we want to only buy tokens that are unique to this exchange
+    # this filter also ensures that the coin can be purchased in the current exchange
     # TODO should we give users the option to prioritize coins unique to this exchange but not making buying them the only option?
-    if not user.is_primary_exchange(exchange):
-        for coin_data in coins_below_index_target:
-            if [exchange] == exchanges.exchanges_with_symbol(coin_data["symbol"], user.purchasing_currency):
-                coins_unique_to_exchange.append(coin_data)
-            else:
-                log.debug("coin not unique to exchange, skipping", symbol=coin_data["symbol"], exchange=exchange)
-    else:
-        coins_unique_to_exchange = coins_below_index_target
+    for coin_data in coins_below_index_target:
+        supported_exchanges_for_coin = exchanges.exchanges_with_symbol(coin_data["symbol"], user.purchasing_currency)
+
+        # purchase this token if (a) we are processing the primary exchange or (b) it's only available on this exchange
+        if exchange in supported_exchanges_for_coin and (user.is_primary_exchange(exchange) or [exchange] == supported_exchanges_for_coin):
+            coins_unique_to_exchange.append(coin_data)
+        else:
+            log.debug("coin not unique to exchange, skipping", symbol=coin_data["symbol"], exchange=exchange)
 
     # TODO pretty sure this sort is nearly useless given the order sorts below
+    # TODO think about grouping drops into tranches so the above sort isn't completely useless
     # sort by coins with the largest allocation delta
     sorted_by_largest_target_delta = sorted(
-        coins_below_index_target,
+        coins_unique_to_exchange,
         key=lambda coin_data: next((balance["percentage"] for balance in merged_portfolio if balance["symbol"] == coin_data["symbol"]), Decimal(0))
         - coin_data["percentage"],
     )
 
-    # TODO think about grouping drops into tranches so the above sort isn't completely useless
     # prioritize coins with the highest drop/lowest gains in the last 30d
     sorted_by_largest_recent_drop = sorted(
         sorted_by_largest_target_delta,
@@ -80,30 +81,43 @@ def calculate_market_buy_preferences(
         key=lambda coin_data: coin_data["change_30d"],
     )
 
-    # prioritize tokens we don't own yet
-    # TODO check if there are any tokens we don't own yet and emit a nice little log message for debugging
-    symbols_in_current_allocation = [item["symbol"] for item in merged_portfolio]
-    sorted_by_unowned_coins = sorted(
-        sorted_by_largest_recent_drop, key=lambda coin_data: 1 if coin_data["symbol"] in symbols_in_current_allocation else 0
-    )
+    # prioritize tokens we don't own yet that we own at least the minimum purchase price specified by the user
+    # why the min purchase price condition? It's possible that users own a very small ($1-2) amount of a coin
+    # but have much less than the user-specific minimum amount
+    symbols_in_current_allocation = [item["symbol"] for item in merged_portfolio if item["usd_total"] > user.purchase_min]
+
+    def is_token_unowned(coin_data: CryptoData) -> int:
+        if coin_data["symbol"] not in symbols_in_current_allocation:
+            log.debug("coin not in current allocation, prioritizing", symbol=coin_data["symbol"])
+            return 0
+
+        return 1
+
+    sorted_by_unowned_coins = sorted(sorted_by_largest_recent_drop, key=is_token_unowned)
 
     # prioritize tokens that make up > 1% of the market
     # and either (a) we don't own or (b) our target allocation is off by a factor of 6
     # why 6? It felt right based on looking at what I wanted out of my current allocation
 
     def should_token_be_treated_as_unowned(coin_data: CryptoData) -> int:
+        target_percentage = coin_data["percentage"]
+
         # if market cap is less than 1%, don't overwride existing prioritization
-        if coin_data["percentage"] < 1:
+        if target_percentage < 1:
             return 1
 
         current_percentage = next((balance["percentage"] for balance in merged_portfolio if balance["symbol"] == coin_data["symbol"]), 0)
 
+        # TODO if current ownership is zero, shouldn't we ensure this is always prioritized first? -max(allocation_delta)?
         if current_percentage == 0:
             return 0
 
-        current_allocation_delta = coin_data["percentage"] / current_percentage
-        if current_allocation_delta > 6:
-            return 0
+        # if the current allocation is off by a user-defined factor, prioritize it
+        # note that this is prioritized by a relative % factor, not an absolute %
+        current_allocation_delta = target_percentage / current_percentage
+        if current_allocation_delta > user.allocation_drift_multiple_limit:
+            log.debug("allocation drift exceeds user-specified percentage", symbol=coin_data["symbol"], drift=current_allocation_delta)
+            return int(current_allocation_delta) * -1
 
         return 1
 
