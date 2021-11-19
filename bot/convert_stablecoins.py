@@ -7,6 +7,7 @@ from .user import User
 from .utils import log
 
 
+# TODO is this required across all exchanges?
 def convert_stablecoins(user: User, exchange: SupportedExchanges, portfolio: t.List[CryptoBalance]) -> t.List[t.Dict]:
     """
     convert all stablecoins of the purchasing currency into the purchasing currency so we can use it
@@ -28,6 +29,7 @@ def convert_stablecoins(user: User, exchange: SupportedExchanges, portfolio: t.L
     stablecoin_portfolio = [balance for balance in portfolio if balance["symbol"] in stablecoin_symbols]
 
     for balance in stablecoin_portfolio:
+        # TODO dynamically calculate the holdback based on the exchange definition
         # in some cases, but not all, binance requires that a small % is held back
         amount = balance["amount"] * Decimal("0.999")
         symbol = balance["symbol"]
