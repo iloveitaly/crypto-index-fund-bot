@@ -99,7 +99,7 @@ def index(format, limit, strategy, sqrt_adjustment):
         user.index_limit = limit
 
     if sqrt_adjustment:
-        user.buy_strategy_sqrt_adjustment = sqrt_adjustment
+        user.index_strategy_sqrt_adjustment = sqrt_adjustment
 
     coins_by_exchange = bot.market_cap.coins_with_market_cap(user)
 
