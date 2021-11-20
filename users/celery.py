@@ -55,6 +55,11 @@ def user_buy(user_id):
     from users.models import User
 
     user = User.objects.get(id=user_id)
+
+    if user.disabled:
+        bot.utils.log.info("user is disabled, skipping", user=user)
+        return
+
     bot_user = user.bot_user()
 
     sentry_sdk.set_user({"id": user_id, "username": user.name})
@@ -62,7 +67,10 @@ def user_buy(user_id):
     bot.utils.log.bind(user_id=user.id)
     bot.utils.log.info("initiating buys for user")
 
-    BuyCommand.execute(bot_user)
+    buy_results = BuyCommand.execute(bot_user)
+
+    if len(buy_results) > 0:
+        user.last_ordered_at = django.utils.timezone.now()
 
     user.date_checked = django.utils.timezone.now()
     user.save()
