@@ -28,8 +28,6 @@ class TestBuyCommand(unittest.TestCase):
     @patch.object(binance.client.Client, "get_open_orders", return_value=[])
     @patch("bot.exchanges.binance_portfolio", return_value=[])
     def test_initial_buy(self, _binance_portfolio_mock, _open_order_mock, order_market_buy_mock):
-        from bot.commands import BuyCommand
-
         user = user_from_env()
         user.external_portfolio = []
         user.purchase_min = self.PURCHASE_MIN
