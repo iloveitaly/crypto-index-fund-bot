@@ -98,11 +98,11 @@ def calculate_market_cap_from_coin_list(
     if strategy == MarketIndexStrategy.SQRT_MARKET_CAP:
         total_market_cap = sum([cap.sqrt() for cap in market_cap_list])
     else:
-        total_market_cap = sum([cap for cap in market_cap_list])
+        total_market_cap = sum(market_cap_list)
 
     log.info("total market cap", total_market_cap=total_market_cap)
 
-    coins_with_market_cap = []
+    coins_with_market_cap_calculation = []
 
     for coin in coins:
         market_cap = Decimal(coin["quote"][purchasing_currency]["market_cap"])
@@ -110,7 +110,7 @@ def calculate_market_cap_from_coin_list(
         if strategy == "sqrt_market_cap":
             market_cap = market_cap.sqrt()
 
-        coins_with_market_cap.append(
+        coins_with_market_cap_calculation.append(
             CryptoData(
                 symbol=coin["symbol"],
                 market_cap=market_cap,
@@ -124,7 +124,7 @@ def calculate_market_cap_from_coin_list(
             )
         )
 
-    return coins_with_market_cap
+    return coins_with_market_cap_calculation
 
 
 def coins_with_market_cap(user: User, limit: t.Optional[int] = None) -> t.List[CryptoData]:

@@ -59,7 +59,7 @@ def determine_limit_price(user: User, symbol: str, purchasing_currency: str) -> 
 
 
 def low_over_last_day(user: User, trading_pair: str) -> Decimal:
-    import datetime
+    # import datetime
 
     # TODO coinbase option is below, but ran into some issues with it that I can't remember
     # candles = coinbase_public_client.get_product_historic_rates(
@@ -73,21 +73,21 @@ def low_over_last_day(user: User, trading_pair: str) -> Decimal:
     # the API just returns an ordered array, which is insane
 
     """
-    [
-    1499040000000,      // Open time
-    "0.01634790",       // Open
-    "0.80000000",       // High
-    "0.01575800",       // Low
-    "0.01577100",       // Close
-    "148976.11427815",  // Volume
-    1499644799999,      // Close time
-    "2434.19055334",    // Quote asset volume
-    308,                // Number of trades
-    "1756.87402397",    // Taker buy base asset volume
-    "28.46694368",      // Taker buy quote asset volume
-    "17928899.62484339" // Ignore.
-  ]
-  """
+      [
+      1499040000000,      // Open time
+      "0.01634790",       // Open
+      "0.80000000",       // High
+      "0.01575800",       // Low
+      "0.01577100",       // Close
+      "148976.11427815",  // Volume
+      1499644799999,      // Close time
+      "2434.19055334",    // Quote asset volume
+      308,                // Number of trades
+      "1756.87402397",    // Taker buy base asset volume
+      "28.46694368",      // Taker buy quote asset volume
+      "17928899.62484339" // Ignore.
+    ]
+    """
 
     candles = user.binance_client().get_klines(symbol=trading_pair, interval="1h")
 
