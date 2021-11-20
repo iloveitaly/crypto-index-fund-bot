@@ -121,11 +121,41 @@ def calculate_market_buy_preferences(
 
         return 1
 
-    sorted_by_large_market_cap_coins = sorted(sorted_by_unowned_coins, key=should_token_be_treated_as_unowned)
+    def portfolio_entry_for_coin(portfolio: t.List[CryptoBalance], coin_data: CryptoData) -> t.Optional[CryptoBalance]:
+        return next((balance for balance in portfolio if balance["symbol"] == coin_data["symbol"]), None)
+
+    if user.allocation_drift_multiple_limit:
+        sorted_by_large_market_cap_coins = sorted(sorted_by_unowned_coins, key=should_token_be_treated_as_unowned)
+    else:
+        sorted_by_large_market_cap_coins = sorted_by_unowned_coins
+
+    def does_token_drift_percentage_limit(coin_data: CryptoData) -> int:
+        coin_info = portfolio_entry_for_coin(merged_portfolio, coin_data)
+        target_percentage = coin_data["percentage"]
+        allocation_drift_percentage_limit = t.cast(int, user.allocation_drift_percentage_limit)
+
+        if not coin_info:
+            if target_percentage > allocation_drift_percentage_limit:
+                return -1 * allocation_drift_percentage_limit
+
+            return 0
+
+        percentage_delta = target_percentage - coin_info["percentage"]
+
+        if percentage_delta > allocation_drift_percentage_limit:
+            log.debug("allocation drift percentage exceeded", symbol=coin_data["symbol"], drift=percentage_delta)
+            return -1 * int(percentage_delta)
+
+        return 0
+
+    if user.allocation_drift_percentage_limit:
+        sorted_by_percentage_drift_prioritization = sorted(sorted_by_large_market_cap_coins, key=does_token_drift_percentage_limit)
+    else:
+        sorted_by_percentage_drift_prioritization = sorted_by_large_market_cap_coins
 
     # last, but not least, let's respect the user's preference for deprioritizing coins
     sorted_by_deprioritized_coins = sorted(
-        sorted_by_large_market_cap_coins, key=lambda coin_data: 1 if coin_data["symbol"] in deprioritized_coins else 0
+        sorted_by_percentage_drift_prioritization, key=lambda coin_data: 1 if coin_data["symbol"] in deprioritized_coins else 0
     )
 
     return sorted_by_deprioritized_coins
