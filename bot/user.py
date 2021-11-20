@@ -49,7 +49,7 @@ class User:
 
     # self explanatory common purchasing configurations
     purchasing_currency: str = "USD"
-    purchase_max: int = 50
+    purchase_max: int = 25
     purchase_min: int = 10
     exchanges: t.List[SupportedExchanges] = [SupportedExchanges.BINANCE]
 
