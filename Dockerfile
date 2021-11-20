@@ -35,7 +35,7 @@ ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 RUN set -eux; \
   # lock to specific version to avoid rust compilation
   pip3 install cryptography==3.4.8; \
-  pip3 install poetry; \
+  pip3 install poetry==1.1.11; \
   poetry config virtualenvs.create false;
 
 # TODO consider using a non-sudo user to run under
