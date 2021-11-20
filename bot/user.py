@@ -86,7 +86,7 @@ class User:
     allocation_drift_multiple_limit: t.Optional[int] = 5
 
     # if the absolute percentage of a holding drifts this amount, prioritize purchasing it even above the % drift multiple above
-    allocation_drift_percentage_limit: t.Optional[int] = 5
+    allocation_drift_percentage_limit: t.Optional[int] = None
 
     def __init__(self):
         pass
