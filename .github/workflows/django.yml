@@ -22,7 +22,7 @@ jobs:
       # let's make sure `config` doesn't throw an exception in this case. Since the cassettes
       # are recorded when there is a valid ENV-based user configuration we only need to worry
       # about this in CI
-      USER_LIVEMODE: true
+      USER_PREFERENCES: '{"livemode":true}'
       USER_BINANCE_API_KEY: ""
       USER_BINANCE_SECRET_KEY: ""
       COINMARKETCAP_API_KEY: ""
