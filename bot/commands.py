@@ -17,6 +17,7 @@ from .data_types import (
     SupportedExchanges,
 )
 from .user import User
+from .utils import log
 
 
 # TODO not really sure the best pattern for implementing the command/interactor pattern but we are going to give this a try
@@ -46,6 +47,24 @@ class PortfolioCommand:
         return user_portfolio
 
 
+class SellStablecoinsCommand:
+    @classmethod
+    # TODO refine return type once we convert the raw exchange order into ExchangeOrder types
+    def execute(cls, user: User) -> t.List[t.Dict]:
+        if not user.convert_stablecoins:
+            log.info("user not configured to sell stablecoins")
+            return []
+
+        orders = []
+
+        for exchange in user.exchanges:
+            log.info("selling stablecoins", exchange=exchange)
+            exchange_portfolio = exchanges.portfolio(exchange, user)
+            orders = orders + convert_stablecoins.convert_stablecoins(user, exchange, exchange_portfolio)
+
+        return orders
+
+
 class BuyCommand:
     # TODO we should break this up into smaller functions
     @classmethod
@@ -56,6 +75,8 @@ class BuyCommand:
             for exchange in user.exchanges:
                 open_orders.cancel_stale_open_orders(user, exchange)
 
+        SellStablecoinsCommand.execute(user)
+
         # calculates the porfolio target across all supported exchanges
         portfolio_target = market_cap.coins_with_market_cap(user)
         merged_portfolio = user.external_portfolio
@@ -63,10 +84,6 @@ class BuyCommand:
 
         for exchange in user.exchanges:
             exchange_portfolio = exchanges.portfolio(exchange, user)
-
-            if user.convert_stablecoins:
-                convert_stablecoins.convert_stablecoins(user, exchange, exchange_portfolio)
-                # TODO we should wait for the stablecoin sells to clear and then refresh the portfolio
 
             # TODO we need to determine how coinbase handles purchasing currencies
 

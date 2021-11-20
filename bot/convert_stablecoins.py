@@ -1,3 +1,4 @@
+import time
 import typing as t
 from decimal import Decimal
 
@@ -7,7 +8,20 @@ from .user import User
 from .utils import log
 
 
-# TODO is this required across all exchanges?
+def wait_until_orders_cleared(user: User, orders) -> None:
+    client = user.binance_client()
+
+    for i in range(5):
+        latest_orders = [client.get_order(orderId=order["id"], symbol=order["trading_pair"]) for order in orders]
+
+        if all([order["status"] == client.ORDER_STATUS_FILLED for order in latest_orders]):
+            break
+
+        log.info("waiting for orders to clear", attempt=i)
+        time.sleep(i ** i)
+
+
+# TODO is this required across all exchanges? Or is this just a binance thing?
 def convert_stablecoins(user: User, exchange: SupportedExchanges, portfolio: t.List[CryptoBalance]) -> t.List[t.Dict]:
     """
     convert all stablecoins of the purchasing currency into the purchasing currency so we can use it
@@ -16,7 +30,7 @@ def convert_stablecoins(user: User, exchange: SupportedExchanges, portfolio: t.L
     purchasing_currency = user.purchasing_currency
     stablecoin_symbols = []
 
-    # TODO check if currency is a stablecoin?
+    # TODO check if currency is a stablecoin? Can we do this programmatically?
 
     if purchasing_currency == "USD":
         stablecoin_symbols = ["USDC", "USDT", "BUSD"]
@@ -41,7 +55,10 @@ def convert_stablecoins(user: User, exchange: SupportedExchanges, portfolio: t.L
         log.info("converting stablecoins", symbol=symbol, amount=amount)
 
         order = exchanges.market_sell(exchange=exchange, user=user, symbol=symbol, amount=amount, purchasing_currency=purchasing_currency)
-
         orders.append(order)
+
+    wait_until_orders_cleared(user, orders)
+
+    # TODO convert to ExchangeOrder
 
     return orders

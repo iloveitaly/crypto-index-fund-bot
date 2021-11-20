@@ -7,7 +7,7 @@ import bot.market_buy
 import bot.market_cap
 import bot.user
 import bot.utils
-from bot.commands import BuyCommand, PortfolioCommand
+from bot.commands import BuyCommand, PortfolioCommand, SellStablecoinsCommand
 from bot.data_types import MarketIndexStrategy, SupportedExchanges
 
 # if you use `cod` it's helpful to disable while you are hacking on the CLI
@@ -151,12 +151,10 @@ def cost_basis():
 # TODO this command needs to be cleaned up with some more options
 @cli.command(short_help="Convert stablecoins to USD for purchasing")
 def convert():
-    import bot.convert_stablecoins as convert_stablecoins
-    import bot.exchanges as exchanges
-
     user = user_for_cli()
-    portfolio = exchanges.portfolio(SupportedExchanges.BINANCE, user)
-    convert_stablecoins.convert_stablecoins(user, SupportedExchanges.BINANCE, portfolio)
+    orders = SellStablecoinsCommand.execute(user)
+
+    click.secho(f"\nSold {len(orders)} stablecoins", fg="green")
 
 
 @cli.command(
