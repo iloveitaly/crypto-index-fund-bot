@@ -37,7 +37,7 @@ def cli(verbose):
         bot.utils.setLevel("INFO")
 
 
-@cli.command(help="Analyize configured exchanges")
+@cli.command(help="Analyze configured exchanges")
 def analyze():
     import bot.exchanges as exchanges
 
