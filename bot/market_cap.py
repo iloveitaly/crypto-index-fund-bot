@@ -85,7 +85,7 @@ def filtered_coins_by_market_cap(
 # TODO hardcoded against USD quotes right now, support different purchase currencies in the future
 # `coins` is data from coinmarketcap
 def calculate_market_cap_from_coin_list(
-    purchasing_currency: str, coins, strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP
+    purchasing_currency: str, coins, strategy: MarketIndexStrategy, sqrt_adjustment: t.Union[None, str]
 ) -> t.List[CryptoData]:
     log.info("calculating market index", strategy=strategy)
 
@@ -94,9 +94,16 @@ def calculate_market_cap_from_coin_list(
             breakpoint()
 
     market_cap_list = [Decimal(coin["quote"][purchasing_currency]["market_cap"]) for coin in coins]
+    sqrt_power_equivilent = None
 
     if strategy == MarketIndexStrategy.SQRT_MARKET_CAP:
-        total_market_cap = sum([cap.sqrt() for cap in market_cap_list])
+        if sqrt_adjustment:
+            sqrt_power_equivilent = Decimal("1.0") / Decimal(sqrt_adjustment)
+        else:
+            # sqrt() == ^0.5
+            sqrt_power_equivilent = Decimal("0.5")
+
+        total_market_cap = sum([cap ** sqrt_power_equivilent for cap in market_cap_list])
     else:
         total_market_cap = sum(market_cap_list)
 
@@ -107,8 +114,10 @@ def calculate_market_cap_from_coin_list(
     for coin in coins:
         market_cap = Decimal(coin["quote"][purchasing_currency]["market_cap"])
 
-        if strategy == "sqrt_market_cap":
-            market_cap = market_cap.sqrt()
+        if strategy == MarketIndexStrategy.SQRT_MARKET_CAP:
+            # make the typechecker happy
+            assert None != sqrt_power_equivilent
+            market_cap = market_cap ** sqrt_power_equivilent
 
         coins_with_market_cap_calculation.append(
             CryptoData(
@@ -139,4 +148,9 @@ def coins_with_market_cap(user: User, limit: t.Optional[int] = None) -> t.List[C
         exclude_coins=user.excluded_coins,
     )
 
-    return calculate_market_cap_from_coin_list(user.purchasing_currency, filtered_coins, user.index_strategy)
+    return calculate_market_cap_from_coin_list(
+        purchasing_currency=user.purchasing_currency,
+        coins=filtered_coins,
+        strategy=user.index_strategy,
+        sqrt_adjustment=user.index_strategy_sqrt_adjustment,
+    )

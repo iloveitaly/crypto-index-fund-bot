@@ -54,6 +54,7 @@ class User:
     exchanges: t.List[SupportedExchanges] = [SupportedExchanges.BINANCE]
 
     index_strategy: MarketIndexStrategy = MarketIndexStrategy.MARKET_CAP
+    index_strategy_sqrt_adjustment: t.Optional[str] = None
     buy_strategy: MarketBuyStrategy = MarketBuyStrategy.MARKET
     # automatically sell stablecoins to USD / purchasing currency?
     convert_stablecoins: bool = True

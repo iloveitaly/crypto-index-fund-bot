@@ -88,7 +88,8 @@ def analyze():
     help="Index strategy",
 )
 @click.option("-l", "--limit", type=int, help="Maximum size of index")
-def index(format, limit, strategy):
+@click.option("--sqrt-adjustment", type=str, help="Customized sqrt calculation", default=None)
+def index(format, limit, strategy, sqrt_adjustment):
     user = user_for_cli()
 
     if strategy:
@@ -96,6 +97,9 @@ def index(format, limit, strategy):
 
     if limit:
         user.index_limit = limit
+
+    if sqrt_adjustment:
+        user.buy_strategy_sqrt_adjustment = sqrt_adjustment
 
     coins_by_exchange = bot.market_cap.coins_with_market_cap(user)
 
