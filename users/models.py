@@ -23,7 +23,7 @@ class User(models.Model):
     preferences = models.JSONField(default=dict)
     name = models.CharField(max_length=100)
     date_checked = models.DateTimeField(null=True)
-    last_ordered_date = models.DateTimeField(null=True)
+    last_ordered_at = models.DateTimeField(null=True)
     disabled = models.BooleanField(default=False)
 
     def bot_user(self):
