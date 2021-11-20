@@ -33,7 +33,7 @@ def user_from_env():
         except FileNotFoundError:
             pass
 
-    user_preferences = json.loads(t.cast(str, config("USER_PREFERENCES", "")))
+    user_preferences = json.loads(t.cast(str, config("USER_PREFERENCES", "{}")))
 
     for k, v in user_preferences.items():
         setattr(user, k, v)
