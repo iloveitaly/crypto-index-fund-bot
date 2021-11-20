@@ -11,9 +11,10 @@ from .data_types import (
     SupportedExchanges,
 )
 from .user import User
-from .utils import log
+from .utils import entry_key_with_symbol, log
 
 
+# TODO this method is way too big, we should break it up
 def calculate_market_buy_preferences(
     target_index: t.List[CryptoData],
     merged_portfolio: t.List[CryptoBalance],
@@ -21,29 +22,39 @@ def calculate_market_buy_preferences(
     exchange: SupportedExchanges,
     user: User,
 ) -> t.List[CryptoData]:
-
     """
     Buying priority:
 
     1. Buying what hasn't been explicitly deprioritized by the user
-    2. Buying what's unique to this exchange
-    3. Buying what has > 1% of the market cap
-    4. Buying a coin that is not currently held, as opposed to getting closer to a new allocation
-    5. Buying whatever has dropped the most
-    6. Buying what has the most % delta from the target
 
-    Filter out coins that have exceeded their targets
+    2. Buying what has > 1% of the market cap OR has exceeded the allocation drift multiple
+    3. Buying a coin that is not currently held, as opposed to getting closer to a new allocation
+    4. Buying whatever has dropped the most
+    5. Buying what has the most % delta from the target
+
+    Filters applied:
+
+    1. Remove coins that have exceeded their target allocations
+    2. If multiple exchanges are being used, and the exchange is not primary, remove coins that are available on another exchange
+    3. Remove coins that contain excluded filters
+    4. Remove coins that are not explicitly excluded
     """
 
     log.info("calculating market buy preferences", target_index=len(target_index), current_portfolio=len(merged_portfolio))
+
+    def portfolio_entry_key_for_coin(portfolio: t.List[CryptoBalance], coin_data: CryptoData, key: str) -> t.Optional[t.Any]:
+        return next((balance[key] for balance in portfolio if balance["symbol"] == coin_data["symbol"]), None)
 
     # for loops instead of list comprehensions because we want to log and debug various details
 
     coins_below_index_target: t.List[CryptoData] = []
 
+    # TODO we should extract out the for loops into a filter function
+
     # first, let's exclude all coins that we've exceeded target on
     for coin_data in target_index:
-        current_percentage = next((balance["percentage"] for balance in merged_portfolio if balance["symbol"] == coin_data["symbol"]), 0)
+        current_percentage = portfolio_entry_key_for_coin(merged_portfolio, coin_data, "percentage") or 0
+        # next((balance["percentage"] for balance in merged_portfolio if balance["symbol"] == coin_data["symbol"]), 0)
 
         if current_percentage < coin_data["percentage"]:
             coins_below_index_target.append(coin_data)
@@ -74,6 +85,8 @@ def calculate_market_buy_preferences(
     )
 
     # prioritize coins with the highest drop/lowest gains in the last 30d
+    # TODO maybe we should apply some filter here? Only sort when change exceeds a treshold?
+
     sorted_by_largest_recent_drop = sorted(
         sorted_by_largest_target_delta,
         # TODO should we use 7d change vs 30?
@@ -81,48 +94,60 @@ def calculate_market_buy_preferences(
         key=lambda coin_data: coin_data["change_30d"],
     )
 
-    # prioritize tokens we don't own yet that we own at least the minimum purchase price specified by the user
-    # why the min purchase price condition? It's possible that users own a very small ($1-2) amount of a coin
-    # but have much less than the user-specific minimum amount
-    symbols_in_current_allocation = [item["symbol"] for item in merged_portfolio if item["usd_total"] > user.purchase_min]
+    # prioritize tokens we don't own yet
+    # previously, in this logic, coins with holdings below the minimum purchase amount were considered unowned
+    # instead of being prioritized here, they will be prioritized in the (optional) `allocation_drift_multiple_limit`
+    # filtering by the minimum ownership amount would cause purchases to be made against tokens which are not as off
+    # from a relative or absolute percentage basis as other tokens
+    symbols_in_current_allocation = [item["symbol"] for item in merged_portfolio]
 
     def is_token_unowned(coin_data: CryptoData) -> int:
         if coin_data["symbol"] not in symbols_in_current_allocation:
-            log.debug("coin not in current allocation, prioritizing", symbol=coin_data["symbol"])
+            log.debug("coin not in current allocation or does not exceed the minimum purchase amount, prioritizing", symbol=coin_data["symbol"])
             return 0
 
         return 1
 
     sorted_by_unowned_coins = sorted(sorted_by_largest_recent_drop, key=is_token_unowned)
 
-    # prioritize tokens that make up > 1% of the market
-    # *and* either (a) we don't own or (b) our target allocation is off by a factor of 6
-    # why 6? It felt right based on looking at what I wanted out of my current allocation
+    # prioritize tokens that either:
+    #   - are not owned or
+    #   - our target allocation is off by a user-specified factor (defaults to five)
+    #
+    # some notes:
+    #   - by returning zero we are holding previous sorting constant
+    #   - previously, we only prioritized tokens with >1% market cap, but I decided this is not a good strategy
+    #     if allocation is off on a smaller token, we want to prioritize it so we can rebalance before the cost
+    #     of fully rebalancing gets too high.
 
     def should_token_be_treated_as_unowned(coin_data: CryptoData) -> int:
         target_percentage = coin_data["percentage"]
 
-        # if market cap is less than 1%, don't overwride existing prioritization
-        if target_percentage < 1:
-            return 1
+        # TODO why isn't this returning the correct typing overloads?
+        current_percentage = entry_key_with_symbol(merged_portfolio, coin_data, "percentage")
 
-        current_percentage = next((balance["percentage"] for balance in merged_portfolio if balance["symbol"] == coin_data["symbol"]), 0)
+        # if don't special case unowned coins, then we'll most likely prioritize other coins under the target multiple
+        # above new coins, which is not something I want to do. Getting some exposer to new coins is a high priority
+        # so we want to prioritize unowned tokens as marginally owned (0.01)
+        if current_percentage is None:
+            current_percentage = Decimal("0.01")
 
-        # TODO if current ownership is zero, shouldn't we ensure this is always prioritized first? -max(allocation_delta)?
-        if current_percentage == 0:
-            return 0
+        # nil value is checked before this function is passed to `sort`, which is why we can safely cast
+        allocation_drift_multiple_limit = t.cast(int, user.allocation_drift_multiple_limit)
 
         # if the current allocation is off by a user-defined factor, prioritize it
         # note that this is prioritized by a relative % factor, not an absolute %
-        current_allocation_delta = target_percentage / current_percentage
-        if current_allocation_delta > user.allocation_drift_multiple_limit:
-            log.debug("allocation drift exceeds user-specified percentage", symbol=coin_data["symbol"], drift=current_allocation_delta)
-            return int(current_allocation_delta) * -1
+        # for absolute % prioritization, use `allocation_drift_percentage_limit`
+        current_allocation_multiple = target_percentage / current_percentage
+        if current_allocation_multiple > allocation_drift_multiple_limit:
+            log.debug(
+                "allocation percentage drift multiple exceeds user-specified percentage, prioritizing",
+                symbol=coin_data["symbol"],
+                drift=current_allocation_multiple,
+            )
+            return int(current_allocation_multiple) * -1
 
-        return 1
-
-    def portfolio_entry_for_coin(portfolio: t.List[CryptoBalance], coin_data: CryptoData) -> t.Optional[CryptoBalance]:
-        return next((balance for balance in portfolio if balance["symbol"] == coin_data["symbol"]), None)
+        return 0
 
     if user.allocation_drift_multiple_limit:
         sorted_by_large_market_cap_coins = sorted(sorted_by_unowned_coins, key=should_token_be_treated_as_unowned)
@@ -130,20 +155,18 @@ def calculate_market_buy_preferences(
         sorted_by_large_market_cap_coins = sorted_by_unowned_coins
 
     def does_token_drift_percentage_limit(coin_data: CryptoData) -> int:
-        coin_info = portfolio_entry_for_coin(merged_portfolio, coin_data)
+        current_percentage = portfolio_entry_key_for_coin(merged_portfolio, coin_data, "percentage")
         target_percentage = coin_data["percentage"]
+
+        # nil value is checked before this function is passed to `sort`, which is why we can safely cast
         allocation_drift_percentage_limit = t.cast(int, user.allocation_drift_percentage_limit)
 
-        if not coin_info:
-            if target_percentage > allocation_drift_percentage_limit:
-                return -1 * allocation_drift_percentage_limit
-
+        if not current_percentage:
             return 0
 
-        percentage_delta = target_percentage - coin_info["percentage"]
-
+        percentage_delta = target_percentage - current_percentage
         if percentage_delta > allocation_drift_percentage_limit:
-            log.debug("allocation drift percentage exceeded", symbol=coin_data["symbol"], drift=percentage_delta)
+            log.debug("allocation drift percentage exceeded, prioritizing", symbol=coin_data["symbol"], drift=percentage_delta)
             return -1 * int(percentage_delta)
 
         return 0
@@ -153,10 +176,15 @@ def calculate_market_buy_preferences(
     else:
         sorted_by_percentage_drift_prioritization = sorted_by_large_market_cap_coins
 
+    def is_coin_deprioritized_by_user(coin_data: CryptoData) -> int:
+        if coin_data["symbol"] in deprioritized_coins:
+            log.debug("coin is in user's deprioritized list, deprioritized", symbol=coin_data["symbol"])
+            return 1
+
+        return 0
+
     # last, but not least, let's respect the user's preference for deprioritizing coins
-    sorted_by_deprioritized_coins = sorted(
-        sorted_by_percentage_drift_prioritization, key=lambda coin_data: 1 if coin_data["symbol"] in deprioritized_coins else 0
-    )
+    sorted_by_deprioritized_coins = sorted(sorted_by_percentage_drift_prioritization, key=is_coin_deprioritized_by_user)
 
     return sorted_by_deprioritized_coins
 
@@ -206,6 +234,7 @@ def determine_market_buys(
 
     user_purchase_minimum = user.purchase_min
     user_purchase_maximum = user.purchase_max
+    # TODO the `sum` typing definitions are incorrect, this should return a decimal
     portfolio_total = sum(balance["usd_total"] for balance in merged_portfolio)
 
     if purchase_balance < exchange_purchase_minimum:
@@ -235,10 +264,14 @@ def determine_market_buys(
         if not exchanges.is_trading_active_for_coin_in_exchange(exchange, coin["symbol"], user.purchasing_currency):
             continue
 
-        # calculate the maximum amount we could purchase based on the target allocation and total portfolio value
-        coin_portfolio_info = next((target for target in target_portfolio if target["symbol"] == coin["symbol"]))
+        coin_portfolio_info = entry_key_with_symbol(target_portfolio, coin, None)
+        assert coin_portfolio_info is not None
+
+        # calculate the maximum amount we could purchase based on the target allocation and current portfolio value
         # percentage is not expressed in a < 1 float, so we need to convert it
-        target_amount = coin_portfolio_info["percentage"] / 100 * portfolio_total
+        absolute_target_amount = coin_portfolio_info["percentage"] / 100 * portfolio_total
+        current_amount = t.cast(Decimal, entry_key_with_symbol(merged_portfolio, coin, "usd_total") or Decimal(0))
+        target_amount = absolute_target_amount - current_amount
 
         # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
         purchase_amount = purchase_total if purchase_total > exchange_purchase_minimum * 2 else user_purchase_minimum
