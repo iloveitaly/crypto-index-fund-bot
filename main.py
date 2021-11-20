@@ -60,7 +60,14 @@ def analyze():
     print("\nAvailable in purchasing currency:")
     print(f"coinbase:\t{len(coinbase_available_coins_in_purchasing_currency)}")
     print(f"binance:\t{len(binance_available_coins_in_purchasing_currency)}")
-    print("unique to coinbase:\n%s" % ("\n".join(coinbase_available_coins_in_purchasing_currency - binance_available_coins_in_purchasing_currency)))
+    print(
+        "binance not available in purchasing currency:\n\n%s\n\n"
+        % ("\n".join(binance_available_coins - binance_available_coins_in_purchasing_currency))
+    )
+    print(
+        "unique to coinbase:\n\n%s\n\n"
+        % ("\n".join(coinbase_available_coins_in_purchasing_currency - binance_available_coins_in_purchasing_currency))
+    )
 
 
 @cli.command(help="Print index by market cap")
