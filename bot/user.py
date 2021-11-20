@@ -83,7 +83,10 @@ class User:
     # if the current holding % / target holding % multiple is greater than this value, prioritize purchasing it above other tokens
     # this is useful if you want to avoid constantly purchasing tokens with smaller total market cap at the risk of not correcting
     # your allocation on coins with a higher total market cap
-    allocation_drift_multiple_limit: int = 5
+    allocation_drift_multiple_limit: t.Optional[int] = 5
+
+    # if the absolute percentage of a holding drifts this amount, prioritize purchasing it even above the % drift multiple above
+    allocation_drift_percentage_limit: t.Optional[int] = 5
 
     def __init__(self):
         pass
