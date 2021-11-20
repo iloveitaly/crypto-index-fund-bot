@@ -1,22 +1,19 @@
 # Crypto Index Fund Bot
 
-A bot to build your own index fund of cryptocurrencies using dollar-cost averaging.
+This is a bot which will a index fund of cryptocurrencies. It's designed to be used with a dollar-cost averaging approach, but can be used with one-deposit as well.
 
-There are [bots](https://allcryptobots.com) out there that do this, so why build another? They are missing key features that I wanted:
+There are [bots](https://allcryptobots.com) out there that do this, so why build another? There are missing features I wanted:
 
-* Never sell any tokens. Instead, rebalance using USD deposits. ([HodlBot](https://www.hodlbot.io) can't do this)
-* Control which tokens are treated as deposits. Specifically, only use USD deposits for purchasing new currencies. ([Shrimpy](https://www.shrimpy.io) can't do this)
-* Build a cross-chain index (otherwise [TokenSets](https://www.tokensets.com) would have been perfect)
-* When new deposits come in, asset purchases should be prioritized by:
-  * New tokens that aren't held at all ([Shrimpy](https://www.shrimpy.io) can't do this)
-  * Tokens whose value has dropped the most over the last month (not aware of any bot that does this)
-  * Tokens whose allocation is below target (nearly all bots do this)
+* Never sell any tokens. Instead, rebalance towards the target allocation using recurring deposits. ([HodlBot](https://www.hodlbot.io) can't do this)
+* Control which tokens are treated as deposits. Specifically, only use USD/stablecoin deposits for purchasing new currencies. ([Shrimpy](https://www.shrimpy.io) can't do this)
+* Build a cross-chain index (otherwise [TokenSets](https://www.tokensets.com), which is EC-20 only, would have been perfect)
+* When new deposits come in, asset purchases should be carefully prioritized. [More info on how purchases are prioritized](#buy-prioritization)
 * Control the minimum and maximum purchase size for new crypto orders. Most bots keep buying the same token over attempting to reach the correct target allocation. I want to distribute new USD deposits over a range of tokens.
 * Represent assets held outside of the bot-managed exchange(s) in the index (not aware of any bot that does this).
 * Ability to exclude certain types of tokens, like stable coins or wrapped tokens (most existing bots allow you to do this manually).
 * Ability to exclude specific tokens from the index completely (most existing bots allow for this).
 * Build a cross-exchange index. Binance and Coinbase are great, but they have a limited set of tokens. I'd like to build an index across multiple exchanges, optimizing for token purchases in each exchange that can't be made in the other (for instance, NEXO isn't available in Binance or CoinBase, but is available in HitBTC). I'm not aware of any bot that does this.
-* Convert stablecoin balance to USD for puchasing (Shrimpy does this).
+* Convert stablecoin balance to USD for purchasing (Shrimpy does this).
 * Ability to deprioritize (buy last) but still hold certain tokens
 * Open source so I can audit and understand the nuances of the bot.
 
@@ -64,6 +61,16 @@ python main.py
 
 Not all configuration options are available via the CLI or the `USER_*` env vars. Checkout `bot/user.py` for more configuration options.
 
+## Customization Options
+
+There are a *bunch* of configuration options available. I'm not going to document them all here, since [they are documented in-code here](https://github.com/iloveitaly/crypto-index-fund-bot/blob/85f27b18aee3a0339996a84974f26fa17fc04f07/bot/user.py#L45-L81). You can configure these preferences by using `USER_PREFERENCES` in your `.env` file.
+
+For instance:
+
+```shell
+USER_PREFERENCES='{"allocation_drift_percentage_limit":1, "allocation_drift_multiple_limit": 4}
+```
+
 ## Command Line Usage
 
 Right now, there are some variables that are hardcoded into the `User` class that you may want to change. Assuming you've taken a look at the `User` options *and* configured `.env` you can run `python main.py --help` to get the following information:
@@ -78,10 +85,12 @@ Options:
   --help         Show this message and exit.
 
 Commands:
-  analyze    Analyize configured exchanges
-  buy        Buy additional tokens for your index
-  index      Print index by market cap
-  portfolio  Print current portfolio with targets
+  analyze     Analyze configured exchanges
+  buy         Buy additional tokens for your index
+  convert     Convert stablecoins to USD for purchasing
+  cost-basis  Calculate cost basis
+  index       Print index by market cap
+  portfolio   Print current portfolio with targets
 ```
 
 Some examples:
@@ -104,7 +113,11 @@ This is the command you'll want to setup on a cron job:
 python main.py buy
 ```
 
-## Heroku Deployment
+## Deployment
+
+There are lots of ways to deploy the bot. Easiest will be heroku, although it works great on a Pi.
+
+### Heroku Deployment
 
 I'm not running this on Heroku, so it will need a bit of work. Here are some notes on what needs to be done, feel free to submit a PR!
 
@@ -119,8 +132,9 @@ I'm not running this on Heroku, so it will need a bit of work. Here are some not
 * You'll need a worker process modeled after `celery.sh`
 * Redis + postgres would need to be configured, along with `DJANGO_SETTINGS_MODULE`
 
+### Docker
 
-## Single-user Docker Deployment
+#### Single-user Docker Deployment
 
 You can use docker to deploy a single-user instance of this bot to a VPS or a local machine like a Raspberry Pi.
 
@@ -134,7 +148,7 @@ There is a `SCHEDULE` variable which you can use to configure how often the acco
 
 `external_portfolio.json` is copied into the container if it exists locally.
 
-## Multi-user Docker Deployment
+#### Multi-user Docker Deployment
 
 In addition to sourcing the user configuration from `.env` and running the bot in single-user mode, you can run the bot in multi-user mode. If you do this:
 
@@ -205,7 +219,67 @@ Note that VCR is used to record interactions for some of the tests. If tests are
 pytest -k 'test_test_name' --record-mode=rewrite
 ```
 
+Debuggins something in particular? Probably useful to increase log level:
+
+```shell
+LOG_LEVEL=debug pytest
+```
+
+Want to break on unhandled exceptions?
+
+```shell
+pytest -s --pdb
+```
+
+## Typechecking
+
+I like Pylance, the preferred VS Code python extension, which uses `pyright` for typchecking.
+
+```shell
+# install node either via asdf or directly
+asdf install
+
+# a specific version is required until this is fixed https://github.com/microsoft/pyright/issues/2578
+npm install -g pyright@1.1.186
+
+pyright .
+```
+
+## Linting
+
+The linter currently doesn't pass, which is why it's not enabled on CI. You can run it here (feel free to submit PRs to get it closer to passing!):
+
+```shell
+poetry shell
+pylint **/*.py
+```
+
 ## Implementation Details
+
+### Buy Prioritization
+
+All of the buying prioritization happens in [`calculate_market_buy_preferences`](https://github.com/iloveitaly/crypto-index-fund-bot/blob/85f27b18aee3a0339996a84974f26fa17fc04f07/bot/market_buy.py#L18) which is decently documented with inline comments. I recommend taking a look if you are curious.
+
+Basically, the logic does two things:
+
+* Filters out tokens that are not eligible for buying
+* Sorts the remaining tokens
+
+#### Filtering
+
+1. Remove tokens that have exceeded their target allocations
+2. If multiple exchanges are being used, and the exchange is not primary, remove tokens that are available on another exchange (user configurable)
+3. Remove tokens that contain excluded filters (user configurable)
+4. Remove tokens that are not explicitly excluded (user configurable)
+
+#### Sorting
+
+1. What hasn't been explicitly deprioritized by the user (optional, user configurable)
+2. What has exceeded the allocation drift percentage (optional, user configurable)
+3. What has exceeded the allocation drift multiple (optional, user configurable)
+4. A token that is not currently held at all
+5. Buying whatever has dropped the most
+6. Buying what has the most % delta, on an absolute basis, from the target
 
 ### Index Strategies
 
@@ -221,7 +295,7 @@ The only way to reduce Binance fees is to hold their BNB token in your account (
 
 ### Limit Orders
 
-_WIP limit order documentation. Right now, there is a limit order strategy, but we don't auto-cancel them after a certain period of time_
+_WIP limit order documentation. Right now, there is a limit order strategy, but it's not well thought through_
 
 If a limit order is not filled, by default it [remains open indefinitely.](https://academy.binance.com/en/articles/understanding-the-different-order-types) This bot will automatically cancel any open limit orders that have not been filled based on the user configuration. The cancellation process does not differentiate between orders created by the bot and orders created by the user.
 
@@ -249,6 +323,10 @@ Nice to have:
 * Ability to submit orders in the purchasing currency instead of tokens quantities
 * Specify an exact time for an order to expire, rather than just GTC.
 * Ability to deposit a recurring amount, in USD rather than a stablecoin (which requires fees to be usable for purchases)
+
+Some helpful exchange-specific links:
+
+* [New binance tokens](https://support.binance.us/hc/en-us/sections/360008343893-New-Listings)
 
 ## Related & Alternative Systems
 
