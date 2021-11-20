@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from rich.traceback import install as install_rich_tracebacks
 
 # install_rich_tracebacks(show_locals=True, width=200)
@@ -5,10 +7,13 @@ install_rich_tracebacks(width=200)
 
 import logging
 import typing as t
+from typing import overload
 
 import structlog
 from decouple import config
 from structlog.threadlocal import wrap_dict
+
+from .data_types import CryptoBalance, CryptoData
 
 
 def setLevel(level):
@@ -57,6 +62,49 @@ def cached_result(key: str, func: t.Callable):
 
 def in_django_environment():
     return config("DJANGO_SETTINGS_MODULE", default=None) != None
+
+
+# https://stackoverflow.com/questions/52445559/how-can-i-type-hint-a-function-where-the-return-type-depends-on-the-input-type-o
+@overload
+def entry_key_with_symbol(
+    list_of_coins: t.List[CryptoBalance], symbol_or_dict: t.Union[CryptoBalance, str], key: str
+) -> t.Optional[t.Union[str, Decimal]]:
+    ...
+
+
+@overload
+def entry_key_with_symbol(list_of_coins: t.List[CryptoBalance], symbol_or_dict: t.Union[CryptoBalance, str], key: None) -> t.Optional[CryptoBalance]:
+    ...
+
+
+@overload
+def entry_key_with_symbol(list_of_coins: t.List[CryptoData], symbol_or_dict: t.Union[CryptoData, str], key: None) -> t.Optional[CryptoData]:
+    ...
+
+
+@overload
+def entry_key_with_symbol(list_of_coins: t.List[CryptoData], symbol_or_dict: t.Union[CryptoData, str], key: str) -> t.Optional[t.Union[str, Decimal]]:
+    ...
+
+
+def entry_key_with_symbol(
+    list_of_coins: t.Union[t.List[CryptoBalance], t.List[CryptoData]], symbol_or_dict: t.Union[str, CryptoBalance, CryptoData], key: t.Optional[str]
+) -> t.Optional[t.Union[CryptoBalance, CryptoData, str, Decimal]]:
+    if isinstance(symbol_or_dict, str):
+        symbol = symbol_or_dict
+    else:
+        symbol = symbol_or_dict["symbol"]
+
+    match = next((target for target in list_of_coins if target["symbol"] == symbol), None)
+
+    if not match:
+        return None
+
+    if not key:
+        return match
+
+    # optionally pluck a specific field from the match
+    return match[key]
 
 
 def currency_format(value):
