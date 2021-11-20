@@ -25,19 +25,19 @@ def calculate_market_buy_preferences(
     """
     Buying priority:
 
-    1. Buying what hasn't been explicitly deprioritized by the user
-
-    2. Buying what has > 1% of the market cap OR has exceeded the allocation drift multiple
-    3. Buying a coin that is not currently held, as opposed to getting closer to a new allocation
-    4. Buying whatever has dropped the most
-    5. Buying what has the most % delta from the target
+    1. What hasn't been explicitly deprioritized by the user (optional, user configurable)
+    2. What has exceeded the allocation drift percentage (optional, user configurable)
+    3. What has exceeded the allocation drift multiple (optional, user configurable)
+    4. A token that is not currently held at all
+    5. Buying whatever has dropped the most
+    6. Buying what has the most % delta, on an absolute basis, from the target
 
     Filters applied:
 
-    1. Remove coins that have exceeded their target allocations
-    2. If multiple exchanges are being used, and the exchange is not primary, remove coins that are available on another exchange
-    3. Remove coins that contain excluded filters
-    4. Remove coins that are not explicitly excluded
+    1. Remove tokens that have exceeded their target allocations
+    2. If multiple exchanges are being used, and the exchange is not primary, remove tokens that are available on another exchange (user configurable)
+    3. Remove tokens that contain excluded filters (user configurable)
+    4. Remove tokens that are not explicitly excluded (user configurable)
     """
 
     log.info("calculating market buy preferences", target_index=len(target_index), current_portfolio=len(merged_portfolio))
