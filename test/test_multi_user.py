@@ -30,3 +30,14 @@ class TestMultiUser(unittest.TestCase):
         fresh_user = User.objects.get(id=user.id)
 
         assert isinstance(fresh_user.external_portfolio[0]["amount"], Decimal)
+
+    # TODO should add better mock for buy command return results
+    @patch.object(bot.commands.BuyCommand, "execute", return_value=[(None, None, None, [{}])])
+    def test_updating_last_ordered_at(self, buy_command_mock):
+        user = User.objects.create(name="user")
+
+        users.celery.initiate_user_buys.delay()
+
+        fresh_user = User.objects.get(id=user.id)
+
+        assert fresh_user.last_ordered_at is not None
