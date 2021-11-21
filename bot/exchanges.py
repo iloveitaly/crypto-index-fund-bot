@@ -114,9 +114,9 @@ def price_of_symbol(symbol: str, purchasing_currency: str) -> Decimal:
 
     if price := binance_price_for_symbol(binance_trading_pair):
         return price
-    else:
-        log.warn("price not available in binance, pulling from coinmarket cap", symbol=symbol)
 
-        from . import market_cap
+    log.warn("price not available in binance, pulling from coinmarket cap", symbol=symbol)
 
-        return Decimal(market_cap.coinmarketcap_data_for_symbol(symbol)["quote"][purchasing_currency]["price"])
+    from . import market_cap
+
+    return Decimal(market_cap.coinmarketcap_data_for_symbol(symbol)["quote"][purchasing_currency]["price"])

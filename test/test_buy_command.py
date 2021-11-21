@@ -118,21 +118,21 @@ class TestBuyCommand(unittest.TestCase):
             {"symbol": "BTC", "amount": Decimal("0.01")},
         ]
 
-        assert set(user.deprioritized_coins) == set(["DOGE", "XRP", "BNB", "STORJ"])
-        assert True == user.livemode
-        assert self.PURCHASE_MIN == user.purchase_min
-        assert self.PURCHASE_MIN == user.purchase_max
-        assert MarketBuyStrategy.MARKET == user.buy_strategy
-        assert MarketIndexStrategy.MARKET_CAP == user.index_strategy
-        assert None == user.allocation_drift_percentage_limit
+        assert set(user.deprioritized_coins) is set(["DOGE", "XRP", "BNB", "STORJ"])
+        assert True is user.livemode
+        assert self.PURCHASE_MIN is user.purchase_min
+        assert self.PURCHASE_MIN is user.purchase_max
+        assert MarketBuyStrategy.MARKET is user.buy_strategy
+        assert MarketIndexStrategy.MARKET_CAP is user.index_strategy
+        assert None is user.allocation_drift_percentage_limit
 
         BuyCommand.execute(user=user, purchase_balance=Decimal(self.PURCHASE_MIN * number_of_orders))
 
         all_order_tokens = [mock_call.kwargs["symbol"] for mock_call in order_market_buy_mock.mock_calls]
 
         # top market tokens should be prioritized
-        assert len(all_order_tokens) == number_of_orders
-        assert set(all_order_tokens) == set(["BTCUSD", "ETHUSD", "ADAUSD", "SOLUSD"])
+        assert len(all_order_tokens) is number_of_orders
+        assert set(all_order_tokens) is set(["BTCUSD", "ETHUSD", "ADAUSD", "SOLUSD"])
 
     @patch(
         "bot.exchanges.open_orders",
@@ -157,9 +157,9 @@ class TestBuyCommand(unittest.TestCase):
         user.cancel_stale_orders = True
         user.buy_strategy = MarketBuyStrategy.LIMIT
 
-        assert user.livemode == False
-        assert user.cancel_stale_orders == True
-        assert user.buy_strategy == MarketBuyStrategy.LIMIT
+        assert user.livemode is False
+        assert user.cancel_stale_orders is True
+        assert user.buy_strategy is MarketBuyStrategy.LIMIT
 
         BuyCommand.execute(user=user)
 
