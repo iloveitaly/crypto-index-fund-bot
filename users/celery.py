@@ -19,8 +19,8 @@ import django.utils.timezone
 import sentry_sdk
 from celery.signals import setup_logging
 
-import bot.utils
 from bot.commands import BuyCommand
+from bot.utils import log
 
 
 @setup_logging.connect
@@ -43,7 +43,7 @@ def setup_periodic_tasks(sender, **kwargs):
 def initiate_user_buys():
     from users.models import User
 
-    bot.utils.log.info("initiating all buys for user")
+    log.info("initiating all buys for user")
 
     # TODO using `iterator` here was causing the queryset contents to be cached
     for user in User.objects.all():
@@ -57,19 +57,26 @@ def user_buy(user_id):
     user = User.objects.get(id=user_id)
 
     if user.disabled:
-        bot.utils.log.info("user is disabled, skipping", user=user)
+        log.info("user is disabled, skipping", user=user)
         return
 
     bot_user = user.bot_user()
 
     sentry_sdk.set_user({"id": user_id, "username": user.name})
 
-    bot.utils.log.bind(user_id=user.id)
-    bot.utils.log.info("initiating buys for user")
+    log.bind(user_id=user.id)
+    log.info("initiating buys for user")
 
-    buy_results = BuyCommand.execute(bot_user)
+    buy_results_by_exchange = BuyCommand.execute(bot_user)
 
-    if len(buy_results) > 0:
+    # TODO this data structure is pretty messy
+    # aggregate buy results
+    completed_orders = []
+    for (_, _, _, completed_orders_in_exchange) in buy_results_by_exchange:
+        completed_orders += completed_orders_in_exchange
+
+    if len(completed_orders) > 0:
+        log.info("completed orders", completed_orders=len(completed_orders))
         user.last_ordered_at = django.utils.timezone.now()
 
     user.date_checked = django.utils.timezone.now()
