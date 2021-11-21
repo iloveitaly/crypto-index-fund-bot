@@ -48,10 +48,10 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
-      # 5900 is a random port to avoid collision with other postgres services
+      # 5901 is a random port to avoid collision with other postgres services
       # if you are running this in a public environment, you should eliminate
       # this port mapping
-      - "5900:5432"
+      - "5901:5432"
 
   # https://hub.docker.com/_/redis
   redis:
