@@ -83,12 +83,11 @@ def analyze():
     "-s",
     "--strategy",
     type=click.Choice([choice.value for choice in MarketIndexStrategy]),
-    default=MarketIndexStrategy.MARKET_CAP,
-    show_default=True,
+    default=None,
     help="Index strategy",
 )
 @click.option("-l", "--limit", type=int, help="Maximum size of index")
-@click.option("--sqrt-adjustment", type=str, help="Customized sqrt calculation", default=None)
+@click.option("--sqrt-adjustment", type=str, help="Customized sqrt calculation")
 def index(format, limit, strategy, sqrt_adjustment):
     user = user_for_cli()
 
@@ -120,8 +119,6 @@ def portfolio(format):
     portfolio = PortfolioCommand.execute(user)
 
     click.echo(bot.utils.table_output_with_format(portfolio, format))
-
-    # import bot.market_buy
 
     purchase_balance = bot.market_buy.purchasing_currency_in_portfolio(user, portfolio)
     click.echo(f"\nPurchasing Balance: {bot.utils.currency_format(purchase_balance)}")
