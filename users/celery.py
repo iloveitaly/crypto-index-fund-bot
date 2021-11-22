@@ -24,7 +24,8 @@ from bot.utils import log
 
 
 @setup_logging.connect
-def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
+# pylint: disable=unused-argument
+def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
     # not sure exactly why, but just defining this function fixed colorization formatting in celery
     # it seems to eliminate the default logging wrapper which mutates the log formatting
     pass
