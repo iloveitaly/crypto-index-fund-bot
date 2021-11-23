@@ -273,10 +273,9 @@ def determine_market_buys(
         current_amount = t.cast(Decimal, entry_key_with_symbol(merged_portfolio, coin, "usd_total") or Decimal(0))
         target_amount = absolute_target_amount - current_amount
 
-        # round up the purchase amount to the total available balance if we don't have enough to buy two tokens
-        purchase_amount = purchase_total if purchase_total > exchange_purchase_minimum * 2 else user_purchase_minimum
+        purchase_amount = purchase_total
 
-        # make sure purchase total will not overflow the target allocation
+        # make sure purchase total will not overflow the target allocation, or the user specified maximum
         purchase_amount = min(purchase_amount, target_amount, user_purchase_maximum)
 
         # make sure the floor purchase amount is at least the user-specific minimum
