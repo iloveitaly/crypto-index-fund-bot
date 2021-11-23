@@ -1050,15 +1050,15 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "structlog"
-version = "21.2.0"
+version = "21.3.0"
 description = "Structured Logging for Python"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-dev = ["coverage", "freezegun (>=0.2.8)", "pretend", "pytest-asyncio", "pytest (>=6.0)", "simplejson", "furo", "sphinx", "twisted", "pre-commit", "rich"]
-docs = ["furo", "sphinx", "twisted"]
+dev = ["pre-commit", "rich", "cogapp", "tomli", "coverage", "freezegun (>=0.2.8)", "pretend", "pytest-asyncio", "pytest (>=6.0)", "simplejson", "furo", "sphinx", "sphinx-notfound-page", "sphinxcontrib-mermaid", "twisted"]
+docs = ["furo", "sphinx", "sphinx-notfound-page", "sphinxcontrib-mermaid", "twisted"]
 tests = ["coverage", "freezegun (>=0.2.8)", "pretend", "pytest-asyncio", "pytest (>=6.0)", "simplejson"]
 
 [[package]]
@@ -1218,7 +1218,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "471c424d8d087ba07dc57d41f50947379c9840159ad8fc65b227cb9e59f077c8"
+content-hash = "66f485dfdce76c421e3231349f2b16ff1394c4248967d967d1cc3791eaf2fe7e"
 
 [metadata.files]
 aiodns = [
@@ -1954,8 +1954,8 @@ sqlparse = [
     {file = "sqlparse-0.4.2.tar.gz", hash = "sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae"},
 ]
 structlog = [
-    {file = "structlog-21.2.0-py2.py3-none-any.whl", hash = "sha256:63a7111a32e5b615671536bb745692ea02cebfea2b39dcb7d2617eed19437cfe"},
-    {file = "structlog-21.2.0.tar.gz", hash = "sha256:7ac42b565e1295712313f91edbcb64e0840a9037d888c8954f11fa6c43270e99"},
+    {file = "structlog-21.3.0-py3-none-any.whl", hash = "sha256:063216becff8e6f6558122a9b00734f7e50bfef309eb730c85a52c74ed861a96"},
+    {file = "structlog-21.3.0.tar.gz", hash = "sha256:4da2aec0aebf6dee7beb884eb0fda26ed9d6cce5338fcd523e8597d0f1826746"},
 ]
 tabulate = [
     {file = "tabulate-0.8.9-py3-none-any.whl", hash = "sha256:d7c013fe7abbc5e491394e10fa845f8f32fe54f8dc60c6622c6cf482d25d47e4"},
