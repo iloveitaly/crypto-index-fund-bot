@@ -16,12 +16,17 @@ class TestCLI(unittest.TestCase):
     @patch.object(binance.client.Client, "order_market_buy", side_effect=mocked_order_result)
     @patch("bot.market_buy.purchasing_currency_in_portfolio", return_value=20)
     def test_market_buy(self, _purchasing_currency_mock, order_market_buy_mock):
+        purchase_min = 10
+
         # user preconditions
         user = bot.user.user_from_env()
         user.buy_strategy = MarketBuyStrategy.MARKET
+        user.purchase_max = purchase_min
+        user.external_portfolio = []
 
         assert True == user.livemode
-        assert 10 == user.purchase_min
+        assert purchase_min == user.purchase_min
+        assert purchase_min == user.purchase_max
         assert MarketBuyStrategy.MARKET == user.buy_strategy
         assert MarketIndexStrategy.MARKET_CAP == user.index_strategy
 
