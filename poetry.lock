@@ -72,7 +72,7 @@ tests = ["pytest", "pytest-asyncio", "mypy (>=0.800)"]
 
 [[package]]
 name = "astroid"
-version = "2.8.2"
+version = "2.9.0"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -81,7 +81,7 @@ python-versions = "~=3.6"
 [package.dependencies]
 lazy-object-proxy = ">=1.4.0"
 typing-extensions = {version = ">=3.10", markers = "python_version < \"3.10\""}
-wrapt = ">=1.11,<1.13"
+wrapt = ">=1.11,<1.14"
 
 [[package]]
 name = "async-timeout"
@@ -776,19 +776,19 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "pylint"
-version = "2.11.1"
+version = "2.12.1"
 description = "python code static checker"
 category = "dev"
 optional = false
-python-versions = "~=3.6"
+python-versions = ">=3.6.2"
 
 [package.dependencies]
-astroid = ">=2.8.0,<2.9"
+astroid = ">=2.9.0,<2.10"
 colorama = {version = "*", markers = "sys_platform == \"win32\""}
 isort = ">=4.2.5,<6"
 mccabe = ">=0.6,<0.7"
 platformdirs = ">=2.2.0"
-toml = ">=0.7.1"
+toml = ">=0.9.2"
 typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""}
 
 [[package]]
@@ -1218,7 +1218,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "c7686c54a1c69f98cbf83c5e44599fb2f45e09df8cd01460ce91190ed9dcc6bb"
+content-hash = "235b2dc361354324d636cbc0abb778781317dff1d3e336bac6d3e00018c029d3"
 
 [metadata.files]
 aiodns = [
@@ -1316,8 +1316,8 @@ asgiref = [
     {file = "asgiref-3.4.1.tar.gz", hash = "sha256:4ef1ab46b484e3c706329cedeff284a5d40824200638503f5768edb6de7d58e9"},
 ]
 astroid = [
-    {file = "astroid-2.8.2-py3-none-any.whl", hash = "sha256:9eaeaf92b3e21b70bec1a262e7eb118d2e96294892a5de595c92a12adc80dfc2"},
-    {file = "astroid-2.8.2.tar.gz", hash = "sha256:304e99c129794f2cfda584a12b71fde85205da950e2f330f4be09150525ae949"},
+    {file = "astroid-2.9.0-py3-none-any.whl", hash = "sha256:776ca0b748b4ad69c00bfe0fff38fa2d21c338e12c84aa9715ee0d473c422778"},
+    {file = "astroid-2.9.0.tar.gz", hash = "sha256:5939cf55de24b92bda00345d4d0659d01b3c7dafb5055165c330bc7c568ba273"},
 ]
 async-timeout = [
     {file = "async-timeout-4.0.1.tar.gz", hash = "sha256:b930cb161a39042f9222f6efb7301399c87eeab394727ec5437924a36d6eef51"},
@@ -1799,8 +1799,8 @@ pygments = [
     {file = "Pygments-2.10.0.tar.gz", hash = "sha256:f398865f7eb6874156579fdf36bc840a03cab64d1cde9e93d68f46a425ec52c6"},
 ]
 pylint = [
-    {file = "pylint-2.11.1-py3-none-any.whl", hash = "sha256:0f358e221c45cbd4dad2a1e4b883e75d28acdcccd29d40c76eb72b307269b126"},
-    {file = "pylint-2.11.1.tar.gz", hash = "sha256:2c9843fff1a88ca0ad98a256806c82c5a8f86086e7ccbdb93297d86c3f90c436"},
+    {file = "pylint-2.12.1-py3-none-any.whl", hash = "sha256:b4b5a7b6d04e914a11c198c816042af1fb2d3cda29bb0c98a9c637010da2a5c5"},
+    {file = "pylint-2.12.1.tar.gz", hash = "sha256:4f4a52b132c05b49094b28e109febcec6bfb7bc6961c7485a5ad0a0f961df289"},
 ]
 pylint-celery = [
     {file = "pylint-celery-0.3.tar.gz", hash = "sha256:41e32094e7408d15c044178ea828dd524beedbdbe6f83f712c5e35bde1de4beb"},
