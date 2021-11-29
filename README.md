@@ -1,6 +1,6 @@
 # Crypto Index Fund Bot
 
-This is a bot which will a index fund of cryptocurrencies. It's designed to be used with a dollar-cost averaging approach, but can be used with one-deposit as well.
+This is a bot which purchases a index of cryptocurrencies. Like [Vanguard VTI](https://investor.vanguard.com/etf/profile/VTI) for crypto assets. [Here's a good explanation](https://avc.com/2021/11/buying-crypto-assets/) of why this is probably a good idea. It's designed to be used with a dollar-cost averaging approach, but can be used with one-time deposit as well.
 
 There are [bots](https://allcryptobots.com) out there that do this, so why build another? There are missing features I wanted:
 
