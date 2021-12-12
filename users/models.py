@@ -19,7 +19,7 @@ class User(models.Model):
     binance_api_key = EncryptedCharField(max_length=100, null=True)
     binance_secret_key = EncryptedCharField(max_length=100, null=True)
 
-    external_portfolio = models.JSONField(default=dict, decoder=CustomJSONDecoder)
+    external_portfolio = models.JSONField(default=list, decoder=CustomJSONDecoder)
     preferences = models.JSONField(default=dict)
     name = models.CharField(max_length=100)
     date_checked = models.DateTimeField(null=True)
