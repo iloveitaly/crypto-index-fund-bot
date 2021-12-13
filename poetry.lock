@@ -394,16 +394,16 @@ python-versions = "*"
 
 [[package]]
 name = "django"
-version = "3.2.9"
-description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
+version = "4.0"
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 
 [package.dependencies]
-asgiref = ">=3.3.2,<4"
-pytz = "*"
+asgiref = ">=3.4.1,<4"
 sqlparse = ">=0.2.2"
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
@@ -1220,7 +1220,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "bf02e3e374b729ee4fe8a55cd8bd9c61ca61e89cf075c73d71777433f1c716cf"
+content-hash = "b2b720956c8f227db068987d52c7918256363d67f142a5d7caa3f7b6e3adca6b"
 
 [metadata.files]
 aiodns = [
@@ -1470,8 +1470,8 @@ dj-database-url = [
     {file = "dj_database_url-0.5.0-py2.py3-none-any.whl", hash = "sha256:851785365761ebe4994a921b433062309eb882fedd318e1b0fcecc607ed02da9"},
 ]
 django = [
-    {file = "Django-3.2.9-py3-none-any.whl", hash = "sha256:e22c9266da3eec7827737cde57694d7db801fedac938d252bf27377cec06ed1b"},
-    {file = "Django-3.2.9.tar.gz", hash = "sha256:51284300f1522ffcdb07ccbdf676a307c6678659e1284f0618e5a774127a6a08"},
+    {file = "Django-4.0-py3-none-any.whl", hash = "sha256:59304646ebc6a77b9b6a59adc67d51ecb03c5e3d63ed1f14c909cdfda84e8010"},
+    {file = "Django-4.0.tar.gz", hash = "sha256:d5a8a14da819a8b9237ee4d8c78dfe056ff6e8a7511987be627192225113ee75"},
 ]
 django-encrypted-model-fields = [
     {file = "django-encrypted-model-fields-0.6.0.tar.gz", hash = "sha256:50340f7739dd476781fe8688ad91261178781480b273cd8ce4285ed4107a6f07"},
