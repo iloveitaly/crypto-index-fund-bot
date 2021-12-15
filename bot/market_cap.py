@@ -116,7 +116,7 @@ def calculate_market_cap_from_coin_list(
 
         if strategy == MarketIndexStrategy.SQRT_MARKET_CAP:
             # make the typechecker happy
-            assert None != sqrt_power_equivilent
+            assert sqrt_power_equivilent is not None
             market_cap = market_cap ** sqrt_power_equivilent
 
         coins_with_market_cap_calculation.append(

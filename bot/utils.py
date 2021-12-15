@@ -67,7 +67,7 @@ def in_django_environment():
 # https://stackoverflow.com/questions/52445559/how-can-i-type-hint-a-function-where-the-return-type-depends-on-the-input-type-o
 @overload
 def entry_key_with_symbol(
-    list_of_coins: t.List[CryptoBalance], symbol_or_dict: t.Union[CryptoBalance, str], key: str
+    list_of_coins: t.Union[t.List[CryptoBalance], t.List[CryptoData]], symbol_or_dict: t.Union[CryptoBalance, CryptoData, str], key: str
 ) -> t.Optional[t.Union[str, Decimal]]:
     ...
 
@@ -79,11 +79,6 @@ def entry_key_with_symbol(list_of_coins: t.List[CryptoBalance], symbol_or_dict: 
 
 @overload
 def entry_key_with_symbol(list_of_coins: t.List[CryptoData], symbol_or_dict: t.Union[CryptoData, str], key: None) -> t.Optional[CryptoData]:
-    ...
-
-
-@overload
-def entry_key_with_symbol(list_of_coins: t.List[CryptoData], symbol_or_dict: t.Union[CryptoData, str], key: str) -> t.Optional[t.Union[str, Decimal]]:
     ...
 
 

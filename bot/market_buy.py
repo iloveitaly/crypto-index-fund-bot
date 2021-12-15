@@ -124,7 +124,7 @@ def calculate_market_buy_preferences(
         target_percentage = coin_data["percentage"]
 
         # TODO why isn't this returning the correct typing overloads?
-        current_percentage = entry_key_with_symbol(merged_portfolio, coin_data, "percentage")
+        current_percentage = t.cast(Decimal, entry_key_with_symbol(merged_portfolio, coin_data, "percentage"))
 
         # if don't special case unowned coins, then we'll most likely prioritize other coins under the target multiple
         # above new coins, which is not something I want to do. Getting some exposer to new coins is a high priority
