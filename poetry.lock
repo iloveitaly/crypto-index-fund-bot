@@ -1064,7 +1064,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "structlog"
-version = "21.4.0"
+version = "21.5.0"
 description = "Structured Logging for Python"
 category = "main"
 optional = false
@@ -1232,7 +1232,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "4f377b4b71d6030259908871d565b8bab964aacda4c4a307f8380991f1e35b79"
+content-hash = "f4ccce26612a492d8d2bb75ce0f60cdaf9bb41ad8b5e4aeff3ce911e96f0497d"
 
 [metadata.files]
 aiodns = [
@@ -1971,8 +1971,8 @@ sqlparse = [
     {file = "sqlparse-0.4.2.tar.gz", hash = "sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae"},
 ]
 structlog = [
-    {file = "structlog-21.4.0-py3-none-any.whl", hash = "sha256:6ed8fadb27cf8362be0e606f5e79ccdd3b1e879aac65f9dc0ac3033fd013a7be"},
-    {file = "structlog-21.4.0.tar.gz", hash = "sha256:305a66201f9605a2e8a2595271a446f258175901c09c01e4c2c2a8ac5b68edf1"},
+    {file = "structlog-21.5.0-py3-none-any.whl", hash = "sha256:fd7922e195262b337da85c2a91c84be94ccab1f8fd1957bd6986f6904e3761c8"},
+    {file = "structlog-21.5.0.tar.gz", hash = "sha256:68c4c29c003714fe86834f347cb107452847ba52414390a7ee583472bde00fc9"},
 ]
 tabulate = [
     {file = "tabulate-0.8.9-py3-none-any.whl", hash = "sha256:d7c013fe7abbc5e491394e10fa845f8f32fe54f8dc60c6622c6cf482d25d47e4"},
