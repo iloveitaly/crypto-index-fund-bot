@@ -103,7 +103,7 @@ def calculate_market_cap_from_coin_list(
             # sqrt() == ^0.5
             sqrt_power_equivilent = Decimal("0.5")
 
-        total_market_cap = sum([cap ** sqrt_power_equivilent for cap in market_cap_list])
+        total_market_cap = sum([cap**sqrt_power_equivilent for cap in market_cap_list])
     else:
         total_market_cap = sum(market_cap_list)
 
@@ -117,7 +117,7 @@ def calculate_market_cap_from_coin_list(
         if strategy == MarketIndexStrategy.SQRT_MARKET_CAP:
             # make the typechecker happy
             assert sqrt_power_equivilent is not None
-            market_cap = market_cap ** sqrt_power_equivilent
+            market_cap = market_cap**sqrt_power_equivilent
 
         coins_with_market_cap_calculation.append(
             CryptoData(

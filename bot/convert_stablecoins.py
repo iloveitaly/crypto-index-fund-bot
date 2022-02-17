@@ -18,7 +18,7 @@ def wait_until_orders_cleared(user: User, orders) -> None:
             break
 
         log.info("waiting for orders to clear", attempt=i)
-        time.sleep(i ** i)
+        time.sleep(i**i)
 
 
 # TODO is this required across all exchanges? Or is this just a binance thing?
