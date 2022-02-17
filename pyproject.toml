@@ -26,7 +26,7 @@ django-redis = "^5.1.0"
 ipython = "^8.0.1"
 requests = "^2.27.1"
 # lock to 3.4.x to avoid rust compilation issues
-cryptography = "3.4.8"
+cryptography = "36.0.1"
 pylint-pytest = "^1.1.2"
 
 [tool.poetry.dev-dependencies]
