@@ -421,11 +421,11 @@ bcrypt = ["bcrypt"]
 
 [[package]]
 name = "django-encrypted-model-fields"
-version = "0.6.0"
+version = "0.6.1"
 description = "A set of django fields that internally are encrypted using the cryptography.io native python encryption library."
 category = "main"
 optional = false
-python-versions = ">=3.6, <=3.10"
+python-versions = ">=3.6, <=3.11"
 
 [package.dependencies]
 cryptography = ">=3.4"
@@ -1281,7 +1281,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "305cfe320a931a963acfa149e9cad2817c8fd8034f5f11098c16bc5c222b19f1"
+content-hash = "e9a7278e3bd733d0a9f4857946e4f379a01c28d780058c32b21c9d515b04e848"
 
 [metadata.files]
 aiodns = [
@@ -1560,8 +1560,8 @@ django = [
     {file = "Django-3.2.9.tar.gz", hash = "sha256:51284300f1522ffcdb07ccbdf676a307c6678659e1284f0618e5a774127a6a08"},
 ]
 django-encrypted-model-fields = [
-    {file = "django-encrypted-model-fields-0.6.0.tar.gz", hash = "sha256:50340f7739dd476781fe8688ad91261178781480b273cd8ce4285ed4107a6f07"},
-    {file = "django_encrypted_model_fields-0.6.0-py3-none-any.whl", hash = "sha256:0d42774ff9231c7523451482e68f631aea5d44ab93c5464ce000f09a17e42c72"},
+    {file = "django-encrypted-model-fields-0.6.1.tar.gz", hash = "sha256:cef683c1cb16a635b5ed1261d4e1d82faadc1bdeadc489854a2992c48e8f4dfc"},
+    {file = "django_encrypted_model_fields-0.6.1-py3-none-any.whl", hash = "sha256:f9b35b4b4c344f4d3d173828be58a468ff016d7656ea1fb8f6954f3b77bef918"},
 ]
 django-extensions = [
     {file = "django-extensions-3.1.5.tar.gz", hash = "sha256:28e1e1bf49f0e00307ba574d645b0af3564c981a6dfc87209d48cb98f77d0b1a"},
