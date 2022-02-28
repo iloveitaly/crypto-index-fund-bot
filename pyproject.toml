@@ -12,7 +12,7 @@ coinbasepro = "^0.3.0"
 structlog = "^21.5.0"
 rich = "^11.1.0"
 click = "^8.0.3"
-Django = "^3.2.9"
+Django = "^4.0.2"
 psycopg2 = "^2.9.2"
 celery = {version = "^5.2.3", allow-prereleases = true}
 redis = "^3.5.3"
