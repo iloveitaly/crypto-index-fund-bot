@@ -136,14 +136,16 @@ def calculate_market_buy_preferences(
         allocation_drift_multiple_limit = t.cast(int, user.allocation_drift_multiple_limit)
 
         # if the current allocation is off by a user-defined factor, prioritize it
-        # note that this is prioritized by a relative % factor, not an absolute %
+        # note that this is prioritized by a relative % factor, not an absolute %.
+        # for instance, if target allocation is 1% but you currently hold 0.1% anything up
+        # to a `allocation_drift_multiple_limit` of 10 would trigger this coin to be prioritized
         # for absolute % prioritization, use `allocation_drift_percentage_limit`
         current_allocation_multiple = target_percentage / current_percentage
-        if current_allocation_multiple > allocation_drift_multiple_limit:
+        if allocation_drift_multiple_limit is not None and current_allocation_multiple > allocation_drift_multiple_limit:
             log.debug(
                 "allocation percentage drift multiple exceeds user-specified percentage, prioritizing",
                 symbol=coin_data["symbol"],
-                drift=current_allocation_multiple,
+                drift_multiple=current_allocation_multiple,
             )
             return int(current_allocation_multiple) * -1
 
@@ -254,6 +256,8 @@ def determine_market_buys(
     existing_orders = exchanges.open_orders(exchange, user)
     symbols_of_open_orders = [order["symbol"] for order in existing_orders]
 
+    log.debug("calculating purchase stack based on available funds")
+
     for coin in sorted_buy_preferences:
         # TODO may make sense in the future to check the purchase amount and adjust the expected
         if coin["symbol"] in symbols_of_open_orders:
@@ -294,7 +298,7 @@ def determine_market_buys(
             log.info("not enough purchase currency balance for coin", amount=purchase_amount, balance=purchase_total, coin=coin["symbol"])
             continue
 
-        log.info("adding purchase preference", symbol=coin["symbol"], amount=purchase_amount)
+        log.info("adding purchase", symbol=coin["symbol"], amount=purchase_amount)
 
         purchases.append(
             {
