@@ -70,7 +70,7 @@ def analyze():
     )
 
 
-@cli.command(help="Print index by market cap")
+@cli.command(help="Print index by market cap. Does not require an exchange connection.")
 @click.option(
     "-f",
     "--format",
@@ -114,9 +114,13 @@ def index(format, limit, strategy, sqrt_adjustment):
     show_default=True,
     help="Output format",
 )
-def portfolio(format):
+@click.option("-m", "--missing", is_flag=True, help="Show coins that are missing from portfolio")
+def portfolio(format, missing):
     user = user_for_cli()
     portfolio = PortfolioCommand.execute(user)
+
+    if missing:
+        portfolio = [balance for balance in portfolio if balance['amount'] == 0]
 
     click.echo(bot.utils.table_output_with_format(portfolio, format))
 
