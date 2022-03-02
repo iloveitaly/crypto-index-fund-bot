@@ -120,7 +120,7 @@ def portfolio(format, missing):
     portfolio = PortfolioCommand.execute(user)
 
     if missing:
-        portfolio = [balance for balance in portfolio if balance['amount'] == 0]
+        portfolio = [balance for balance in portfolio if balance["amount"] == 0]
 
     click.echo(bot.utils.table_output_with_format(portfolio, format))
 
