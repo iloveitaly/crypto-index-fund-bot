@@ -170,7 +170,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "ccxt"
-version = "1.66.66"
+version = "1.75.12"
 description = "A JavaScript / Python / PHP cryptocurrency trading library with support for 130+ exchanges"
 category = "dev"
 optional = false
@@ -1281,7 +1281,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "9b62f1d1eff34371a853459532208ebbb35143c5c34370a9486879eab04ccb64"
+content-hash = "2a156390477685de95a72b1e979922a9eb3b70425764ab9baa0b12a75184e7fc"
 
 [metadata.files]
 aiodns = [
@@ -1432,8 +1432,8 @@ black = [
     {file = "black-22.1.0.tar.gz", hash = "sha256:a7c0192d35635f6fc1174be575cb7915e92e5dd629ee79fdaf0dcfa41a80afb5"},
 ]
 ccxt = [
-    {file = "ccxt-1.66.66-py2.py3-none-any.whl", hash = "sha256:3a4b8a9cef6d8d63f770262199a730a08df20a2c8abc4cc5b64cdcfa4a4e9681"},
-    {file = "ccxt-1.66.66.tar.gz", hash = "sha256:8e78db90aafbd021dcae418f96fd129bee864bbc97769ba80025b9de52728f58"},
+    {file = "ccxt-1.75.12-py2.py3-none-any.whl", hash = "sha256:9d0f9ed2e86f534e03e77480904fa6bbe4a5afad55ac07dd6af0a4727ff671f2"},
+    {file = "ccxt-1.75.12.tar.gz", hash = "sha256:5ee6d40cc962828b07733a40085fe6356b341146d9d6b892cd6f289194166be6"},
 ]
 celery = [
     {file = "celery-5.2.3-py3-none-any.whl", hash = "sha256:8aacd02fc23a02760686d63dde1eb0daa9f594e735e73ea8fb15c2ff15cb608c"},
