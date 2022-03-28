@@ -34,7 +34,7 @@ pylint-pytest = "^1.1.2"
 # vcrpy = {path = "../../python/vcrpy", develop = true }
 vcrpy = { git = "https://github.com/iloveitaly/vcrpy.git", branch = "deduped-cassettes", develop = true }
 ipdb = "^0.13.8"
-pytest = "^6.2.5"
+pytest = "^7.1.1"
 pytest-recording = "^0.12.0"
 colorama = "^0.4.4"
 pylint = "^2.12.2"
