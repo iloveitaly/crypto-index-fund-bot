@@ -44,7 +44,7 @@ black = "^22.1"
 pylint-django = "^2.5.0"
 pylint-celery = "^0.3"
 isort = "^5.10.1"
-ccxt = "^1.75.12"
+ccxt = "^1.77.97"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
