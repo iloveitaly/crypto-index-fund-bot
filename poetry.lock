@@ -190,7 +190,7 @@ qa = ["flake8 (==3.7.9)"]
 
 [[package]]
 name = "celery"
-version = "5.2.3"
+version = "5.2.6"
 description = "Distributed Task Queue."
 category = "main"
 optional = false
@@ -1280,7 +1280,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "16cfb38b23d655913ebb923878c2bbc37e04da2054084e8efd9c7e60f768e698"
+content-hash = "71a08556ecd1d331e0d5dd04c5c50f6e640524fa30b1db2b022f07fa6ca3216a"
 
 [metadata.files]
 aiodns = [
@@ -1435,8 +1435,8 @@ ccxt = [
     {file = "ccxt-1.77.97.tar.gz", hash = "sha256:fde7d1c3c20812dfa5df8dbe50f1c6ab3a7c05f2ec28fe0751edcaaa585ba3bb"},
 ]
 celery = [
-    {file = "celery-5.2.3-py3-none-any.whl", hash = "sha256:8aacd02fc23a02760686d63dde1eb0daa9f594e735e73ea8fb15c2ff15cb608c"},
-    {file = "celery-5.2.3.tar.gz", hash = "sha256:e2cd41667ad97d4f6a2f4672d1c6a6ebada194c619253058b5f23704aaadaa82"},
+    {file = "celery-5.2.6-py3-none-any.whl", hash = "sha256:da31f8eae7607b1582e5ee2d3f2d6f58450585afd23379491e3d9229d08102d0"},
+    {file = "celery-5.2.6.tar.gz", hash = "sha256:d1398cadf30f576266b34370e28e880306ec55f7a4b6307549b0ae9c15663481"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},
