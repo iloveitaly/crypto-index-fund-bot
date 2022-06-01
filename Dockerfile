@@ -9,6 +9,8 @@
 
 FROM python:3.9.6
 
+LABEL maintainer="Michael Bianco <mike@mikebian.co>"
+
 # clean eliminates the need to manually `rm -rf` the cache
 RUN set -eux; \
   \
