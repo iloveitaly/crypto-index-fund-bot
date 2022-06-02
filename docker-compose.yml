@@ -1,9 +1,8 @@
+version: "3.8"
+
 services:
   worker: &worker
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: mdnwebdocs/kuma_base
+    image: iloveitaly/crypto-index-fund-bot
     restart: always
     command: ./scripts/celery.sh
     # user: ${UID:-1000}
