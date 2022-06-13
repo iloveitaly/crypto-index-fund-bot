@@ -47,7 +47,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v3
+    - uses: actions/setup-python@v4
       with:
         python-version: 3.9.6
     # https://stackoverflow.com/questions/62977821/how-to-cache-poetry-install-for-github-actions
