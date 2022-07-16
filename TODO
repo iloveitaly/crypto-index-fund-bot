@@ -1,5 +1,6 @@
 # Bot
 
+* Staked balances do not show up anymore
 * Purchase more than the minimum
 * Make sure MIN_NOTIONAL is respected when LIMIT strategy is used
 * Refactor all binance stuff into a exchange-wrapped module
@@ -33,3 +34,4 @@
 
 * Can we use cointracker to get external portfolio data?
 * Check prices across exchanges?
+ https://marketplace.visualstudio.com/items?itemName=ms-python.isort
