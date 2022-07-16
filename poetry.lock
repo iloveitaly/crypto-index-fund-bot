@@ -452,7 +452,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
 [[package]]
 name = "django-redis"
-version = "5.1.0"
+version = "5.2.0"
 description = "Full featured redis cache backend for Django."
 category = "main"
 optional = false
@@ -460,10 +460,10 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 Django = ">=2.2"
-redis = ">=3,<4"
+redis = ">=3,<4.0.0 || >4.0.0,<4.0.1 || >4.0.1"
 
 [package.extras]
-hiredis = ["redis[hiredis] (>=3,<4)"]
+hiredis = ["redis[hiredis] (>=3,!=4.0.0,!=4.0.1)"]
 
 [[package]]
 name = "django-structlog"
@@ -1280,7 +1280,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "53b4f81c7f4e3dba35991ebcf1852889289fa4762e008d42161a5b2c1a39dbe4"
+content-hash = "855c14f8d07c39134c5a48c891d97c24db20a721c0e294c1fb90359c815c3973"
 
 [metadata.files]
 aiodns = [
@@ -1571,8 +1571,8 @@ django-ipware = [
     {file = "django_ipware-4.0.0-py2.py3-none-any.whl", hash = "sha256:116bd0d7940f09bf7ffd465943992e23d87e772a9d6c0d3a57b74040589a383b"},
 ]
 django-redis = [
-    {file = "django-redis-5.1.0.tar.gz", hash = "sha256:98fb3d31633a1addea1aeb558a647359908bbcf78c0833f99496c5348fe3c1b4"},
-    {file = "django_redis-5.1.0-py3-none-any.whl", hash = "sha256:bf75bce0d6f65c3a6165dd6789506c8d22238f3bfaf7c4ad447e55afbc5b68cb"},
+    {file = "django-redis-5.2.0.tar.gz", hash = "sha256:8a99e5582c79f894168f5865c52bd921213253b7fd64d16733ae4591564465de"},
+    {file = "django_redis-5.2.0-py3-none-any.whl", hash = "sha256:1d037dc02b11ad7aa11f655d26dac3fb1af32630f61ef4428860a2e29ff92026"},
 ]
 django-structlog = [
     {file = "django-structlog-2.2.0.tar.gz", hash = "sha256:0443d39d27bf34258a375a2dfd1a0ae51f24bedce88beae55c1b69f3c09af922"},
