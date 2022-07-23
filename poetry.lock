@@ -950,7 +950,7 @@ vcrpy = ">=2.0.1"
 
 [[package]]
 name = "python-binance"
-version = "1.0.15"
+version = "1.0.16"
 description = "Binance REST API python implementation"
 category = "main"
 optional = false
@@ -962,7 +962,7 @@ dateparser = "*"
 requests = "*"
 six = "*"
 ujson = "*"
-websockets = "9.1"
+websockets = "*"
 
 [[package]]
 name = "python-dateutil"
@@ -1285,7 +1285,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "f5981d1223a2f8920b938a332a8d2109c4d98db7e4b2ca5bd961a7f4f8372299"
+content-hash = "333157901dbf0f690b32e52cb53d3836adc64be9c62b08f21dec9325fb376b02"
 
 [metadata.files]
 aiodns = [
@@ -1937,8 +1937,8 @@ pytest-recording = [
     {file = "pytest_recording-0.12.0-py3-none-any.whl", hash = "sha256:a94b000640fe5d05b34fa9e25dca1671dd7f21195502c5f4d2f600c31dc14f7e"},
 ]
 python-binance = [
-    {file = "python-binance-1.0.15.tar.gz", hash = "sha256:0fcf7cf671f79d00d81251b2616c9517bee07ca13238cfd52e1ca0e58b066004"},
-    {file = "python_binance-1.0.15-py2.py3-none-any.whl", hash = "sha256:f2b827d37170a02ba28e816756febe7d706ab49bdc237fbda9d6689598562d3e"},
+    {file = "python-binance-1.0.16.tar.gz", hash = "sha256:3796bfa0124d376cf9ad42f03168d7630de56f936613eb39d05a4b82e1b1f1eb"},
+    {file = "python_binance-1.0.16-py2.py3-none-any.whl", hash = "sha256:a56ffc8b2c61d1283d02f8cb9011adbd19a9ebc8d903823552f8f6e1e549f28f"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
