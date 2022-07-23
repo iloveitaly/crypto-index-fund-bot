@@ -8,7 +8,7 @@ authors = ["Michael Bianco <mike@mikebian.co>"]
 python = ">=3.9.6,<=3.10"
 python-binance = "^1.0.15"
 tabulate = "^0.8.9"
-coinbasepro = "^0.3.0"
+coinbasepro = "^0.3.1"
 structlog = "^21.5.0"
 rich = "^12.3.0"
 click = "^8.1.3"

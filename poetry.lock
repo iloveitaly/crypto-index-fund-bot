@@ -68,7 +68,7 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-tests = ["pytest", "pytest-asyncio", "mypy (>=0.800)"]
+tests = ["mypy (>=0.800)", "pytest-asyncio", "pytest"]
 
 [[package]]
 name = "astroid"
@@ -303,7 +303,7 @@ python-versions = "*"
 click = ">=4.0"
 
 [package.extras]
-dev = ["pytest (>=3.6)", "pytest-cov", "wheel", "coveralls"]
+dev = ["coveralls", "wheel", "pytest-cov", "pytest (>=3.6)"]
 
 [[package]]
 name = "click-repl"
@@ -320,7 +320,7 @@ six = "*"
 
 [[package]]
 name = "coinbasepro"
-version = "0.3.0"
+version = "0.3.1"
 description = "A Python interface for the Coinbase Pro API."
 category = "main"
 optional = false
@@ -328,6 +328,9 @@ python-versions = ">=3.4.x"
 
 [package.dependencies]
 requests = ">=2.20.0"
+
+[package.extras]
+dev = ["pygments", "pre-commit", "pip-tools"]
 
 [[package]]
 name = "colorama"
@@ -346,7 +349,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
+test = ["hypothesis (==3.55.3)", "flake8 (==3.7.8)"]
 
 [[package]]
 name = "cryptography"
@@ -382,9 +385,9 @@ regex = "<2019.02.19 || >2019.02.19,<2021.8.27 || >2021.8.27"
 tzlocal = "*"
 
 [package.extras]
-calendars = ["convertdate", "hijri-converter", "convertdate"]
-fasttext = ["fasttext"]
 langdetect = ["langdetect"]
+fasttext = ["fasttext"]
+calendars = ["convertdate", "hijri-converter", "convertdate"]
 
 [[package]]
 name = "decorator"
@@ -717,8 +720,8 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-docs = ["Sphinx (>=4)", "furo (>=2021.7.5b38)", "proselint (>=0.10.2)", "sphinx-autodoc-typehints (>=1.12)"]
-test = ["appdirs (==1.4.4)", "pytest (>=6)", "pytest-cov (>=2.7)", "pytest-mock (>=3.6)"]
+test = ["pytest-mock (>=3.6)", "pytest-cov (>=2.7)", "pytest (>=6)", "appdirs (==1.4.4)"]
+docs = ["sphinx-autodoc-typehints (>=1.12)", "proselint (>=0.10.2)", "furo (>=2021.7.5b38)", "Sphinx (>=4)"]
 
 [[package]]
 name = "pluggy"
@@ -729,8 +732,8 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-dev = ["pre-commit", "tox"]
-testing = ["pytest", "pytest-benchmark"]
+testing = ["pytest-benchmark", "pytest"]
+dev = ["tox", "pre-commit"]
 
 [[package]]
 name = "prompt-toolkit"
@@ -1108,7 +1111,7 @@ executing = "*"
 pure-eval = "*"
 
 [package.extras]
-tests = ["pytest", "typeguard", "pygments", "littleutils"]
+tests = ["littleutils", "pygments", "typeguard", "pytest"]
 
 [[package]]
 name = "structlog"
@@ -1189,7 +1192,7 @@ python-versions = ">=3.6"
 tzdata = {version = "*", markers = "platform_system == \"Windows\""}
 
 [package.extras]
-test = ["pytest-mock (>=3.3)", "pytest (>=4.3)"]
+test = ["pytest (>=4.3)", "pytest-mock (>=3.3)"]
 
 [[package]]
 name = "ujson"
@@ -1280,7 +1283,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "855c14f8d07c39134c5a48c891d97c24db20a721c0e294c1fb90359c815c3973"
+content-hash = "dac69d3f0517165f13fff99787e0044c61b76bfe0cad12b515d0cdb95be9f449"
 
 [metadata.files]
 aiodns = [
@@ -1510,8 +1513,8 @@ click-repl = [
     {file = "click_repl-0.2.0-py3-none-any.whl", hash = "sha256:94b3fbbc9406a236f176e0506524b2937e4b23b6f4c0c0b2a0a83f8a64e9194b"},
 ]
 coinbasepro = [
-    {file = "coinbasepro-0.3.0-py3-none-any.whl", hash = "sha256:80d31129bf5850f260763fa5516ae4e0791beadd842b42965173156250b29d8b"},
-    {file = "coinbasepro-0.3.0.tar.gz", hash = "sha256:8f1f794a8c431364a782914a01d2979f24e2ad7d66305cfe2da129fd95130291"},
+    {file = "coinbasepro-0.3.1-py3-none-any.whl", hash = "sha256:13818ff40b750d808357afa3031e74f6cbdfde95cb7ae132babb0bece267d7fc"},
+    {file = "coinbasepro-0.3.1.tar.gz", hash = "sha256:21a2f7e950732fed5f7d6dbd033434ca3b2cf9bddaf4708f44936f234059f901"},
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
