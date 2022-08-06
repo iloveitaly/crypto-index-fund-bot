@@ -334,7 +334,7 @@ dev = ["pygments", "pre-commit", "pip-tools"]
 
 [[package]]
 name = "colorama"
-version = "0.4.4"
+version = "0.4.5"
 description = "Cross-platform colored terminal text."
 category = "main"
 optional = false
@@ -1310,7 +1310,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "054f90a967b555e363ee366f4716138c51bf3fc2438dce9613417c27adcd18fb"
+content-hash = "124b15bc75a41291c3d2ceb3fcef250915fe5278d478d3b8ffb04a3e5676557d"
 
 [metadata.files]
 aiodns = [
@@ -1544,8 +1544,8 @@ coinbasepro = [
     {file = "coinbasepro-0.3.1.tar.gz", hash = "sha256:21a2f7e950732fed5f7d6dbd033434ca3b2cf9bddaf4708f44936f234059f901"},
 ]
 colorama = [
-    {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
-    {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+    {file = "colorama-0.4.5-py2.py3-none-any.whl", hash = "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da"},
+    {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
 ]
 commonmark = [
     {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
