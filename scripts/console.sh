@@ -1,2 +1,4 @@
 #!/bin/bash
-python manage.py shell_plus
+# `scripts/console.sh -- --pdb` to break on uncaught exceptions
+
+python manage.py shell_plus $@
