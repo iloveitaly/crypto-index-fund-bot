@@ -17,9 +17,12 @@ from ..data_types import (
 from ..user import User
 from ..utils import log
 
+# binance.us API is difference from binance.com
+# https://github.com/binance-us/binance-official-api-docs
+# https://docs.binance.us/#introduction
+
 # https://python-binance.readthedocs.io/en/latest/market_data.html
 # https://binance-docs.github.io/apidocs/spot/en/#change-log
-# https://github.com/binance-us/binance-official-api-docs
 # https://dev.binance.vision/
 # https://algotrading101.com/learn/binance-python-api-guide/
 # https://github.com/timggraf/crypto-index-bot seems to have details about binance errors. Need to handle more error types
@@ -86,6 +89,9 @@ def binance_price_for_symbol(trading_pair: str) -> Decimal:
 
 def binance_portfolio(user: User) -> t.List[CryptoBalance]:
     account = user.binance_client().get_account()
+
+    # binance.us does not yet have staking balances
+    # result = user.binance_client()._request_margin_api("get", "staking/position", True, data={"product": "STAKING"})
 
     # TODO return an incomplete CryptoBalance that will be augmented with additional fields later on
     return [
