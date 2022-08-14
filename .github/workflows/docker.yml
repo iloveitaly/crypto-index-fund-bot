@@ -31,11 +31,10 @@ jobs:
           platforms: linux/arm64
           tags: ${{ github.repository }}:latest
 
-      # broken https://github.com/peter-evans/dockerhub-description/issues/10
-      # -
-      #   name: Update repo description
-      #   uses: peter-evans/dockerhub-description@v3.0.0
-      #   with:
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      #     short-description: ${{ github.event.repository.description }}
+      -
+        name: Update repo description
+        uses: peter-evans/dockerhub-description@v3.0.0
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          short-description: ${{ github.event.repository.description }}
