@@ -10,6 +10,7 @@
 FROM python:3.9.6
 
 LABEL maintainer="Michael Bianco <mike@mikebian.co>"
+LABEL org.opencontainers.image.source=https://github.com/iloveitaly/crypto-index-fund-bot
 
 # clean eliminates the need to manually `rm -rf` the cache
 RUN set -eux; \
