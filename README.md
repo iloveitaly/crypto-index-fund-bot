@@ -134,6 +134,8 @@ I'm not running this on Heroku, so it will need a bit of work. Here are some not
 
 ### Docker
 
+https://hub.docker.com/r/iloveitaly/crypto-index-fund-bot
+
 #### Single-user Docker Deployment
 
 You can use docker to deploy a single-user instance of this bot to a VPS or a local machine like a Raspberry Pi.
