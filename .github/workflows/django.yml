@@ -86,7 +86,7 @@ jobs:
         node-version: "17"
     - name: Run type checking
       run: |
-        npm install -g pyright@1.1.186
+        npm install --location=global pyright@latest
         source .venv/bin/activate
         pyright .
 
