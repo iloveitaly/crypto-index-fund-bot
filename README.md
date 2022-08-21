@@ -235,15 +235,12 @@ pytest -s --pdb
 
 ## Typechecking
 
-I like Pylance, the preferred VS Code python extension, which uses `pyright` for typchecking.
+I like Pylance, the preferred VS Code python extension, which uses `pyright` for typechecking.
 
 ```shell
 # install node either via asdf or directly
 asdf install
-
-# a specific version is required until this is fixed https://github.com/microsoft/pyright/issues/2578
-npm install -g pyright@1.1.186
-
+npm install -g pyright@latest
 pyright .
 ```
 
@@ -350,7 +347,7 @@ Some helpful exchange-specific links:
 * https://www.shrimpy.io. Best bot that I could find. They have [an advanced DCA product](https://help.shrimpy.io/hc/en-us/articles/1260803098690-Dollar-Cost-Averaging-DCA-in-Shrimpy) which only reallocates new deposits to the account.
 * https://www.tokensets.com. Really interesting solution to this problem using smart contracts. Only supports EC20 tokens.
 * https://www.bitfract.com Exchange one coin for multiple. This tool does *not* use a centralized exchange, which is really interesting. It was acquired and looks abandoned.
-* https://www.alongside.xyz/ Looks new, not much info out about it. 
+* https://www.alongside.xyz/ Looks new, not much info out about it.
 
 ### Funds
 
