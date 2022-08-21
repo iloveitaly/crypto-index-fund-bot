@@ -1,5 +1,7 @@
 import pytest
-from vcr.persisters.deduplicated_filesystem import DeduplicatedFilesystemPersister
+from vcr.persisters.deduplicated_filesystem import (  # type: ignore
+    DeduplicatedFilesystemPersister,
+)
 
 
 def pytest_recording_configure(config, vcr):
