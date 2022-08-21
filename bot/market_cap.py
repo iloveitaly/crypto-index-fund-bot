@@ -45,8 +45,10 @@ def coinmarketcap_data_for_symbol(symbol):
 # TODO should indicate that this is married to coinmarketcap data a bit more
 # market_data is pulled from coinmarketcap
 def filtered_coins_by_market_cap(
-    market_data, purchasing_currency: str, enabled_exchanges: t.List[SupportedExchanges], exclude_tags=[], exclude_coins=[], limit=-1
+    market_data, purchasing_currency: str, enabled_exchanges: t.List[SupportedExchanges], exclude_tags=[], exclude_coins=[], limit=None
 ):
+    if limit is None:
+        limit = -1
 
     exclude_tags = set(exclude_tags)
     coins = []
@@ -103,7 +105,7 @@ def calculate_market_cap_from_coin_list(
             # sqrt() == ^0.5
             sqrt_power_equivilent = Decimal("0.5")
 
-        total_market_cap = sum([cap**sqrt_power_equivilent for cap in market_cap_list])
+        total_market_cap = sum([cap ** sqrt_power_equivilent for cap in market_cap_list])
     else:
         total_market_cap = sum(market_cap_list)
 
@@ -117,7 +119,7 @@ def calculate_market_cap_from_coin_list(
         if strategy == MarketIndexStrategy.SQRT_MARKET_CAP:
             # make the typechecker happy
             assert sqrt_power_equivilent is not None
-            market_cap = market_cap**sqrt_power_equivilent
+            market_cap = market_cap ** sqrt_power_equivilent
 
         coins_with_market_cap_calculation.append(
             CryptoData(
@@ -136,7 +138,7 @@ def calculate_market_cap_from_coin_list(
     return coins_with_market_cap_calculation
 
 
-def coins_with_market_cap(user: User, limit: t.Optional[int] = None) -> t.List[CryptoData]:
+def coins_with_market_cap(user: User) -> t.List[CryptoData]:
     market_data = coinmarketcap_data()
 
     filtered_coins = filtered_coins_by_market_cap(
