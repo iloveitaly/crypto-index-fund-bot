@@ -7,7 +7,7 @@
 #   https://github.com/monicahq/monica/blob/master/scripts/docker/Dockerfile
 #   https://github.com/schickling/dockerfiles/blob/master/mysql-backup-s3/Dockerfile
 
-FROM python:3.9.6
+FROM python:3.9.13
 
 LABEL maintainer="Michael Bianco <mike@mikebian.co>"
 LABEL org.opencontainers.image.source=https://github.com/iloveitaly/crypto-index-fund-bot
@@ -30,14 +30,7 @@ RUN set -eux; \
   locale-gen; \
   apt-get clean;
 
-# TODO this will not work once the cryptography package is updated
-#      we must install python3-dev when it's package version is updated to 3.9.6
-# https://stackoverflow.com/questions/66118337/how-to-get-rid-of-cryptography-build-error
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
-
 RUN set -eux; \
-  # lock to specific version to avoid rust compilation
-  pip3 install cryptography==3.4.8; \
   pip3 install poetry==1.1.14; \
   poetry config virtualenvs.create false;
 
