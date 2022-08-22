@@ -492,7 +492,7 @@ hiredis = ["redis[hiredis] (>=3,!=4.0.0,!=4.0.1)"]
 
 [[package]]
 name = "django-structlog"
-version = "2.2.0"
+version = "3.0.1"
 description = "Structured Logging for Django"
 category = "main"
 optional = false
@@ -501,7 +501,7 @@ python-versions = "*"
 [package.dependencies]
 django = ">=1.11"
 django-ipware = "*"
-structlog = "*"
+structlog = ">=21.4.0"
 
 [[package]]
 name = "executing"
@@ -625,20 +625,20 @@ amqp = ">=5.0.9,<6.0.0"
 vine = "*"
 
 [package.extras]
-zookeeper = ["kazoo (>=1.3.1)"]
-yaml = ["PyYAML (>=3.10)"]
-sqs = ["urllib3 (>=1.26.7)", "pycurl (>=7.44.1,<7.45.0)", "boto3 (>=1.9.12)"]
-sqlalchemy = ["sqlalchemy"]
-slmq = ["softlayer-messaging (>=1.0.3)"]
-redis = ["redis (>=3.4.1,!=4.0.0,!=4.0.1)"]
-qpid = ["qpid-tools (>=0.26)", "qpid-python (>=0.26)"]
-pyro = ["pyro4"]
-msgpack = ["msgpack"]
-mongodb = ["pymongo (>=3.3.0,<3.12.1)"]
-librabbitmq = ["librabbitmq (>=2.0.0)"]
-consul = ["python-consul (>=0.6.0)"]
-azurestoragequeues = ["azure-storage-queue"]
 azureservicebus = ["azure-servicebus (>=7.0.0)"]
+azurestoragequeues = ["azure-storage-queue"]
+consul = ["python-consul (>=0.6.0)"]
+librabbitmq = ["librabbitmq (>=2.0.0)"]
+mongodb = ["pymongo (>=3.3.0,<3.12.1)"]
+msgpack = ["msgpack"]
+pyro = ["pyro4"]
+qpid = ["qpid-python (>=0.26)", "qpid-tools (>=0.26)"]
+redis = ["redis (>=3.4.1,!=4.0.0,!=4.0.1)"]
+slmq = ["softlayer-messaging (>=1.0.3)"]
+sqlalchemy = ["sqlalchemy"]
+sqs = ["boto3 (>=1.9.12)", "pycurl (>=7.44.1,<7.45.0)", "urllib3 (>=1.26.7)"]
+yaml = ["PyYAML (>=3.10)"]
+zookeeper = ["kazoo (>=1.3.1)"]
 
 [[package]]
 name = "lazy-object-proxy"
@@ -1327,7 +1327,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9.6,<=3.10"
-content-hash = "2bd42a8f234f1597f132ac9bf4da7a82b683a43043e06d954743e4c51d19555c"
+content-hash = "cb40066a7e059d5229186d0fb338c6633e8275def2e4815c80d9827955b7cc49"
 
 [metadata.files]
 aiodns = [
@@ -1633,8 +1633,8 @@ django-redis = [
     {file = "django_redis-5.2.0-py3-none-any.whl", hash = "sha256:1d037dc02b11ad7aa11f655d26dac3fb1af32630f61ef4428860a2e29ff92026"},
 ]
 django-structlog = [
-    {file = "django-structlog-2.2.0.tar.gz", hash = "sha256:0443d39d27bf34258a375a2dfd1a0ae51f24bedce88beae55c1b69f3c09af922"},
-    {file = "django_structlog-2.2.0-py3-none-any.whl", hash = "sha256:d6eb180963c7baf381ad7035e9afc7ecb7031246cb640f16925fe72f7712a2a1"},
+    {file = "django-structlog-3.0.1.tar.gz", hash = "sha256:7195a24133fcf9d6817b7afbd32f4b3b47e8a66c08ec5b148b1d5736281bb144"},
+    {file = "django_structlog-3.0.1-py3-none-any.whl", hash = "sha256:179c1d63e9792fa925de8991c052634176ca06e106993ca61fb721f8358d5ff6"},
 ]
 executing = [
     {file = "executing-0.8.2-py2.py3-none-any.whl", hash = "sha256:32fc6077b103bd19e6494a72682d66d5763cf20a106d5aa7c5ccbea4e47b0df7"},
