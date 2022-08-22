@@ -7,7 +7,7 @@ authors = ["Michael Bianco <mike@mikebian.co>"]
 [tool.poetry.dependencies]
 python = ">=3.9.6,<=3.10"
 python-binance = "^1.0.15"
-tabulate = "^0.8.9"
+tabulate = "^0.8.10"
 coinbasepro = "^0.3.1"
 structlog = "^21.5.0"
 rich = "^12.5.1"
