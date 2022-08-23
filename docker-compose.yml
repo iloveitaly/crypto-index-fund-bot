@@ -5,9 +5,6 @@ services:
     image: iloveitaly/crypto-index-fund-bot
     restart: always
     command: ./scripts/celery.sh
-    # user: ${UID:-1000}
-    # volumes:
-    #   - ./:/app:z
     env_file: .env
     depends_on:
       - postgres
@@ -56,5 +53,22 @@ services:
   redis:
     image: redis:6.2
     restart: always
+
+  db_backup:
+    image: schickling/postgres-backup-s3:latest
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_BACKUP_ALL: true
+      POSTGRES_HOST: postgres
+      S3_ACCESS_KEY_ID: KEY_ID
+      S3_SECRET_ACCESS_KEY: ACCESS_KEY
+      S3_BUCKET: bucket
+      S3_ENDPOINT: https://s3.compatible.endpoint.com
+      SCHEDULE: '@weekly'
+
 volumes:
   postgres:
