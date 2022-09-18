@@ -6,13 +6,14 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspace",
-
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
+				// Enable pylance's pyright integration (disabled by default):
+				"python.analysis.typeCheckingMode": "basic",
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
 				"python.linting.enabled": true,
 				"python.linting.pylintEnabled": true,
@@ -26,11 +27,8 @@
 				"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
 				"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
 				"python.testing.pytestPath": "/usr/local/py-utils/bin/pytest",
-				"dotfiles.repository": "iloveitaly/dotfiles",
-				"dotfiles.targetPath": "~/dotfiles",
-				// "dotfiles.installCommand": "~/dotfiles/install.sh"
+				"terminal.integrated.defaultProfile.linux": "zsh"
 			},
-
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.python",
@@ -38,18 +36,19 @@
 			]
 		}
 	},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// This can be used to network with other containers or the host.
 	// "forwardPorts": [5000, 5432],
-
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "pip install --user -r requirements.txt",
-
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
 	"features": {
 		"git": "latest",
-		"github-cli": "latest"
+		"github-cli": "latest",
+		"homebrew": {
+			"version": "latest",
+			"shallow": false
+		}
 	}
 }
