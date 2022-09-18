@@ -7,10 +7,7 @@ ENV PYTHONUNBUFFERED 1
 # [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
-
-# https://stackoverflow.com/questions/53835198/integrating-python-poetry-with-docker
-# https://gist.github.com/jthorniley/fba81c62a9d45c723777c7205ff96481
-RUN curl -sSL https://install.python-poetry.org | python - --version=1.1.14
-COPY .env* ./
-ENV PATH "/home/vscode/.poetry/bin:$PATH"
 RUN npm i -g pyright
+
+RUN pip install poetry==1.1.14
+RUN poetry config virtualenvs.in-project true
