@@ -11,6 +11,6 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 # https://stackoverflow.com/questions/53835198/integrating-python-poetry-with-docker
 # https://gist.github.com/jthorniley/fba81c62a9d45c723777c7205ff96481
 RUN curl -sSL https://install.python-poetry.org | python - --version=1.1.14
-RUN .env* ./
+COPY .env* ./
 ENV PATH "/home/vscode/.poetry/bin:$PATH"
 RUN npm i -g pyright
