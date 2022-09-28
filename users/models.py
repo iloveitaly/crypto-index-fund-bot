@@ -9,6 +9,7 @@ from encrypted_model_fields.fields import EncryptedCharField
 # but is more of a pain in our case since django does not provide a decoder which converts the strings
 # back to Decimals. For this reason, we are using completely custom decoders/encoders which use float JSON
 # types even though there is a risk of precision loss.
+# https://github.com/rapidpro/rapidpro/blob/649ed372111a4a97e252efffe7484e4dcedff325/temba/utils/json.py#L45
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
