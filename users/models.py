@@ -1,15 +1,26 @@
+import decimal
 import json
 
 from django.db import models
 from encrypted_model_fields.fields import EncryptedCharField
 
 
+# There's a DjangoJSONEncoder, but it encodes Decimals as strings, which is probably more correct
+# but is more of a pain in our case since django does not provide a decoder which converts the strings
+# back to Decimals. For this reason, we are using completely custom decoders/encoders which use float JSON
+# types even though there is a risk of precision loss.
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return float(o)
+        else:
+            return super().default(o)
+
+
 # for ensuring all floats are parsed as decimals
 class CustomJSONDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
-        from decimal import Decimal
-
-        kwargs["parse_float"] = Decimal
+        kwargs["parse_float"] = decimal.Decimal
         super().__init__(*args, **kwargs)
 
 
@@ -19,7 +30,8 @@ class User(models.Model):
     binance_api_key = EncryptedCharField(max_length=100, null=True)
     binance_secret_key = EncryptedCharField(max_length=100, null=True)
 
-    external_portfolio = models.JSONField(default=list, decoder=CustomJSONDecoder)
+    # custom encoder required for handling Decimal fields
+    external_portfolio = models.JSONField(default=list, encoder=CustomJSONEncoder, decoder=CustomJSONDecoder)
     preferences = models.JSONField(default=dict)
     name = models.CharField(max_length=100)
     date_checked = models.DateTimeField(null=True)
