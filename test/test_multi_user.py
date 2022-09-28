@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
@@ -34,10 +35,11 @@ class TestMultiUser(unittest.TestCase):
     # TODO should add better mock for buy command return results
     @patch.object(bot.commands.BuyCommand, "execute", return_value=[(None, None, None, [{}])])
     def test_updating_last_ordered_at(self, buy_command_mock):
-        user = User.objects.create(name="user")
+        user = User.objects.create(name="name", external_portfolio=[{"amount": 7.09981267, "symbol": "LINK"}])
 
         users.celery.initiate_user_buys.delay()
 
         fresh_user = User.objects.get(id=user.id)
 
         assert fresh_user.last_ordered_at is not None
+        assert fresh_user.external_portfolio[0]["amount"] == Decimal("7.09981267")
