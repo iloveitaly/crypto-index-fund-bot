@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+cd "${0%/*}/.."
+
+source "~/.asdf/asdf.sh"
 
 # install all required plugins
 cat .tool-versions | cut -d' ' -f1 | grep "^[^\#]" | xargs -i asdf plugin add {}
@@ -10,3 +14,5 @@ poetry config virtualenvs.in-project true
 poetry install
 
 npm install -g pyright@latest
+
+(cd .devcontainer && docker compose up -d)
