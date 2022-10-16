@@ -1,6 +1,7 @@
 # Bot
 
 * Staked balances do not show up anymore
+  * might be fixed: https://github.com/binance-us/binance-us-api-docs/issues/107#issuecomment-1261877728
 * Purchase more than the minimum
 * Make sure MIN_NOTIONAL is respected when LIMIT strategy is used
 * Refactor all binance stuff into a exchange-wrapped module
