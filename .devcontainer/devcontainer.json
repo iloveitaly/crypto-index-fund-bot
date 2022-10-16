@@ -3,20 +3,18 @@
 {
 	"name": "Python 3, PostgreSQL, and Redis",
 	"dockerFile": "./Dockerfile",
-	// "mounts": [
-	// 	"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-	// ],
-	"forwardPorts": [],
-	// required in order to run docker compose within the container
-	"runArgs": [
-		"--volume=/var/lib/docker",
-		"--privileged"
-	],
-	"extensions": [],
-	// "postCreateCommand": "sh ./.devcontainer/post-install.sh",
-	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"forwardPorts": [6379, 5432],
+
 	"remoteUser": "vscode",
 	"features": {
-		"homebrew": true
+		"homebrew": "latest",
+		// you can view all of the features here: https://github.com/devcontainers/features/tree/main/src
+		"ghcr.io/devcontainers/features/sshd:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:1": {
+			"version": "latest",
+			"dockerDashComposeVersion":"v2"
+		}
 	}
 }
