@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # install all required plugins
 cat .tool-versions | cut -d' ' -f1 | grep "^[^\#]" | xargs -i asdf plugin add {}
 

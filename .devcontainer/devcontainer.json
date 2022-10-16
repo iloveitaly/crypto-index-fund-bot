@@ -1,9 +1,9 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/python-3-postgres
+// https://aka.ms/devcontainer.json
 {
 	"name": "Python 3, PostgreSQL, and Redis",
 	"dockerFile": "./Dockerfile",
 	"forwardPorts": [6379, 5432],
+	"postCreateCommand": ".devcontainer/post-create.sh",
 
 	"remoteUser": "vscode",
 	"features": {
