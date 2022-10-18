@@ -2,17 +2,18 @@
 
 cd "${0%/*}/.."
 
-source "~/.asdf/asdf.sh"
+source "$HOME/.asdf/asdf.sh"
 
-# install all required plugins
-cat .tool-versions | cut -d' ' -f1 | grep "^[^\#]" | xargs -i asdf plugin add {}
+/bin/find $CODESPACE_VSCODE_FOLDER -name ".tool-versions" | while read filePath; do
+  echo "asdf setup for $filePath"
 
-# install all required versions
-asdf install
+  # install all required plugins
+  cat $filePath | cut -d' ' -f1 | grep "^[^\#]" | xargs -i asdf plugin add {}
 
-poetry config virtualenvs.in-project true
-poetry install
+  # install all required versions
+  (cd $(dirname $filepath) && asdf install)
+done
 
-npm install -g pyright@latest
-
-(cd .devcontainer && docker compose up -d)
+if test -f $CODESPACE_VSCODE_FOLDER/.devcontainer/docker-compose.yml; then
+  docker compose up -d
+fi

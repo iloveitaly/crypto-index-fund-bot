@@ -3,7 +3,7 @@
 	"name": "Python 3, PostgreSQL, and Redis",
 	"dockerFile": "./Dockerfile",
 	"forwardPorts": [6379, 5432],
-	"postCreateCommand": ".devcontainer/post-create.sh",
+	"postCreateCommand": ".devcontainer/post-create.sh && scripts/setup.sh",
 
 	"remoteUser": "vscode",
 	"features": {
