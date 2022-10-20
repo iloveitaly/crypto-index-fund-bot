@@ -1,3 +1,4 @@
 python 3.9.13
 poetry 1.1.14
+# this is for pyright, which is distributed via npm
 nodejs 17.1.0
