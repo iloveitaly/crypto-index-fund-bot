@@ -11,7 +11,7 @@ source "$HOME/.asdf/asdf.sh"
   cat $filePath | cut -d' ' -f1 | grep "^[^\#]" | xargs -i asdf plugin add {}
 
   # install all required versions
-  (cd $(dirname $filepath) && asdf install)
+  (cd $(dirname $filePath) && asdf install)
 done
 
 if test -f $CODESPACE_VSCODE_FOLDER/.devcontainer/docker-compose.yml; then
