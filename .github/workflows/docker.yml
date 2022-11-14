@@ -33,7 +33,7 @@ jobs:
 
       -
         name: Update repo description
-        uses: peter-evans/dockerhub-description@v3.1.1
+        uses: peter-evans/dockerhub-description@v3.1.2
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
