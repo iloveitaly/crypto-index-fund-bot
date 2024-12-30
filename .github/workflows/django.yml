@@ -52,7 +52,7 @@ jobs:
         python-version: 3.9.13
     # https://stackoverflow.com/questions/62977821/how-to-cache-poetry-install-for-github-actions
     - name: Install poetry
-      uses: snok/install-poetry@v1.3
+      uses: snok/install-poetry@v1.4
       with:
         version: 1.1.14
         virtualenvs-create: true
